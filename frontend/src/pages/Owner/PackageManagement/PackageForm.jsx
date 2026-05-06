@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import PackageFormComponent from '@/components/Forms/PackageForm';
 import { ArrowLeft } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import { toast } from '@/utils/toast';
+import { packageService } from '@/services/packageService';
+import { useCreatePackage, useUpdatePackage } from '@/hooks/mutations/usePackageMutation';
 
 const PackageFormPage = () => {
   const { id } = useParams();
@@ -13,30 +15,68 @@ const PackageFormPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [initialData, setInitialData] = useState(null);
 
+  const createMutation = useCreatePackage();
+  const updateMutation = useUpdatePackage();
+
   useEffect(() => {
     if (isEditing) {
       setIsLoading(true);
-      // Giả lập tải dữ liệu từ API
-      setTimeout(() => {
-        setInitialData({
-          name: 'Gói Yoga - Cơ bản 1 tháng',
-          durationMonths: 1,
-          price: 500000,
-          description: 'Truy cập không giới hạn khu tập Yoga cơ bản',
-          type: 'basic',
+      packageService.getPackageById(id)
+        .then(response => {
+          const data = response.data || response;
+          setInitialData({
+            name: data.package_name || data.name,
+            durationMonths: data.duration_days ? Math.round(data.duration_days / 30) : 1,
+            price: data.price || 0,
+            description: data.description || '',
+            type: { 1: 'VIP', 2: 'Normal', 3: 'Female-only' }[data.category_id] || 'Normal',
+            status: data.is_active === true ? 'active' : 'inactive',
+          });
+        })
+        .catch(err => {
+          toast.error("Lỗi tải thông tin gói tập");
+          console.error(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        setIsLoading(false);
-      }, 500);
     }
   }, [id, isEditing]);
 
   const handleSubmit = (data) => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success(isEditing ? 'Cập nhật thay đổi thành công!' : 'Đã thiết lập gói tập mới thành công!');
-      navigate('/owner/packages');
-    }, 500);
+    const payload = {
+      package_name: data.name,
+      category_id: { 'VIP': 1, 'Normal': 2, 'Female-only': 3 }[data.type] || 2,
+      duration_days: data.durationMonths * 30,
+      price: parseFloat(data.price),
+      is_active: data.status === 'active' || data.status === true,
+      description: data.description
+    };
+
+    if (isEditing) {
+      updateMutation.mutate(
+        { id, data: payload },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate('/owner/packages');
+          },
+          onError: () => setIsLoading(false)
+        }
+      );
+    } else {
+      createMutation.mutate(
+        payload,
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate('/owner/packages');
+          },
+          onError: () => setIsLoading(false)
+        }
+      );
+    }
   };
 
   if (isEditing && !initialData) {

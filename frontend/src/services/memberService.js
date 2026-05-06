@@ -1,44 +1,30 @@
 import axios from '@/lib/axios';
 
-const IS_MOCK = true;
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-const MOCK_MEMBERS = [
-  { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', expiredAt: '2025-12-30', status: 'active', package: 'Gói VIP (Kèm PT)' },
-  { id: 2, name: 'Trần Thị B', phone: '0912345678', expiredAt: '2025-05-15', status: 'active', package: 'Gói Cơ Bản' },
-  { id: 3, name: 'Lê Văn C', phone: '0923456789', expiredAt: '2024-01-01', status: 'expired', package: 'Lớp Nhóm' },
-];
-
 export const memberService = {
-  getMembers: async () => {
-    if (IS_MOCK) {
-      await delay(600);
-      return MOCK_MEMBERS;
-    }
-    return axios.get('/members');
-  },
+  getMembers: (page = 1, limit = 6) =>
+    axios.get(`/members?page=${page}&limit=${limit}`),
 
-  createMember: async (data) => {
-    if (IS_MOCK) {
-      await delay(800);
-      return { ...data, id: Date.now() };
-    }
-    return axios.post('/members', data);
-  },
+  getMemberDetail: (id) =>
+    axios.get(`/members/${id}`),
 
-  updateMember: async (id, data) => {
-    if (IS_MOCK) {
-      await delay(800);
-      return { id, ...data };
-    }
-    return axios.put(`/members/${id}`, data);
-  },
+  createMember: (data) =>
+    axios.post('/members', data),
 
-  deleteMember: async (id) => {
-    if (IS_MOCK) {
-      await delay(500);
-      return { success: true };
-    }
-    return axios.delete(`/members/${id}`);
-  }
+  updateMember: (id, data) =>
+    axios.put(`/members/${id}`, data),
+
+  getMemberSubscriptionHistory: (memberId, page = 1, limit = 5) =>
+    axios.get(`/members/${memberId}/subscriptions?page=${page}&limit=${limit}`),
+
+  updateMemberStatus: (id, isActive) =>
+    axios.put(`/members/${id}/status`, { is_active: isActive }),
+
+  deleteMember: (id) =>
+    axios.delete(`/members/${id}`),
+
+  getMemberByAccountId: (accountId) =>
+    axios.get(`/members/account/${accountId}`),
+
+  getAllMembers: () =>
+    axios.get('/members'),
 };

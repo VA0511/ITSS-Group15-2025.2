@@ -3,7 +3,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/schemas/authSchemas';
 import { useLogin } from '@/hooks/mutations/useAuthMutations';
-import { Dumbbell, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Dumbbell, User, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import gigachadVideo from '@/assets/gigachad.mp4';
+
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +17,7 @@ const Login = () => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { username: '', password: '' },
   });
 
   const onSubmit = (data) => {
@@ -53,25 +55,26 @@ const Login = () => {
               </div>
             )}
 
-            {/* Email Field */}
+            {/* Username Field */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email</label>
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tên đăng nhập</label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                  <Mail className="h-5 w-5" />
+                  <User className="h-5 w-5" />
                 </div>
                 <input
-                  type="email"
-                  {...register('email')}
+                  type="text"
+                  autoComplete="username"
+                  {...register('username')}
                   className={`block w-full rounded-xl border bg-gray-50/50 py-3 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 focus:bg-white dark:bg-gray-900/50 dark:focus:bg-gray-900 ${
-                    errors.email
+                    errors.username
                       ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
                       : 'border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-800 dark:focus:border-blue-500'
                   }`}
-                  placeholder="nhanvien@activegym.vn"
+                  placeholder="owner, manager01, ..."
                 />
               </div>
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+              {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
             </div>
 
             {/* Password Field */}
@@ -107,12 +110,7 @@ const Login = () => {
               {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
             </div>
             
-            <p className="text-xs text-gray-500 flex flex-col gap-1 border-l-2 border-blue-500 pl-3">
-              <span><strong>Mẹo (Bản Demo MOCK):</strong></span>
-              <span>- Gõ <code>owner@...</code> pw <code>123456</code> để vào tài khoản Chủ.</span>
-              <span>- Gõ <code>manager@...</code> pw <code>123456</code> để vào tài khoản Quản lý.</span>
-              <span>- Bất kỳ email khác pw <code>123456</code> để vào màn hình Hội viên bình thường.</span>
-            </p>
+
 
             <button
               type="submit"
@@ -137,12 +135,15 @@ const Login = () => {
       <div className="relative hidden w-1/2 overflow-hidden lg:block bg-gray-900">
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div>
         <div className="absolute inset-0 z-10 bg-blue-600/10 mix-blend-multiply"></div>
-        <img 
-          src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=2070&auto=format&fit=crop" 
-          alt="Gym Background" 
-          className="h-full w-full object-cover opacity-80"
+        <video
+          src={gigachadVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover object-center opacity-80"
         />
-        
+
         {/* Quote overlay */}
         <div className="absolute bottom-0 left-0 z-20 w-full p-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
           <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-sm font-medium tracking-wide text-white backdrop-blur-md mb-6 border border-white/20">

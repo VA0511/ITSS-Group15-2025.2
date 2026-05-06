@@ -7,52 +7,78 @@ import {
   Smartphone,
   ShieldCheck,
   CheckCircle2,
+  Landmark,
 } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { toast } from "@/utils/toast";
+import { useRenewPackage } from "@/hooks/mutations/usePackageMutations";
 
 const PaymentCheckout = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const renewPackageMutation = useRenewPackage();
 
+  // Check if this is a renewal or new registration
+  const isRenewal = !!state?.renewalData;
+  
   // Dữ liệu gói tập từ trang trước truyền sang (nếu không có thì trả về mặc định)
-  const selectedPkg = state?.package || {
+  const selectedPkg = isRenewal ? state.renewalData : (state?.package || {
     id: 0,
     name: "Gói tập không xác định",
     price: "0 đ",
     description: "Không có thông tin gói.",
-  };
+  });
 
   const [paymentMethod, setPaymentMethod] = useState("vnpay");
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Xử lý tính toán giá tiền
-  const priceStr = selectedPkg.price.replace(/[^\d]/g, "");
-  const priceValue = parseInt(priceStr, 10) || 0;
+  const priceValue = isRenewal ? selectedPkg.renewalPrice : (parseInt(selectedPkg.price?.replace(/[^\d]/g, "") || "0", 10) || 0);
   const vat = priceValue * 0.1; // VAT 10%
   const totalAmount = priceValue + vat;
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     setIsProcessing(true);
-    // Giả lập gọi API thanh toán
-    setTimeout(() => {
+    
+    try {
+      if (isRenewal) {
+        // Call renewal mutation for renewals
+        await renewPackageMutation.mutateAsync({
+          packageId: selectedPkg.packageId,
+          packageName: selectedPkg.packageName,
+          renewalMonths: selectedPkg.renewalMonths,
+          renewalPrice: selectedPkg.renewalPrice,
+          currentEndDate: selectedPkg.currentEndDate,
+          newEndDate: selectedPkg.newEndDate,
+          paymentMethod,
+        });
+        toast.success("Thanh toán thành công! Gói tập đã được gia hạn.");
+      } else {
+        // Simulate payment processing for new registrations
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        toast.success("Thanh toán thành công! Gói tập đã được kích hoạt.");
+      }
+      
+      navigate("/member/my-package");
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error("Thanh toán thất bại. Vui lòng thử lại.");
+    } finally {
       setIsProcessing(false);
-      toast.success("Thanh toán thành công! Gói tập đã được kích hoạt.");
-      navigate("/member/dashboard");
-    }, 1500);
+    }
   };
 
   return (
     <div className="max-w-5xl mx-auto pb-20">
       <div className="flex items-center gap-4 mb-8">
-        <Link to="/member/renew">
+        <Link to={isRenewal ? "/member/renew" : "/member/register"}>
           <Button variant="outline" size="icon" className="shrink-0 h-10 w-10">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Thanh toán gói tập
+            {isRenewal ? "Gia hạn gói tập" : "Thanh toán gói tập"}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Vui lòng kiểm tra thông tin đơn hàng và chọn phương thức thanh toán.
@@ -182,6 +208,44 @@ const PaymentCheckout = () => {
                   )}
                 </div>
               </label>
+
+              {/* Online Banking Option */}
+              <label
+                className={`relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none dark:bg-gray-950 ${
+                  paymentMethod === "bank"
+                    ? "border-green-500 ring-1 ring-green-500"
+                    : "border-gray-300 dark:border-gray-800"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="bank"
+                  className="sr-only"
+                  checked={paymentMethod === "bank"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="text-sm flex items-center gap-3">
+                      <div className="h-10 w-10 rounded bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                        <Landmark className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          Chuyển khoản Ngân Hàng
+                        </p>
+                        <p className="text-gray-500 text-xs">
+                          Chuyển tiền vào tài khoản ngân hàng
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {paymentMethod === "bank" && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
+              </label>
             </div>
 
             {/* Dynamic UI depending on selection (Mock QR / Form) */}
@@ -264,6 +328,34 @@ const PaymentCheckout = () => {
                   </div>
                 </div>
               )}
+              {paymentMethod === "bank" && (
+                <div className="w-full max-w-sm space-y-4 text-center">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-green-200 dark:border-green-900/30 space-y-4">
+                    <p className="font-semibold text-gray-900 dark:text-white">Thông tin chuyển khoản</p>
+                    <div className="space-y-3 text-sm bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Tên ngân hàng:</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">VietComBank</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Số tài khoản:</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">0123456789</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Chủ tài khoản:</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">Active Gym</span>
+                      </div>
+                      <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Nội dung chuyển:</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-xs">GYM-[Mã HV]</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                      Vui lòng nhập mã hội viên vào nội dung chuyển để xác nhân thanh toán
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -278,12 +370,40 @@ const PaymentCheckout = () => {
             <div className="space-y-4 text-sm mb-6">
               <div className="flex justify-between items-start">
                 <span className="text-gray-600 dark:text-gray-400 font-medium">
-                  Gói tập đăng ký:
+                  {isRenewal ? "Gia hạn gói:" : "Gói tập đăng ký:"}
                 </span>
                 <span className="font-bold text-gray-900 dark:text-white text-right break-words w-1/2">
-                  {selectedPkg.name}
+                  {selectedPkg.packageName || selectedPkg.name}
                 </span>
               </div>
+              {isRenewal && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Thời gian gia hạn:
+                    </span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {selectedPkg.renewalMonths} tháng
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Hạn kết thúc hiện tại:
+                    </span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {new Date(selectedPkg.currentEndDate).toLocaleDateString('vi-VN')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Hạn kết thúc mới:
+                    </span>
+                    <span className="font-semibold text-green-600 dark:text-green-400">
+                      {new Date(selectedPkg.newEndDate).toLocaleDateString('vi-VN')}
+                    </span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">
                   Tạm tính:
@@ -314,12 +434,12 @@ const PaymentCheckout = () => {
               className="w-full font-bold shadow-lg"
               size="lg"
               onClick={handleCheckout}
-              disabled={isProcessing}
+              disabled={isProcessing || renewPackageMutation.isPending}
               leftIcon={
-                isProcessing ? undefined : <ShieldCheck className="h-5 w-5" />
+                isProcessing || renewPackageMutation.isPending ? undefined : <ShieldCheck className="h-5 w-5" />
               }
             >
-              {isProcessing ? "Đang xử lý..." : "Xác nhận & Hoàn tất"}
+              {isProcessing || renewPackageMutation.isPending ? "Đang xử lý..." : "Xác nhận & Hoàn tất"}
             </Button>
 
             <p className="text-xs text-center text-gray-500 mt-4 leading-relaxed">

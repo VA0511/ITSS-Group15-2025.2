@@ -17,7 +17,7 @@ const PackageForm = ({ initialData, onSubmit, isLoading }) => {
       durationMonths: 1,
       price: 0,
       description: '',
-      type: 'basic',
+      type: 'Normal',
     }
   });
 
@@ -53,9 +53,9 @@ const PackageForm = ({ initialData, onSubmit, isLoading }) => {
           className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:bg-gray-950 dark:border-gray-800 dark:text-white"
           {...register('type')}
         >
-          <option value="basic">Basic (Cơ bản - Dùng thiết bị chung)</option>
-          <option value="premium">Premium (Cao cấp - Kèm Yoga/GroupX)</option>
-          <option value="vip">VIP (Thương gia - Xông hơi/Tủ riêng)</option>
+          <option value="Normal">Normal (Khu vực Gym cơ bản)</option>
+          <option value="VIP">VIP (Truy cập mọi khu vực, phòng xông hơi, yoga, gym, hồ bơi)</option>
+          <option value="Female-only">Female-only (Khu vực riêng cho nữ, Yoga, Spa)</option>
         </select>
         {errors.type && <span className="text-xs font-medium text-red-500">{errors.type.message}</span>}
       </div>

@@ -4,16 +4,24 @@ import useAuthStore from '@/store/useAuthStore';
 import useThemeStore from '@/store/useThemeStore';
 import useUIStore from '@/store/useUIStore';
 import { toast } from '@/utils/toast';
+import axios from '@/lib/axios';
 const Header = () => {
   // Lấy hàm xử lý đăng xuất và thông tin user từ Zustand Store
-  const { user, logout } = useAuthStore();
+  const { user, logout, refreshToken } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const [unreadCount, setUnreadCount] = useState(3); // Demo số thông báo
 
-  const handleLogout = () => {
-    logout();
-    toast.success('Đăng xuất thành công', { description: 'Hẹn gặp lại bạn' });
+  const handleLogout = async () => {
+    try {
+      if (refreshToken) {
+        // Gọi backend để revoke refresh token — fire-and-forget
+        axios.post('/auth/logout', { refresh_token: refreshToken }).catch(() => {});
+      }
+    } finally {
+      logout();
+      toast.success('Đăng xuất thành công', { description: 'Hẹn gặp lại bạn' });
+    }
   };
 
   const handleNotificationClick = () => {
@@ -39,9 +47,6 @@ const Header = () => {
         </button>
         
         {/* Tên màn hình / Ứng dụng ở góc trái Header */}
-        <h1 className="hidden text-lg font-bold tracking-tight lg:block md:text-xl text-gray-900 dark:text-white">
-          Trang Quản Trị
-        </h1>
       </div>
 
       <div className="flex items-center gap-4">

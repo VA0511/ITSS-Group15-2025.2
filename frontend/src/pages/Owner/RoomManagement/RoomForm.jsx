@@ -4,6 +4,8 @@ import RoomFormComponent from "@/components/Forms/RoomForm";
 import { ArrowLeft } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { toast } from "@/utils/toast";
+import { facilityService } from "@/services/facilityService";
+import { useCreateFacility, useUpdateFacility } from "@/hooks/mutations/useFacilityMutation";
 
 const RoomFormPage = () => {
   const { id } = useParams();
@@ -12,39 +14,75 @@ const RoomFormPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [initialData, setInitialData] = useState(null);
+  const [currentStatus, setCurrentStatus] = useState('Operating');
+
+  const createMutation = useCreateFacility();
+  const updateMutation = useUpdateFacility();
 
   useEffect(() => {
     if (isEditing) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(true);
-      // Giả lập tải dữ liệu từ API
-      setTimeout(() => {
-        setInitialData({
-          name: "Phòng Yoga",
-          capacity: 20,
-          status: "active",
-          icon: "yoga",
+      facilityService.getFacilityById(id)
+        .then(response => {
+          const data = response.data || response;
+          setCurrentStatus(data.status || 'Operating');
+          setInitialData({
+            facility_name: data.facility_name || '',
+            facility_type: data.facility_type || 'Gym',
+            description: data.description || '',
+            max_capacity: data.max_capacity || 30,
+            current_capacity: data.current_capacity || 0,
+            amenities: data.amenities || '',
+          });
+        })
+        .catch(err => {
+          toast.error("Lỗi khi tải thông tin phòng tập");
+          console.error(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        setIsLoading(false);
-      }, 500);
     }
   }, [id, isEditing]);
 
   const handleSubmit = (data) => {
-    console.log("Form data:", data);
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success(
-        isEditing
-          ? "Cập nhật thay đổi thành công!"
-          : "Đã tạo phòng tập mới thành công!",
+    const payload = {
+      facility_name: data.facility_name,
+      facility_type: data.facility_type,
+      description: data.description || '',
+      max_capacity: parseInt(data.max_capacity, 10),
+      current_capacity: parseInt(data.current_capacity || 0, 10),
+      amenities: data.amenities || '',
+      status: isEditing ? currentStatus : 'Operating',
+    };
+
+    if (isEditing) {
+      updateMutation.mutate(
+        { id, data: payload },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate("/owner/rooms");
+          },
+          onError: () => setIsLoading(false)
+        }
       );
-      navigate("/owner/rooms");
-    }, 500);
+    } else {
+      createMutation.mutate(
+        payload,
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate("/owner/rooms");
+          },
+          onError: () => setIsLoading(false)
+        }
+      );
+    }
   };
 
-  if (isEditing && !initialData)
+  if (isEditing && isLoading && !initialData)
     return (
       <div className="p-8 text-center text-gray-500">Đang tải dữ liệu...</div>
     );
@@ -59,14 +97,12 @@ const RoomFormPage = () => {
         </Link>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {isEditing
-              ? "Chỉnh sửa Khu vực / Phòng tập"
-              : "Thiết lập Phòng tập mới"}
+            {isEditing ? "Chỉnh sửa khu vực / phòng tập" : "Thêm phòng tập mới"}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {isEditing
-              ? "Thay đổi thông tin sức chứa, biểu tượng hoặc trạng thái khu vực."
-              : "Thêm khu vực tập luyện mới để quản lý hệ thống thuận tiện hơn."}
+              ? "Thay đổi thông tin sức chứa, loại khu vực và tiện ích."
+              : "Thêm khu vực tập luyện mới vào hệ thống quản lý."}
           </p>
         </div>
       </div>
@@ -75,7 +111,7 @@ const RoomFormPage = () => {
         <RoomFormComponent
           initialData={initialData}
           onSubmit={handleSubmit}
-          isLoading={isLoading}
+          isLoading={isLoading || createMutation.isPending || updateMutation.isPending}
         />
       </div>
     </div>

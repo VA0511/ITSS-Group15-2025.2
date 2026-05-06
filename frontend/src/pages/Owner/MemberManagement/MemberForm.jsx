@@ -4,6 +4,8 @@ import MemberFormComponent from '@/components/Forms/MemberForm';
 import { ArrowLeft } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import { toast } from '@/utils/toast';
+import { memberService } from '@/services/memberService';
+import { useCreateMember, useUpdateMember } from '@/hooks/mutations/useMemberMutation';
 
 const MemberFormPage = () => {
   const { id } = useParams();
@@ -13,31 +15,71 @@ const MemberFormPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [initialData, setInitialData] = useState(null);
 
+  const createMutation = useCreateMember();
+  const updateMutation = useUpdateMember();
+
   useEffect(() => {
     if (isEditing) {
       setIsLoading(true);
-      // Giả lập tải dữ liệu từ API
-      setTimeout(() => {
-        setInitialData({
-          fullName: 'Nguyễn Văn A',
-          phoneNumber: '0987654321',
-          email: 'nguyenvana@example.com',
-          address: '123 Đường B, Quận C',
-          gender: 'male',
-          dateOfBirth: '1990-01-01',
+      memberService.getMemberDetail(id)
+        .then(response => {
+          const data = response.data || response;
+          setInitialData({
+            fullName: data.full_name || data.FullName || data.name || '',
+            phoneNumber: data.phone || data.Phone || '',
+            email: data.email || data.Email || '',
+            address: data.address || data.Address || '',
+            gender: data.gender || data.Gender || 'Nam',
+            dateOfBirth: data.dob || data.DOB ? (data.dob || data.DOB).split('T')[0] : '',
+            status: data.is_active || data.status === 'active' ? 'active' : 'inactive',
+          });
+        })
+        .catch(err => {
+          toast.error("Lỗi khi tải thông tin hội viên");
+          console.error(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        setIsLoading(false);
-      }, 500);
     }
   }, [id, isEditing]);
 
   const handleSubmit = (data) => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success(isEditing ? 'Cập nhật thay đổi thành công!' : 'Đã thêm hội viên mới thành công!');
-      navigate('/owner/members');
-    }, 500);
+    const payload = {
+      full_name: data.fullName,
+      phone: data.phoneNumber,
+      email: data.email,
+      address: data.address,
+      gender: data.gender,
+      dob: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString() : new Date().toISOString(),
+      is_active: data.status === 'active',
+      account_id: 0 // Mock account ID or from context if available
+    };
+
+    if (isEditing) {
+      updateMutation.mutate(
+        { id, data: payload },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate('/owner/members');
+          },
+          onError: () => setIsLoading(false)
+        }
+      );
+    } else {
+      createMutation.mutate(
+        payload,
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate('/owner/members');
+          },
+          onError: () => setIsLoading(false)
+        }
+      );
+    }
   };
 
   if (isEditing && !initialData) {

@@ -1,20 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Eye, EyeOff } from 'lucide-react';
 import { usePackages } from '@/hooks/queries/usePackages';
+import { useUpdatePackageStatus } from '@/hooks/mutations/usePackageMutation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Common/Table';
 import Button from '@/components/Common/Button';
+import Modal from '@/components/Common/Modal';
 import { formatPriceVND } from '@/utils/formatters';
 
 const PackageList = () => {
   const { data: packages, isLoading, isError } = usePackages();
+  const [toggleModal, setToggleModal] = useState({ isOpen: false, pkg: null });
+  const statusMutation = useUpdatePackageStatus();
 
-  // Tạo mock data fallback cho tình huống usePackages hook chưa có data thật
+  // Lưu ý: Nếu bạn muốn dùng deleteMutation, bạn cần import hook tương ứng ở đây
+  // const deleteMutation = useDeletePackage(); 
+
+  const handleToggleStatus = (pkg) => {
+    setToggleModal({ isOpen: true, pkg });
+  };
+
+  const handleConfirmToggle = () => {
+    if (toggleModal.pkg) {
+      const newIsActive = !toggleModal.pkg.is_active;
+      statusMutation.mutate({ id: toggleModal.pkg.id, isActive: newIsActive }, {
+        onSuccess: () => setToggleModal({ isOpen: false, pkg: null })
+      });
+    }
+  };
+
   const mockPackages = packages || [
-    { id: 1, name: "Gói Cơ Bản", duration: 1, durationUnit: "Tháng", price: 300000, status: "active", features: ["Phòng gym cơ bản", "Yoga"] },
-    { id: 2, name: "Gói Nâng Cao", duration: 3, durationUnit: "Tháng", price: 800000, status: "active", features: ["Tất cả khu vực", "Tủ đồ cá nhân"] },
-    { id: 3, name: "Gói VIP (1 Năm)", duration: 12, durationUnit: "Tháng", price: 3000000, status: "active", features: ["HLV cá nhân 2 buổi", "Massge", "Sauna"] },
-    { id: 4, name: "Gói Trải Nghiệm", duration: 7, durationUnit: "Ngày", price: 100000, status: "inactive", features: ["Dùng thử giới hạn"] },
+    { id: 1, name: "Gói Cơ Bản", duration: 1, durationUnit: "Tháng", price: 300000, is_active: true, features: ["Phòng gym cơ bản", "Yoga"] },
+    { id: 2, name: "Gói Nâng Cao", duration: 3, durationUnit: "Tháng", price: 800000, is_active: true, features: ["Tất cả khu vực", "Tủ đồ cá nhân"] },
+    { id: 3, name: "Gói VIP (1 Năm)", duration: 12, durationUnit: "Tháng", price: 3000000, is_active: true, features: ["HLV cá nhân 2 buổi", "Massge", "Sauna"] },
+    { id: 4, name: "Gói Trải Nghiệm", duration: 7, durationUnit: "Ngày", price: 100000, is_active: false, features: ["Dùng thử giới hạn"] },
   ];
 
   return (
@@ -60,36 +79,41 @@ const PackageList = () => {
               ) : (
                 mockPackages.map((pkg) => (
                   <TableRow key={pkg.id}>
-                    <TableCell className="font-semibold text-gray-900 dark:text-gray-100">{pkg.name}</TableCell>
+                    <TableCell className="font-semibold text-gray-900 dark:text-gray-100">{pkg.package_name || pkg.name}</TableCell>
                     <TableCell className="text-gray-600 dark:text-gray-300">
-                      {pkg.duration} {pkg.durationUnit}
+                      {pkg.duration_days ? `${pkg.duration_days} Ngày` : `${pkg.duration} ${pkg.durationUnit}`}
                     </TableCell>
                     <TableCell className="font-medium text-emerald-600 dark:text-emerald-400">
                       {formatPriceVND ? formatPriceVND(pkg.price) : `${pkg.price.toLocaleString('vi-VN')} đ`}
                     </TableCell>
                     <TableCell className="text-sm text-gray-500 max-w-[200px] truncate">
-                      {pkg.features?.join(", ")}
+                      {pkg.description || pkg.features?.join(", ") || 'Chưa có mô tả'}
                     </TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${
-                        pkg.status === 'active' 
+                        (pkg.is_active === true || pkg.status === 'active')
                           ? 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400' 
                           : 'bg-gray-50 text-gray-600 ring-gray-600/20 dark:bg-gray-800/50 dark:text-gray-400'
                       }`}>
-                        {pkg.status === 'active' ? 'Đang bán' : 'Bị ẩn'}
+                        {(pkg.is_active === true || pkg.status === 'active') ? 'Đang bán' : 'Bị ẩn'}
                       </span>
                     </TableCell>
                     <TableCell className="text-right pr-4">
                       <div className="flex items-center justify-end gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          title={pkg.is_active ? 'Ẩn gói' : 'Hiển thị gói'}
+                          className={`h-8 w-8 ${pkg.is_active ? 'text-green-500' : 'text-amber-500'} hidden sm:inline-flex`}
+                          onClick={() => handleToggleStatus(pkg)}
+                        >
+                          {pkg.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                        </Button>
                         <Link to={`/owner/packages/${pkg.id}/edit`}>
                           <Button variant="ghost" size="icon" title="Chỉnh sửa" className="h-8 w-8 text-blue-500 hidden sm:inline-flex">
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Button variant="ghost" size="icon" title="Xóa" className="h-8 w-8 text-red-500 hidden sm:inline-flex">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                        {/* Mobile view Action Fallback */}
                         <div className="sm:hidden text-blue-500 font-medium text-sm underline px-2 py-1">Sửa</div>
                       </div>
                     </TableCell>
@@ -100,6 +124,31 @@ const PackageList = () => {
           </Table>
         )}
       </div>
+
+      <Modal
+        isOpen={toggleModal.isOpen}
+        onClose={() => setToggleModal({ isOpen: false, pkg: null })}
+        title={toggleModal.pkg?.is_active ? 'Ẩn gói tập' : 'Hiển thị gói tập'}
+      >
+        <div className="p-4">
+          <p className="text-gray-700 dark:text-gray-300 mb-4">
+            Bạn có chắc chắn muốn {toggleModal.pkg?.is_active ? 'ẩn' : 'hiển thị'} gói tập <strong>{toggleModal.pkg?.package_name || toggleModal.pkg?.name}</strong> không?
+          </p>
+          {toggleModal.pkg?.is_active && (
+            <p className="text-sm text-amber-600 dark:text-amber-400 mb-4">
+              💡 Gói tập sẽ bị ẩn, member không thể mua.
+            </p>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setToggleModal({ isOpen: false, pkg: null })}>
+              Hủy
+            </Button>
+            <Button variant="primary" onClick={handleConfirmToggle} disabled={statusMutation.isPending}>
+              {statusMutation.isPending ? 'Đang xử lý...' : toggleModal.pkg?.is_active ? 'Ẩn' : 'Hiển thị'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

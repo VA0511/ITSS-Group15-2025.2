@@ -27,14 +27,24 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const RevenueChart = ({ className }) => {
+const defaultData = [
+  { name: 'T1', total: 12000000 },
+  { name: 'T2', total: 18000000 },
+  { name: 'T3', total: 15000000 },
+  { name: 'T4', total: 25000000 },
+  { name: 'T5', total: 22000000 },
+  { name: 'T6', total: 30000000 },
+  { name: 'T7', total: 28000000 },
+];
+
+const RevenueChart = ({ data = defaultData, title = 'Doanh thu thống kê', description = 'Biểu đồ doanh thu 7 tháng gần nhất', className }) => {
   const isDark = useThemeStore((state) => state.theme === 'dark');
 
   return (
     <div className={cn("rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950", className)}>
       <div className="mb-4">
-        <h3 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Doanh thu thống kê</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Biểu đồ doanh thu 7 tháng gần nhất</p>
+        <h3 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{title}</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
       </div>
       
       <div className="h-[300px] w-full">

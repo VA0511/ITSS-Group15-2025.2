@@ -4,6 +4,8 @@ import EquipmentFormComponent from '@/components/Forms/EquipmentForm';
 import { ArrowLeft } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import { toast } from '@/utils/toast';
+import { equipmentService } from '@/services/equipmentService';
+import { useCreateEquipment, useUpdateEquipment } from '@/hooks/mutations/useEquipmentMutation';
 
 const EquipmentFormPage = () => {
   const { id } = useParams();
@@ -13,31 +15,74 @@ const EquipmentFormPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [initialData, setInitialData] = useState(null);
 
+  const createMutation = useCreateEquipment();
+  const updateMutation = useUpdateEquipment();
+
   useEffect(() => {
     if (isEditing) {
       setIsLoading(true);
-      // Giả lập tải dữ liệu từ API
-      setTimeout(() => {
-        setInitialData({
-          name: 'Máy chạy bộ Kingsmith XS-100',
-          code: 'TB-001-A',
-          quantity: 2,
-          status: 'active',
-          purchaseDate: '2023-01-01',
-          warrantyUntil: '2025-01-01',
+      equipmentService.getEquipmentById(id)
+        .then(response => {
+          const data = response.data || response;
+          setInitialData({
+            name: data.equipment_name || data.name,
+            code: data.serial_number || data.code || '',
+            quantity: String(data.quantity || 1),
+            status: data.status || 'Operating',
+            purchaseDate: data.purchase_date ? data.purchase_date.split('T')[0] : '',
+            warrantyUntil: data.maintenance_deadline ? data.maintenance_deadline.split('T')[0] : '',
+            facility_id: String(data.facility_id || 1),
+            origin: data.origin || ''
+          });
+        })
+        .catch(err => {
+          toast.error("Lỗi khi tải thông tin thiết bị");
+          console.error(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        setIsLoading(false);
-      }, 500);
     }
   }, [id, isEditing]);
 
   const handleSubmit = (data) => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success(isEditing ? 'Cập nhật tài sản thành công!' : 'Đã nhập thiết bị mới thành công!');
-      navigate('/owner/equipment');
-    }, 500);
+    
+    // Map form fields to API payload
+    const payload = {
+      equipment_name: data.name,
+      serial_number: data.code,
+      quantity: parseInt(data.quantity, 10),
+      status: data.status,
+      purchase_date: data.purchaseDate ? new Date(data.purchaseDate).toISOString() : new Date().toISOString(),
+      maintenance_deadline: data.warrantyUntil ? new Date(data.warrantyUntil).toISOString() : new Date().toISOString(),
+      facility_id: parseInt(data.facility_id || 1, 10),
+      origin: data.origin || 'Chưa rõ'
+    };
+
+    if (isEditing) {
+      updateMutation.mutate(
+        { id, data: payload },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate('/owner/equipment');
+          },
+          onError: () => setIsLoading(false)
+        }
+      );
+    } else {
+      createMutation.mutate(
+        payload,
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            navigate('/owner/equipment');
+          },
+          onError: () => setIsLoading(false)
+        }
+      );
+    }
   };
 
   if (isEditing && !initialData) {

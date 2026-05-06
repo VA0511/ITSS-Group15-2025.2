@@ -1,10 +1,9 @@
 import React, { Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import MainLayout from '@/components/Layout/MainLayout';
+import TrainerLayout from '@/components/Layout/TrainerLayout';
 import PrivateRoute from './PrivateRoute';
 import RoleBasedRoute from './RoleBasedRoute';
-
-
 import Login from '@/pages/Login/Login';
 import OwnerDashboard from '@/pages/Owner/OwnerDashboard';
 import MemberList from '@/pages/Owner/MemberManagement/MemberList';
@@ -20,40 +19,49 @@ import RoomList from '@/pages/Owner/RoomManagement/RoomList';
 import RoomDetail from '@/pages/Owner/RoomManagement/RoomDetail';
 import RoomFormPage from '@/pages/Owner/RoomManagement/RoomForm';
 import FeedbackList from '@/pages/Owner/FeedbackManagement/FeedbackList';
+import AccountList from '@/pages/Owner/AccountManagement/AccountList';
 import RevenueReport from '@/pages/Owner/Reports/RevenueReport';
 
-import ManagerDashboard from '@/pages/Manager/ManagerDashboard';
-import ManagerMemberList from '@/pages/Manager/MemberManagement/MemberList';
-import RegisterMember from '@/pages/Manager/MemberManagement/RegisterMember';
-import ManagerMemberDetail from '@/pages/Manager/MemberManagement/MemberDetail';
-import ManagerMemberFormPage from '@/pages/Manager/MemberManagement/MemberForm';
-import ManagerRenewPackage from '@/pages/Manager/MemberManagement/RenewPackage';
-import ManagerFeedbackList from '@/pages/Manager/FeedbackManagement/FeedbackList';
-import ManagerPackageList from '@/pages/Manager/PackageManagement/PackageListView';
+import MemberReport from '@/pages/Owner/Reports/MemberReport';
+import StaffPerformanceReport from '@/pages/Owner/Reports/StaffPerformanceReport';
+import ReportsOverview from '@/pages/Owner/Reports/ReportsOverview';
 
+import ManagerDashboard from '@/pages/Manager/ManagerDashboard';
+import MemberListView from '@/pages/Manager/MemberManagement/MemberListView';
+import MemberDetailView from '@/pages/Manager/MemberManagement/MemberDetailView';
+import TransactionsView from '@/pages/Manager/Transactions/TransactionsView';
+import ScheduleCalendarView from '@/pages/Manager/Schedule/ScheduleCalendarView';
+import FeedbacksView from '@/pages/Manager/FeedbackManagement/FeedbacksView';
+import ReportsView from '@/pages/Manager/Reports/ReportsView';
+import ManagerPackageList from '@/pages/Manager/PackageManagement/PackageListView';
+import ManagerPackageDetail from '@/pages/Manager/PackageManagement/PackageDetail';
 import TrainerDashboard from '@/pages/Trainer/TrainerDashboard';
+import TrainerProfile from '@/pages/Trainer/TrainerProfile';
 import StudentList from '@/pages/Trainer/StudentManagement/StudentList';
 import TrackProgress from '@/pages/Trainer/StudentManagement/TrackProgress';
 import ScheduleList from '@/pages/Trainer/Schedule/ScheduleList';
-import EvaluationForm from '@/pages/Trainer/Evaluation/EvaluationForm';
-
+import TrainerAvailability from '@/pages/Trainer/Availability/TrainerAvailability';
+import EvaluationList from '@/pages/Trainer/Evaluation/EvaluationList';
 import MemberDashboard from '@/pages/Member/MemberDashboard';
 import PackageInfo from '@/pages/Member/MyPackage/PackageInfo';
 import TrainingHistory from '@/pages/Member/MyPackage/TrainingHistory';
 import RenewPackage from '@/pages/Member/RenewPackage/RenewPackage';
 import PaymentCheckout from '@/pages/Member/RenewPackage/PaymentCheckout';
+import RegisterGymPackage from '@/pages/Member/RegisterPackage/RegisterGymPackage';
+import RegisterGymPackageCheckout from '@/pages/Member/RegisterPackage/RegisterGymPackageCheckout';
 import SendFeedback from '@/pages/Member/Feedback/SendFeedback';
 import ProfileInfo from '@/pages/Member/Profile/ProfileInfo';
 import EditProfile from '@/pages/Member/Profile/EditProfile';
+import Schedule from '@/pages/Member/Schedule/Schedule';
 
 export const router = createBrowserRouter([
-  // Public Route: Bất kỳ ai cũng vào được (Login)
+  // Public Route: Bất kỳ ai cũng vào được (Login, Register)
   {
     path: '/login',
     element: <Login />,
   },
-  
   // Private Routes: Phải có Token JWT (Bọc bởi PrivateRoute)
+
   {
     path: '/',
     element: <PrivateRoute />,
@@ -63,18 +71,41 @@ export const router = createBrowserRouter([
         path: '/',
         element: <Navigate to="/member/dashboard" replace />,
       },
-      // Bọc Layout chính (Sidebar + Header)
+      // 2. Trainer Area - SEPARATE LAYOUT (Not inside MainLayout)
+      {
+        path: 'trainer',
+        element: <TrainerLayout />,
+        children: [
+          {
+            path: '',
+            element: <RoleBasedRoute allowedRoles={['trainer']} />,
+            children: [
+              { path: 'profile', element: <TrainerProfile /> },
+              { path: 'dashboard', element: <TrainerDashboard /> },
+              { path: 'students', element: <StudentList /> },
+              { path: 'students/:id/progress', element: <TrackProgress /> },
+              { path: 'schedule', element: <ScheduleList /> },
+              { path: 'availability', element: <TrainerAvailability /> },
+              { path: 'evaluation', element: <EvaluationList /> }
+            ]
+          }
+        ]
+      },
+      // 3. Other Roles - Use MainLayout
       {
         element: <MainLayout />,
         children: [
-          // 2. Member Normal Dashboard
+          // Member Dashboard
           {
             path: 'member',
-            element: <RoleBasedRoute allowedRoles={['member', 'owner', 'manager', 'trainer']} />,
+            element: <RoleBasedRoute allowedRoles={['member', 'owner', 'manager']} />,
             children: [
               { path: 'dashboard', element: <MemberDashboard /> },
+              { path: 'schedule', element: <Schedule /> },
               { path: 'my-package', element: <PackageInfo /> },
               { path: 'history', element: <TrainingHistory /> },
+              { path: 'register', element: <RegisterGymPackage /> },
+              { path: 'register/checkout', element: <RegisterGymPackageCheckout /> },
               { path: 'renew', element: <RenewPackage /> },
               { path: 'renew/checkout', element: <PaymentCheckout /> },
               { path: 'feedback', element: <SendFeedback /> },
@@ -82,7 +113,7 @@ export const router = createBrowserRouter([
               { path: 'profile/edit', element: <EditProfile /> }
             ]
           },
-          // 3. System Owner Area (Chỉ Chủ Cửa Hàng)
+          // System Owner Area
           {
             path: 'owner',
             element: <RoleBasedRoute allowedRoles={['owner']} />,
@@ -106,34 +137,33 @@ export const router = createBrowserRouter([
               { path: 'rooms/:id', element: <RoomDetail /> },
               { path: 'rooms/:id/edit', element: <RoomFormPage /> },
               { path: 'feedbacks', element: <FeedbackList /> },
-              { path: 'reports/revenue', element: <RevenueReport /> }
+              { path: 'accounts', element: <AccountList /> },
+              { path: 'reports', element: <ReportsOverview /> },
+              { path: 'reports/revenue', element: <RevenueReport /> },
+              { path: 'reports/members', element: <MemberReport /> },
+              { path: 'reports/staff', element: <StaffPerformanceReport /> }
             ]
           },
-          // 4. Manager Area (Quản lý thu ngân)
+          // Manager Area
           {
             path: 'manager',
             element: <RoleBasedRoute allowedRoles={['manager', 'owner']} />,
             children: [
               { path: 'dashboard', element: <ManagerDashboard /> },
-              { path: 'members', element: <ManagerMemberList /> },
-              { path: 'members/:id', element: <ManagerMemberDetail /> },
-              { path: 'members/:id/edit', element: <ManagerMemberFormPage /> },
-              { path: 'members/register', element: <RegisterMember /> },
-              { path: 'members/renew', element: <ManagerRenewPackage /> },
+              // Members Management
+              { path: 'members', element: <MemberListView /> },
+              { path: 'members/:id', element: <MemberDetailView /> },
+              // Transactions
+              { path: 'transactions', element: <TransactionsView /> },
+              // Schedule
+              { path: 'schedule', element: <ScheduleCalendarView /> },
+              // Feedbacks
+              { path: 'feedbacks', element: <FeedbacksView /> },
+              // Reports
+              { path: 'report', element: <ReportsView /> },
+              // Packages (View Only)
               { path: 'packages', element: <ManagerPackageList /> },
-              { path: 'feedbacks', element: <ManagerFeedbackList /> }
-            ]
-          },
-          // 5. Trainer Area (Huấn luyện viên)
-          {
-            path: 'trainer',
-            element: <RoleBasedRoute allowedRoles={['trainer']} />,
-            children: [
-              { path: 'dashboard', element: <TrainerDashboard /> },
-              { path: 'students', element: <StudentList /> },
-              { path: 'students/:id/progress', element: <TrackProgress /> },
-              { path: 'schedule', element: <ScheduleList /> },
-              { path: 'evaluation', element: <EvaluationForm /> }
+              { path: 'packages/:id', element: <ManagerPackageDetail /> }
             ]
           }
         ]
