@@ -65,7 +65,7 @@ INSERT INTO "Equipment" ("facility_id", "equipment_name", "serial_number", "quan
 INSERT INTO "ServiceCategory" ("category_name", "benefits_description", "allowed_gender") VALUES
 ('VIP', 'Truy cập mọi khu vực, sử dụng phòng xông hơi, yoga, gym, hồ bơi', 'All'),
 ('Normal', 'Khu vực Gym cơ bản', 'All'),
-('Female-only', 'Khu vực riêng cho nữ, Yoga, Spa', 'Female');
+('Female-only', 'Khu vực riêng cho nữ, Yoga, Spa', 'Female'),
 ('VIP', 'Truy cập mọi khu vực, sử dụng phòng xông hơi, yoga, gym, hồ bơi', 'All'),
 ('Normal', 'Khu vực Gym cơ bản', 'All'),
 ('Female-only', 'Khu vực riêng cho nữ, Yoga, Spa', 'Female');
