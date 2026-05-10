@@ -35,8 +35,15 @@ export const trainingBookingService = {
         if (IS_MOCK) {
             return { id, ...data };
         }
-        const response = await axios.put(`/training-bookings/${id}`, data);
-        return response.data || response;
+        console.log(`[TrainingBooking] Updating booking ${id} with data:`, data);
+        try {
+            const response = await axios.put(`/training-bookings/${id}`, data);
+            console.log(`[TrainingBooking] Update response:`, response);
+            return response.data || response;
+        } catch (error) {
+            console.error(`[TrainingBooking] Update failed:`, error.response?.data || error.message);
+            throw error;
+        }
     },
 
     // Xóa booking
@@ -49,9 +56,25 @@ export const trainingBookingService = {
 
     // Hủy booking (cập nhật status thành Cancelled)
     cancelTrainingBooking: async (id, reason = '') => {
-        return trainingBookingService.updateTrainingBooking(id, {
+        console.log(`[CancelBooking] Fetching current booking ${id}`);
+
+        // Lấy booking hiện tại trước
+        const currentBooking = await trainingBookingService.getTrainingBookingById(id);
+        console.log(`[CancelBooking] Current booking:`, currentBooking);
+
+        if (!currentBooking) {
+            throw new Error('Không tìm thấy lịch tập');
+        }
+
+        // Merge với dữ liệu mới
+        const updatedData = {
+            ...currentBooking,
             status: 'Cancelled',
-            training_plan_note: reason,
-        });
+            training_plan_note: reason || 'Hủy bởi quản lý',
+        };
+
+        console.log(`[CancelBooking] Updated data:`, updatedData);
+
+        return trainingBookingService.updateTrainingBooking(id, updatedData);
     },
 };

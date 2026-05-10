@@ -39,13 +39,18 @@ export const useCancelTrainingBooking = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, reason }) => trainingBookingService.cancelTrainingBooking(id, reason),
-        onSuccess: () => {
+        mutationFn: ({ id, reason }) => {
+            console.log('[useCancelTrainingBooking] Calling mutation with id:', id, 'reason:', reason);
+            return trainingBookingService.cancelTrainingBooking(id, reason);
+        },
+        onSuccess: (data) => {
+            console.log('[useCancelTrainingBooking] Success, invalidating query');
             queryClient.invalidateQueries({ queryKey: ['trainingBookings'] });
             console.log('Hủy lịch tập thành công');
         },
         onError: (error) => {
-            console.error('Hủy lịch tập thất bại:', error);
+            console.error('[useCancelTrainingBooking] Error:', error);
+            console.error('Hủy lịch tập thất bại:', error.message || error);
         },
     });
 };

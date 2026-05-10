@@ -11,6 +11,7 @@ const ScheduleCalendarView = () => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
     const [showCancelConfirm, setShowCancelConfirm] = useState(null);
+    const [cancelError, setCancelError] = useState(null);
 
     // Fetch real data from API
     const { data: bookingsData, isLoading: bookingsLoading } = useTrainingBookings();
@@ -119,15 +120,36 @@ const ScheduleCalendarView = () => {
     };
 
     const handleCancelBooking = async (bookingId) => {
-        if (window.confirm('Bạn có chắc chắn muốn hủy lịch tập này?')) {
+        console.log('Opening cancel confirmation for booking:', bookingId);
+        setCancelError(null);
+        setShowCancelConfirm(bookingId);
+    };
+
+    const confirmCancel = async () => {
+        if (showCancelConfirm) {
             try {
-                await cancelBookingMutation.mutateAsync({ id: bookingId, reason: 'Hủy bởi quản lý' });
+                console.log('Confirming cancel for booking:', showCancelConfirm);
+                setCancelError(null);
+
+                const response = await cancelBookingMutation.mutateAsync({
+                    id: showCancelConfirm,
+                    reason: 'Hủy bởi quản lý'
+                });
+
+                console.log('Cancel successful:', response);
                 setShowCancelConfirm(null);
                 setSelectedSchedule(null);
             } catch (error) {
-                console.error('Error canceling booking:', error);
+                const errorMsg = error?.response?.data?.message || error?.message || 'Lỗi hủy lịch tập';
+                console.error('Error canceling booking:', errorMsg, error);
+                setCancelError(errorMsg);
             }
         }
+    };
+
+    const cancelCancel = () => {
+        setShowCancelConfirm(null);
+        setCancelError(null);
     };
 
     return (
@@ -325,7 +347,43 @@ const ScheduleCalendarView = () => {
                 </div>
             </div>
 
+            {/* Cancel Confirmation Modal */}
+            {showCancelConfirm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 max-w-sm mx-4">
+                        <div className="flex items-center gap-3 mb-4">
+                            <AlertCircle className="text-red-500" size={24} />
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Xác nhận hủy lịch</h3>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 mb-6">
+                            Bạn có chắc chắn muốn hủy lịch tập này không?
+                        </p>
 
+                        {cancelError && (
+                            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-400">
+                                {cancelError}
+                            </div>
+                        )}
+
+                        <div className="flex gap-3 justify-end">
+                            <Button
+                                variant="outline"
+                                onClick={cancelCancel}
+                                disabled={cancelBookingMutation.isPending}
+                            >
+                                Không
+                            </Button>
+                            <Button
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                                onClick={confirmCancel}
+                                disabled={cancelBookingMutation.isPending}
+                            >
+                                {cancelBookingMutation.isPending ? 'Đang xử lý...' : 'Xác nhận'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
