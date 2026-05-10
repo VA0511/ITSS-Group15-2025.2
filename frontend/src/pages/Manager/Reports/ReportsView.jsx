@@ -97,20 +97,20 @@ const ReportsView = () => {
             </div>
 
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 min-h-[140px] flex flex-col justify-between">
                     <p className="text-sm text-gray-500 dark:text-gray-400">Tổng doanh thu</p>
-                    <p className="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(totalRevenue)}</p>
+                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 break-words">{formatCurrency(totalRevenue)}</p>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Trung bình {formatCurrency(avgRevenue)}/tháng</p>
                 </div>
 
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 min-h-[140px] flex flex-col justify-between">
                     <p className="text-sm text-gray-500 dark:text-gray-400">Hội viên mới</p>
                     <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">{totalNewMembers}</p>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Trung bình {(totalNewMembers / newMembersData.length).toFixed(1)}/tháng</p>
                 </div>
 
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 min-h-[140px] flex flex-col justify-between">
                     <p className="text-sm text-gray-500 dark:text-gray-400">Tổng hội viên</p>
                     <p className="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">{totalMembers}</p>
                     <div className="mt-1 flex gap-2">

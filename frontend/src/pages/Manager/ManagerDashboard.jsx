@@ -1,46 +1,11 @@
 import React from 'react';
-import { Users, UserCheck, Calendar, Dumbbell } from 'lucide-react';
+import { Users, UserCheck, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '@/components/Common/Button';
 import StatsCard from '@/components/Dashboard/StatsCard';
 import { useMembers } from '@/hooks/queries/useMembers';
 import { useEmployees } from '@/hooks/queries/useEmployees';
 import { useTrainingBookings } from '@/hooks/queries/useTrainingBookings';
-
-// Mock Data - Stats
-const dashboardStats = [
-  {
-    title: 'Tổng hội viên',
-    value: '128',
-    icon: Users,
-    trend: 'up',
-    trendValue: '+12',
-    trendLabel: 'tháng này'
-  },
-  {
-    title: 'Hội viên đang active',
-    value: '102',
-    icon: UserCheck,
-    trend: 'up',
-    trendValue: '+8',
-    trendLabel: 'so với tuần trước'
-  },
-  {
-    title: 'Lịch PT hôm nay',
-    value: '24',
-    icon: Calendar,
-    trend: 'neutral',
-    trendValue: 'Bình thường'
-  },
-  {
-    title: 'PT đang làm việc',
-    value: '12',
-    icon: Dumbbell,
-    trend: 'up',
-    trendValue: '+3',
-    trendLabel: 'hôm nay'
-  }
-];
 
 const ManagerDashboard = () => {
   const { data: memberResponse = {} } = useMembers(1, 1000);
@@ -185,18 +150,10 @@ const ManagerDashboard = () => {
     },
     {
       title: 'Lịch PT hôm nay',
-      value: '24',
+      value: String(todaySchedules.length),
       icon: Calendar,
       trend: 'neutral',
       trendValue: 'Bình thường'
-    },
-    {
-      title: 'PT đang làm việc',
-      value: '12',
-      icon: Dumbbell,
-      trend: 'up',
-      trendValue: '+3',
-      trendLabel: 'hôm nay'
     }
   ];
 
@@ -213,7 +170,7 @@ const ManagerDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {dashboardStats.map((stat) => (
           <StatsCard key={stat.title} {...stat} />
         ))}
@@ -292,12 +249,12 @@ const ManagerDashboard = () => {
                   <span className={`text-xs font-medium ${schedule.status === 'Done' ? 'text-green-600 dark:text-green-400' :
                     schedule.status === 'InProgress' ? 'text-blue-600 dark:text-blue-400' :
                       schedule.status === 'Cancelled' ? 'text-red-600 dark:text-red-400' :
-                      'text-gray-600 dark:text-gray-400'
+                        'text-gray-600 dark:text-gray-400'
                     }`}>
                     {schedule.status === 'Done' ? '✓ Hoàn thành' :
                       schedule.status === 'InProgress' ? '⏱ Đang diễn ra' :
                         schedule.status === 'Cancelled' ? '✕ Đã hủy' :
-                        '○ Đã lên lịch'}
+                          '○ Đã lên lịch'}
                   </span>
                 </div>
               </div>

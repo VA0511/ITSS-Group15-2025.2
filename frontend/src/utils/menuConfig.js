@@ -18,8 +18,8 @@ export const menus = {
     { title: "Giao dịch", path: "/manager/transactions", icon: "CreditCard" },
     { title: "Lịch PT", path: "/manager/schedule", icon: "Calendar" },
     { title: "Phản hồi", path: "/manager/feedbacks", icon: "MessageSquare" },
-    { title: "Báo cáo", path: "/manager/report", icon: "BarChartBig" },
     { title: "Gói tập", path: "/manager/packages", icon: "Package" },
+    { title: "Báo cáo", path: "/manager/report", icon: "BarChartBig" },
   ],
   [ROLES.TRAINER]: [
     { title: "Thông tin cá nhân", path: "/trainer/profile", icon: "User" },
