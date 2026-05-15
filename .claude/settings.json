@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($env:PGPASSWORD = \"Megake123\"; psql -U postgres -h localhost -p 5432 -d gymdb -f \"e:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\backend\\\\db\\\\datasample.sql\" 2>&1)"
+    ]
+  }
+}
