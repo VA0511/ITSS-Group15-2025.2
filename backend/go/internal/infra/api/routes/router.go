@@ -25,6 +25,7 @@ func NewRouter(
 	trainingBookingHandler *handlers.TrainingBookingHandler,
 	trainingSessionHandler *handlers.TrainingSessionHandler,
 	ptDetailHandler *handlers.PTDetailHandler,
+	notificationHandler *handlers.NotificationHandler,
 ) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(middleware.LoggingMiddleware)
@@ -44,13 +45,15 @@ func NewRouter(
 		return mw(handler)
 	}
 
-	// These "me" routes must be registered BEFORE subrouters, because ownerManager has
-	// wildcard routes like /members/{memberId}/subscriptions that would match "me" as a
-	// variable, blocking member/PT users before they reach allRoles.
+	// These routes must be registered BEFORE subrouters, because ownerManager has wildcard
+	// routes (e.g. /members/{id}, /members/{memberId}/subscriptions) that would match and
+	// block member/PT users with 403 before they could reach allRoles.
 	authenticated.Handle("/pt-details/me", auth(isAnyRole, ptDetailHandler.GetMe)).Methods("GET")
 	authenticated.Handle("/pt-details/me", auth(isAnyRole, ptDetailHandler.UpdateMe)).Methods("PUT")
 	authenticated.Handle("/members/me/subscriptions", auth(isAnyRole, subscriptionHandler.GetMySubscriptions)).Methods("GET")
 	authenticated.Handle("/members/me/feedbacks", auth(isAnyRole, feedbackHandler.GetMyFeedbacks)).Methods("GET")
+	// Member self-update: handler internally restricts MEMBER to their own profile only
+	authenticated.Handle("/members/{id}", auth(isAnyRole, memberHandler.Update)).Methods("PUT")
 
 	// Owner/Manager only routes (admin and configuration)
 	ownerManager := authenticated.PathPrefix("").Subrouter()
@@ -169,6 +172,12 @@ func NewRouter(
 	allRoles.Handle("/feedbacks", auth(isAnyRole, feedbackHandler.Create)).Methods("POST")
 	allRoles.Handle("/feedbacks/{id}", auth(isAnyRole, feedbackHandler.GetByID)).Methods("GET")
 	allRoles.Handle("/feedbacks/{id}", auth(isStaff, feedbackHandler.Update)).Methods("PUT")
+
+	// Notification routes
+	// SSE stream uses ?token= query param auth (EventSource can't set headers)
+	r.HandleFunc("/notifications/stream", notificationHandler.Stream).Methods("GET")
+	allRoles.HandleFunc("/notifications", notificationHandler.GetHistory).Methods("GET")
+	allRoles.HandleFunc("/notifications/read-all", notificationHandler.MarkAllRead).Methods("POST")
 
 	return r
 }

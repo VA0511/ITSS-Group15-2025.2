@@ -26,6 +26,7 @@ import (
 	"gym-management/internal/domain/usecase/training_session_usecase"
 	"gym-management/internal/infra/api/handlers"
 	"gym-management/internal/infra/api/routes"
+	"gym-management/internal/infra/notification"
 	"gym-management/internal/infra/postgresql"
 	"gym-management/internal/repository"
 )
@@ -104,6 +105,9 @@ func main() {
 	trainingSessionUsecase := training_session_usecase.NewTrainingSessionUsecase(trainingSessionRepo)
 	ptDetailUsecase := pt_detail_usecase.NewPTDetailUsecase(ptDetailRepo)
 
+	// Initialize notification hub (in-memory, no persistence)
+	notifHub := notification.NewHub()
+
 	// Initialize handlers
 	memberHandler := handlers.NewMemberHandler(memberUsecase)
 	employeeHandler := handlers.NewEmployeeHandler(employeeUsecase)
@@ -117,9 +121,10 @@ func main() {
 	authHandler := handlers.NewAuthHandler(authUsecase)
 	serviceCategoryHandler := handlers.NewServiceCategoryHandler(serviceCategoryUsecase)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase, memberUsecase)
-	trainingBookingHandler := handlers.NewTrainingBookingHandler(trainingBookingUsecase, memberUsecase, employeeUsecase, trainingSessionUsecase)
+	trainingBookingHandler := handlers.NewTrainingBookingHandler(trainingBookingUsecase, memberUsecase, employeeUsecase, trainingSessionUsecase, notifHub)
 	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase, memberUsecase)
 	ptDetailHandler := handlers.NewPTDetailHandler(ptDetailUsecase)
+	notificationHandler := handlers.NewNotificationHandler(notifHub)
 
 	// Auto-confirm member attendance 3 hours before session start
 	go func() {
@@ -134,7 +139,7 @@ func main() {
 	}()
 
 	// Setup routes
-	router := routes.NewRouter(authHandler, memberHandler, employeeHandler, packageHandler, equipmentHandler, feedbackHandler, invoiceHandler, roleHandler, facilityHandler, accountHandler, serviceCategoryHandler, subscriptionHandler, trainingBookingHandler, trainingSessionHandler, ptDetailHandler)
+	router := routes.NewRouter(authHandler, memberHandler, employeeHandler, packageHandler, equipmentHandler, feedbackHandler, invoiceHandler, roleHandler, facilityHandler, accountHandler, serviceCategoryHandler, subscriptionHandler, trainingBookingHandler, trainingSessionHandler, ptDetailHandler, notificationHandler)
 
 	// Bọc router trong CORS middleware
 	handler := corsMiddleware(router)

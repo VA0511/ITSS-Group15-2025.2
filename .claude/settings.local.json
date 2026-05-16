@@ -3,7 +3,12 @@
     "allow": [
       "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8080/health\" -ErrorAction SilentlyContinue)",
       "PowerShell(if \\($LASTEXITCODE -eq 0 -or $?\\) { \"Backend running\" } else { \"Backend not responding\" })",
-      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8080/auth/login\" -Method POST -ContentType \"application/json\" -Body '{\"username\":\"member@gym.com\",\"password\":\"123456\"}')"
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8080/auth/login\" -Method POST -ContentType \"application/json\" -Body '{\"username\":\"member@gym.com\",\"password\":\"123456\"}')",
+      "Bash(tasklist)",
+      "Bash(taskkill /PID 41548 /F)",
+      "PowerShell(Stop-Process -Name \"app\" -Force -ErrorAction SilentlyContinue)",
+      "Bash(./gym-management.exe)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/notifications)"
     ]
   }
 }

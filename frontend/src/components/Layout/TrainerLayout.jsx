@@ -6,8 +6,9 @@ import useThemeStore from '@/store/useThemeStore';
 import { cn } from '@/lib/utils';
 import {
   Dumbbell, User, Users, CalendarCheck, ClipboardList,
-  Bell, Moon, Sun, LogOut, Menu, X, Settings
+  Moon, Sun, LogOut, Menu, X, Settings
 } from 'lucide-react';
+import NotificationBell from '@/components/Common/NotificationBell';
 
 const TrainerLayout = () => {
   const user = useAuthStore((state) => state.user);
@@ -96,12 +97,7 @@ const TrainerLayout = () => {
           <div className="flex-1" />
 
           <div className="flex items-center gap-3">
-            <button
-              className="relative rounded-full p-2.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white focus:outline-none"
-              title="Thông báo"
-            >
-              <Bell className="h-5 w-5" />
-            </button>
+            <NotificationBell />
 
             <button
               onClick={toggleTheme}

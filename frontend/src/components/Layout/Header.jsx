@@ -1,37 +1,25 @@
-import React, { useState } from 'react';
-import { Menu, Sun, Moon, LogOut, User, Bell } from 'lucide-react';
+import React from 'react';
+import { Menu, Sun, Moon, LogOut, User } from 'lucide-react';
 import useAuthStore from '@/store/useAuthStore';
 import useThemeStore from '@/store/useThemeStore';
 import useUIStore from '@/store/useUIStore';
 import { toast } from '@/utils/toast';
 import axios from '@/lib/axios';
+import NotificationBell from '@/components/Common/NotificationBell';
 const Header = () => {
   // Lấy hàm xử lý đăng xuất và thông tin user từ Zustand Store
   const { user, logout, refreshToken } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
-  const [unreadCount, setUnreadCount] = useState(3); // Demo số thông báo
 
   const handleLogout = async () => {
     try {
       if (refreshToken) {
-        // Gọi backend để revoke refresh token — fire-and-forget
         axios.post('/auth/logout', { refresh_token: refreshToken }).catch(() => {});
       }
     } finally {
       logout();
       toast.success('Đăng xuất thành công', { description: 'Hẹn gặp lại bạn' });
-    }
-  };
-
-  const handleNotificationClick = () => {
-    if (unreadCount > 0) {
-      toast.info(`Bạn có ${unreadCount} thông báo mới`, {
-        description: 'Vui lòng kiểm tra trung tâm thông báo.',
-      });
-      setUnreadCount(0); // Mark as read
-    } else {
-      toast.default('Không có thông báo mới vào lúc này');
     }
   };
 
@@ -50,18 +38,7 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Nút Chuông Thông Báo */}
-        <button
-          onClick={handleNotificationClick}
-          className="relative rounded-full p-2.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white focus:outline-none"
-          title="Thông báo"
-        >
-          <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <span className="absolute right-2 top-2 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-950">
-            </span>
-          )}
-        </button>
+        <NotificationBell />
 
         {/* Nút Đổi màu Sáng/Tối (Light/Dark Mode) */}
         <button
