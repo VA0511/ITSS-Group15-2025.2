@@ -1,6 +1,10 @@
 package adapter
 
-import "gym-management/internal/domain/entity"
+import (
+	"time"
+
+	"gym-management/internal/domain/entity"
+)
 
 type SubscriptionRepository interface {
 	Create(sub *entity.Subscription) error
@@ -9,4 +13,6 @@ type SubscriptionRepository interface {
 	Update(sub *entity.Subscription) error
 	Delete(id int) error
 	GetByMemberID(memberID int, page, limit int) ([]*entity.SubscriptionHistory, int, error)
+	GetActiveByMemberID(memberID int) (*entity.Subscription, error)
+	Renew(id int, newEndDate time.Time) error
 }

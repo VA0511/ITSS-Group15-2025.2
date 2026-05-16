@@ -1,13 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, ArrowRight, CheckCircle2, Video, Image as ImageIcon, CreditCard, ShieldCheck, HelpCircle, Loader2 } from 'lucide-react';
+import { ShoppingCart, ArrowRight, CheckCircle2, Video, Image as ImageIcon, CreditCard, ShieldCheck, HelpCircle, Loader2, AlertTriangle, TrendingUp } from 'lucide-react';
 import Button from '@/components/Common/Button';
-import { usePackages } from '@/hooks/queries/usePackages';
+import { toast } from '@/utils/toast';
+import { usePackages, useMemberPackages } from '@/hooks/queries/usePackages';
+import { useMyMemberProfile } from '@/hooks/queries/useMembers';
 
 const RegisterGymPackage = () => {
   const { data: apiPackages = [], isLoading } = usePackages();
+  const { data: memberPackagesRaw } = useMemberPackages();
+  const { data: memberProfile } = useMyMemberProfile();
+
+  // Detect member gender: 'Male', 'Female', or null (show all)
+  const memberGender = (() => {
+    const g = (memberProfile?.gender || '').toLowerCase().trim();
+    if (g.includes('nữ') || g.includes('nu') || g.includes('female')) return 'Female';
+    if (g.includes('nam') || g.includes('male')) return 'Male';
+    return null;
+  })();
   const [selectedPkg, setSelectedPkg] = useState(null);
   const navigate = useNavigate();
+
+  // Find current active package
+  const memberPackages = Array.isArray(memberPackagesRaw)
+    ? memberPackagesRaw
+    : Array.isArray(memberPackagesRaw?.data?.data)
+    ? memberPackagesRaw.data.data
+    : Array.isArray(memberPackagesRaw?.data)
+    ? memberPackagesRaw.data
+    : [];
+  const activePkg = memberPackages.find(p => p.status === 'active' || p.status === 'Active');
 
   // Map API packages to UI format
   const mappedPackages = (apiPackages.data || apiPackages).map(pkg => ({
@@ -40,6 +62,10 @@ const RegisterGymPackage = () => {
   const malePackages = mappedPackages.filter(pkg => pkg.gender === 'Male' || pkg.gender === 'All');
   const femalePackages = mappedPackages.filter(pkg => pkg.gender === 'Female' || pkg.gender === 'All');
 
+  // Show section only if member's gender matches (or gender unknown)
+  const showMaleSection = memberGender !== 'Female';
+  const showFemaleSection = memberGender !== 'Male';
+
   useEffect(() => {
     if (mappedPackages.length > 0 && !selectedPkg) {
       setSelectedPkg(mappedPackages[0]);
@@ -50,9 +76,29 @@ const RegisterGymPackage = () => {
     setSelectedPkg(pkg);
   };
 
+  // VIP is the highest tier — detect by package_name containing 'vip'
+  const isActiveVip = activePkg && activePkg.package_name?.toLowerCase().includes('vip');
+
+  // On highest tier = currently on VIP (any VIP duration — renewal handles duration extension)
+  const isOnHighestTier = !!isActiveVip;
+
+  // Upgrade = currently on Normal AND selected package is VIP
+  const isUpgrade = activePkg && !isOnHighestTier && selectedPkg && selectedPkg.type === 'vip';
+
+  // Blocked = has active package AND not upgrading to VIP (same or lower tier)
+  const isBlocked = activePkg && !isOnHighestTier && selectedPkg && selectedPkg.type !== 'vip';
+
   const handleCheckout = () => {
     if (!selectedPkg) return;
-    navigate('/member/register/checkout', { state: { package: selectedPkg } });
+    if (isOnHighestTier) {
+      toast.error('Gói của bạn đã là VIP — tier cao nhất. Dùng chức năng Gia hạn để kéo dài thời gian.');
+      return;
+    }
+    if (isBlocked) {
+      toast.error(`Bạn đang có gói "${activePkg.package_name}" còn hiệu lực. Chỉ có thể nâng cấp lên gói VIP.`);
+      return;
+    }
+    navigate('/member/register/checkout', { state: { package: selectedPkg, isUpgrade: !!isUpgrade, activePackageName: activePkg?.package_name } });
   };
 
   if (isLoading) {
@@ -70,11 +116,53 @@ const RegisterGymPackage = () => {
         <p className="text-gray-500 text-sm mt-2">Chọn gói tập phù hợp với giới tính của bạn và hoàn tất thanh toán qua thẻ / Momo / VNPay.</p>
       </div>
 
+      {activePkg && (
+        <div className={`mb-6 rounded-xl border p-4 flex items-start gap-3 ${
+          isOnHighestTier
+            ? 'border-purple-300 bg-purple-50 dark:bg-purple-900/10 dark:border-purple-700'
+            : isUpgrade
+            ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/10 dark:border-blue-700'
+            : 'border-amber-300 bg-amber-50 dark:bg-amber-900/10 dark:border-amber-700'
+        }`}>
+          {isOnHighestTier ? (
+            <ShieldCheck className="h-5 w-5 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+          ) : isUpgrade ? (
+            <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+          ) : (
+            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          )}
+          <div>
+            <p className={`text-sm font-semibold ${
+              isOnHighestTier ? 'text-purple-800 dark:text-purple-300'
+              : isUpgrade ? 'text-blue-800 dark:text-blue-300'
+              : 'text-amber-800 dark:text-amber-300'
+            }`}>
+              {isOnHighestTier
+                ? 'Gói VIP đã là gói cao nhất'
+                : isUpgrade
+                ? `Nâng cấp từ "${activePkg.package_name}" lên gói cao hơn`
+                : `Bạn đang có gói "${activePkg.package_name}" còn hiệu lực`}
+            </p>
+            <p className={`text-xs mt-1 ${
+              isOnHighestTier ? 'text-purple-600 dark:text-purple-400'
+              : isUpgrade ? 'text-blue-600 dark:text-blue-400'
+              : 'text-amber-600 dark:text-amber-400'
+            }`}>
+              {isOnHighestTier
+                ? 'Bạn đang sử dụng gói cao nhất hiện có. Không thể nâng cấp thêm.'
+                : isUpgrade
+                ? 'Gói mới có giá cao hơn — bạn có thể tiến hành đăng ký nâng cấp.'
+                : 'Chỉ được đăng ký gói có giá cao hơn gói hiện tại (nâng cấp). Vui lòng chọn gói cao hơn hoặc đợi gói hiện tại hết hạn.'}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Left Panel: Male & Female Packages */}
         <div className="xl:col-span-2 space-y-6">
           {/* Male Packages Section */}
-          <div className="space-y-4">
+          {showMaleSection && <div className="space-y-4">
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Gói Tập Nam</h2>
               <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full font-semibold">Nam</span>
@@ -106,29 +194,29 @@ const RegisterGymPackage = () => {
                 </label>
               ))}
             </div>
-          </div>
+          </div>}
 
           {/* Female Packages Section */}
-          <div className="space-y-4 pt-8 border-t border-gray-200 dark:border-gray-800">
+          {showFemaleSection && <div className={`space-y-4 ${showMaleSection ? 'pt-8 border-t border-gray-200 dark:border-gray-800' : ''}`}>
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Gói Tập Nữ</h2>
               <span className="text-xs bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 px-3 py-1 rounded-full font-semibold">Nữ</span>
             </div>
             <div className="grid gap-3">
               {femalePackages.map(pkg => (
-                <label 
-                  key={pkg.id} 
+                <label
+                  key={pkg.id}
                   onClick={() => handleSelectPackage(pkg)}
                   className={`rounded-xl border-2 p-5 cursor-pointer transition-all flex items-center justify-between relative ${selectedPkg?.id === pkg.id ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20 shadow-md' : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950 hover:border-blue-300'}`}
                 >
                   {pkg.best && <div className="absolute -top-3 right-4 bg-red-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-sm tracking-widest">Tiết kiệm nhất</div>}
                   <div className="flex items-center gap-4">
-                    <input 
-                      type="radio" 
-                      name="package" 
-                      checked={selectedPkg?.id === pkg.id} 
-                      onChange={() => handleSelectPackage(pkg)} 
-                      className="h-5 w-5 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                    <input
+                      type="radio"
+                      name="package"
+                      checked={selectedPkg?.id === pkg.id}
+                      onChange={() => handleSelectPackage(pkg)}
+                      className="h-5 w-5 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     />
                     <div>
                       <p className="font-bold text-gray-900 dark:text-white text-lg">{pkg.name}</p>
@@ -141,7 +229,7 @@ const RegisterGymPackage = () => {
                 </label>
               ))}
             </div>
-          </div>
+          </div>}
 
           {/* Info Sections */}
           <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
@@ -248,14 +336,31 @@ const RegisterGymPackage = () => {
                   </div>
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleCheckout}
-                  className="w-full h-12 text-base font-bold rounded-xl" 
-                  leftIcon={<ShoppingCart className="h-5 w-5" />} 
+                  className="w-full h-12 text-base font-bold rounded-xl"
+                  leftIcon={<ShoppingCart className="h-5 w-5" />}
                   rightIcon={<ArrowRight className="h-5 w-5 opacity-70" />}
+                  disabled={isBlocked || isOnHighestTier}
                 >
-                  Thanh Toán Nhanh
+                  {isOnHighestTier
+                    ? 'Gói đã tối đa'
+                    : isBlocked
+                    ? 'Không thể đăng ký'
+                    : isUpgrade
+                    ? 'Nâng Cấp Gói'
+                    : 'Thanh Toán Nhanh'}
                 </Button>
+                {isOnHighestTier && (
+                  <p className="text-xs text-purple-600 dark:text-purple-400 text-center mt-2">
+                    Bạn đang dùng gói cao nhất, không thể nâng cấp thêm
+                  </p>
+                )}
+                {!isOnHighestTier && isBlocked && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 text-center mt-2">
+                    Chọn gói có giá cao hơn để nâng cấp
+                  </p>
+                )}
               </>
             )}
           </div>

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { memberService } from '@/services/memberService';
+import useAuthStore from '@/store/useAuthStore';
 
 // Hook lấy danh sách tất cả hội viên với pagination
 export const useMembers = (page = 1, limit = 10) => {
@@ -30,5 +31,14 @@ export const useAllMembers = () => {
   return useQuery({
     queryKey: ['allMembers'],
     queryFn: () => memberService.getAllMembers(),
+  });
+};
+
+export const useMyMemberProfile = () => {
+  const user = useAuthStore((s) => s.user);
+  return useQuery({
+    queryKey: ['myMemberProfile', user?.id],
+    queryFn: () => memberService.getMemberByAccountId(user.id),
+    enabled: !!user?.id,
   });
 };

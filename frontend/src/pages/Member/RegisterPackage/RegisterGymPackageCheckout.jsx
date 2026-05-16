@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   Landmark,
+  TrendingUp,
 } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import { toast } from '@/utils/toast';
@@ -17,6 +18,8 @@ const RegisterGymPackageCheckout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedPackage = location.state?.package;
+  const isUpgrade = location.state?.isUpgrade;
+  const activePackageName = location.state?.activePackageName;
   const [paymentMethod, setPaymentMethod] = useState('vnpay');
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -53,7 +56,17 @@ const RegisterGymPackageCheckout = () => {
       navigate("/member/my-package");
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('Đăng ký gói tập thất bại. Vui lòng thử lại.');
+      const status = error?.response?.status || (error?.message?.includes('409') ? 409 : null);
+      const errMsg = typeof error?.response?.data === 'string' ? error.response.data.trim() : '';
+      if (status === 409) {
+        if (errMsg === 'already_on_highest_tier') {
+          toast.error('Gói của bạn đã là VIP — tier cao nhất. Dùng chức năng Gia hạn để kéo dài thời gian.');
+        } else {
+          toast.error('Chỉ có thể nâng cấp từ gói thường lên gói VIP.');
+        }
+      } else {
+        toast.error('Đăng ký gói tập thất bại. Vui lòng thử lại.');
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -76,6 +89,18 @@ const RegisterGymPackageCheckout = () => {
           </p>
         </div>
       </div>
+
+      {isUpgrade && activePackageName && (
+        <div className="mb-6 rounded-xl border border-blue-300 bg-blue-50 dark:bg-blue-900/10 dark:border-blue-700 p-4 flex items-start gap-3">
+          <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">Nâng cấp gói tập</p>
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              Bạn đang nâng cấp từ <strong>{activePackageName}</strong> lên <strong>{selectedPackage?.name}</strong>. Gói cũ sẽ bị thay thế.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Payment Methods */}

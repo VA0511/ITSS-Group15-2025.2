@@ -120,7 +120,7 @@ func main() {
 	accountHandler := handlers.NewAccountHandler(accountUsecase)
 	authHandler := handlers.NewAuthHandler(authUsecase)
 	serviceCategoryHandler := handlers.NewServiceCategoryHandler(serviceCategoryUsecase)
-	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase, memberUsecase)
+	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase, memberUsecase, packageUsecase)
 	trainingBookingHandler := handlers.NewTrainingBookingHandler(trainingBookingUsecase, memberUsecase, employeeUsecase, trainingSessionUsecase, notifHub)
 	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase, memberUsecase)
 	ptDetailHandler := handlers.NewPTDetailHandler(ptDetailUsecase)

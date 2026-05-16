@@ -84,6 +84,7 @@ export const useRegisterPackage = () => {
       endDate.setMonth(endDate.getMonth() + duration);
       
       // Optimistically update the cache with the new package
+      // oldData shape: { data: [...], page, limit, total, totalPages } (paginated)
       queryClient.setQueryData(['memberPackages'], (oldData) => {
         const newPackage = {
           id: Date.now(),
@@ -94,7 +95,11 @@ export const useRegisterPackage = () => {
           endDate: endDate.toISOString(),
           duration: duration,
         };
-        return [...(oldData || []), newPackage];
+        if (Array.isArray(oldData)) {
+          return [...oldData, newPackage];
+        }
+        const dataArray = Array.isArray(oldData?.data) ? oldData.data : [];
+        return { ...oldData, data: [...dataArray, newPackage] };
       });
       
       // Return rollback context
@@ -126,18 +131,17 @@ export const useRenewPackage = () => {
       const previousData = queryClient.getQueryData(['memberPackages']);
       
       // Optimistically update the cache
+      // oldData shape: { data: [...], page, limit, total, totalPages } (paginated)
       queryClient.setQueryData(['memberPackages'], (oldData) => {
         if (!oldData) return oldData;
-        return oldData.map(pkg => {
+        const dataArray = Array.isArray(oldData) ? oldData : (oldData.data || []);
+        const mapped = dataArray.map(pkg => {
           if (pkg.id === renewalData.packageId) {
-            return {
-              ...pkg,
-              endDate: renewalData.newEndDate,
-              status: 'active',
-            };
+            return { ...pkg, end_date: renewalData.newEndDate, status: 'active' };
           }
           return pkg;
         });
+        return Array.isArray(oldData) ? mapped : { ...oldData, data: mapped };
       });
       
       // Return rollback context

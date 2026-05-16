@@ -158,6 +158,7 @@ func NewRouter(
 	// Subscription routes
 	allRoles.HandleFunc("/subscriptions", subscriptionHandler.Create).Methods("POST")
 	allRoles.HandleFunc("/subscriptions/{id}", subscriptionHandler.GetByID).Methods("GET")
+	allRoles.HandleFunc("/subscriptions/{id}/renew", subscriptionHandler.Renew).Methods("PATCH")
 
 	// PT details (GET/PUT /pt-details/me registered early above to beat the wildcard)
 	allRoles.HandleFunc("/pt-details/{employeeID}", ptDetailHandler.GetByID).Methods("GET")
