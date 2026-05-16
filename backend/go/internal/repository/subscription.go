@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"time"
+
 	"gym-management/internal/domain/entity"
 )
 
@@ -12,6 +14,8 @@ type SubscriptionRepository interface {
 	GetAll() ([]*entity.Subscription, error)
 	Update(subscription *entity.Subscription) error
 	Delete(id int) error
+	GetActiveByMemberID(memberID int) (*entity.Subscription, error)
+	Renew(id int, newEndDate time.Time) error
 }
 
 type subscriptionRepository struct {
@@ -107,4 +111,31 @@ func (r *subscriptionRepository) Delete(id int) error {
 	query := `DELETE FROM "Subscription" WHERE id = $1`
 	_, err := r.db.Exec(query, id)
 	return err
+}
+
+func (r *subscriptionRepository) Renew(id int, newEndDate time.Time) error {
+	query := `UPDATE "Subscription" SET end_date = $1, status = 'active' WHERE id = $2`
+	result, err := r.db.Exec(query, newEndDate, id)
+	if err != nil {
+		return err
+	}
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
+func (r *subscriptionRepository) GetActiveByMemberID(memberID int) (*entity.Subscription, error) {
+	query := `SELECT id, member_id, package_id, registration_date, start_date, end_date, status FROM "Subscription" WHERE member_id = $1 AND end_date >= CURRENT_DATE AND status = 'active' LIMIT 1`
+	row := r.db.QueryRow(query, memberID)
+	var sub entity.Subscription
+	err := row.Scan(&sub.ID, &sub.MemberID, &sub.PackageID, &sub.RegistrationDate, &sub.StartDate, &sub.EndDate, &sub.Status)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &sub, nil
 }

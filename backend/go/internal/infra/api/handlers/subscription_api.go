@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"gym-management/internal/domain/entity"
 	"gym-management/internal/domain/usecase/member_usecase"
+	"gym-management/internal/domain/usecase/package_usecase"
 	"gym-management/internal/domain/usecase/subscription_usecase"
 	"gym-management/internal/infra/api/middleware"
 
@@ -14,12 +16,13 @@ import (
 )
 
 type SubscriptionHandler struct {
-	usecase       subscription_usecase.SubscriptionUsecase
-	memberUsecase member_usecase.MemberUsecase
+	usecase        subscription_usecase.SubscriptionUsecase
+	memberUsecase  member_usecase.MemberUsecase
+	packageUsecase package_usecase.PackageUsecase
 }
 
-func NewSubscriptionHandler(u subscription_usecase.SubscriptionUsecase, mu member_usecase.MemberUsecase) *SubscriptionHandler {
-	return &SubscriptionHandler{usecase: u, memberUsecase: mu}
+func NewSubscriptionHandler(u subscription_usecase.SubscriptionUsecase, mu member_usecase.MemberUsecase, pu package_usecase.PackageUsecase) *SubscriptionHandler {
+	return &SubscriptionHandler{usecase: u, memberUsecase: mu, packageUsecase: pu}
 }
 
 func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +52,37 @@ func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 			member = newMember
 		}
 		subscription.MemberID = member.ID
+	}
+
+	// Check if member already has an active subscription
+	activeSub, err := h.usecase.GetActiveSubscriptionByMemberID(subscription.MemberID)
+	if err != nil {
+		http.Error(w, "failed to check active subscription", http.StatusInternalServerError)
+		return
+	}
+	if activeSub != nil {
+		newPkg, err := h.packageUsecase.GetPackageByID(subscription.PackageID)
+		if err != nil || newPkg == nil {
+			http.Error(w, "invalid package", http.StatusBadRequest)
+			return
+		}
+		activePkg, err := h.packageUsecase.GetPackageByID(activeSub.PackageID)
+		if err != nil || activePkg == nil {
+			http.Error(w, "failed to check active package", http.StatusInternalServerError)
+			return
+		}
+		// VIP is the highest tier — if already on VIP, no upgrade possible
+		activeIsVip := activePkg.CategoryName == "VIP"
+		newIsVip := newPkg.CategoryName == "VIP"
+		if activeIsVip {
+			http.Error(w, "already_on_highest_tier", http.StatusConflict)
+			return
+		}
+		// Allow only Normal → VIP upgrade
+		if !newIsVip {
+			http.Error(w, "upgrade_to_vip_only", http.StatusConflict)
+			return
+		}
 	}
 
 	if err := h.usecase.CreateSubscription(&subscription); err != nil {
@@ -214,6 +248,50 @@ func (h *SubscriptionHandler) GetHistoryByMemberID(w http.ResponseWriter, r *htt
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+func (h *SubscriptionHandler) Renew(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var body struct {
+		NewEndDate time.Time `json:"new_end_date"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Security: MEMBER can only renew their own subscription
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if ok && currentUser.Role == "MEMBER" {
+		member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
+		if err != nil {
+			http.Error(w, "member not found", http.StatusInternalServerError)
+			return
+		}
+		sub, err := h.usecase.GetSubscriptionByID(id)
+		if err != nil {
+			http.Error(w, "subscription not found", http.StatusNotFound)
+			return
+		}
+		if sub.MemberID != member.ID {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+	}
+
+	if err := h.usecase.RenewSubscription(id, body.NewEndDate); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "subscription renewed successfully"})
+}
+
 func (h *SubscriptionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 

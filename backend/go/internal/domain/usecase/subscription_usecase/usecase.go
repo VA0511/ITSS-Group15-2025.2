@@ -2,6 +2,8 @@ package subscription_usecase
 
 import (
 	"context"
+	"time"
+
 	"gym-management/internal/domain/adapter"
 	"gym-management/internal/domain/entity"
 )
@@ -13,9 +15,12 @@ type SubscriptionUsecase interface {
 	GetAllSubscriptions() ([]*entity.Subscription, error)
 	UpdateSubscription(subscription *entity.Subscription) error
 	DeleteSubscription(id int) error
+	GetActiveSubscriptionByMemberID(memberID int) (*entity.Subscription, error)
+	RenewSubscription(id int, newEndDate time.Time) error
 }
 
 type subscriptionUsecase struct {
+	repo       adapter.SubscriptionRepository
 	create     ICreateSubscriptionUseCase
 	get        IGetSubscriptionUseCase
 	getHistory IGetSubscriptionHistoryUseCase
@@ -26,6 +31,7 @@ type subscriptionUsecase struct {
 
 func NewSubscriptionUsecase(repo adapter.SubscriptionRepository) SubscriptionUsecase {
 	return &subscriptionUsecase{
+		repo:       repo,
 		create:     NewCreateSubscriptionUseCase(repo),
 		get:        NewGetSubscriptionUseCase(repo),
 		getHistory: NewGetSubscriptionHistoryUseCase(repo),
@@ -66,4 +72,12 @@ func (u *subscriptionUsecase) DeleteSubscription(id int) error {
 }
 func (u *subscriptionUsecase) GetAllSubscriptions() ([]*entity.Subscription, error) {
 	return u.list.Execute(context.Background())
+}
+
+func (u *subscriptionUsecase) GetActiveSubscriptionByMemberID(memberID int) (*entity.Subscription, error) {
+	return u.repo.GetActiveByMemberID(memberID)
+}
+
+func (u *subscriptionUsecase) RenewSubscription(id int, newEndDate time.Time) error {
+	return u.repo.Renew(id, newEndDate)
 }

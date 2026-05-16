@@ -37,5 +37,7 @@ export const packageService = {
     axios.get('/members/me/subscriptions'),
 
   renewPackage: (renewalData) =>
-    axios.post('/members/packages/renew', renewalData),
+    axios.patch(`/subscriptions/${renewalData.packageId}/renew`, {
+      new_end_date: renewalData.newEndDate,
+    }),
 };
