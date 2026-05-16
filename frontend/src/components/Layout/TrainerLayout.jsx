@@ -2,9 +2,11 @@ import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import useAuthStore from '@/store/useAuthStore';
 import useUIStore from '@/store/useUIStore';
+import useThemeStore from '@/store/useThemeStore';
 import { cn } from '@/lib/utils';
 import {
-  User, Users, Calendar, CheckSquare, Bell, Moon, LogOut, Menu, X, Settings
+  Dumbbell, User, Users, CalendarCheck, ClipboardList,
+  Bell, Moon, Sun, LogOut, Menu, X, Settings
 } from 'lucide-react';
 
 const TrainerLayout = () => {
@@ -12,35 +14,40 @@ const TrainerLayout = () => {
   const logout = useAuthStore((state) => state.logout);
   const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+  const { theme, toggleTheme } = useThemeStore();
 
   const trainerMenuItems = [
     { title: 'Thông tin cá nhân', path: '/trainer/profile', icon: User },
     { title: 'Học viên', path: '/trainer/students', icon: Users },
-    { title: 'Lịch dạy', path: '/trainer/schedule', icon: Calendar },
-    { title: 'Thiết lập lịch', path: '/trainer/availability', icon: Settings }
+    { title: 'Lịch dạy', path: '/trainer/schedule', icon: CalendarCheck },
+    { title: 'Thiết lập lịch', path: '/trainer/availability', icon: Settings },
+    { title: 'Đánh giá buổi tập', path: '/trainer/evaluation', icon: ClipboardList },
   ];
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-60 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-950 lg:static lg:translate-x-0 shadow-sm',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Logo */}
-        <div className="border-b border-gray-200 px-5 py-4.5">
-          <div className="text-base font-semibold text-blue-600">ACTIVEGYM</div>
-          <div className="text-xs text-gray-500 mt-0.5">Management System</div>
+        <div className="flex h-16 shrink-0 items-center justify-center border-b border-gray-200 px-6 dark:border-gray-800">
+          <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-500">
+            <Dumbbell className="h-7 w-7" />
+            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white uppercase">
+              Active<span className="text-blue-600 dark:text-blue-500">Gym</span>
+            </span>
+          </div>
         </div>
 
         {/* Menu Section */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-4 mb-3">
+        <nav className="flex-1 space-y-1.5 overflow-y-auto px-4 py-6 custom-scrollbar">
+          <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
             Danh mục quản lý
           </div>
-
           {trainerMenuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -49,14 +56,14 @@ const TrainerLayout = () => {
                 to={item.path}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors mb-1',
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-600 hover:bg-gray-50'
+                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 font-semibold'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:text-gray-200'
                   )
                 }
               >
-                <Icon className="w-4 h-4 opacity-70" />
+                <Icon className="h-5 w-5" />
                 {item.title}
               </NavLink>
             );
@@ -64,12 +71,12 @@ const TrainerLayout = () => {
         </nav>
 
         {/* Help Box */}
-        <div className="border-t border-gray-200 p-4">
-          <div className="bg-gray-50 rounded-lg p-3">
-            <div className="font-medium text-sm text-gray-900">Cần hỗ trợ?</div>
-            <div className="text-xs text-gray-600 mt-1">Hỗ trợ kỹ thuật hệ thống v2026.</div>
-            <a href="mailto:support@activegym.vn" className="text-xs text-blue-600 font-medium mt-2 inline-block hover:underline">
-              Gửi Ticket hỗ trợ →
+        <div className="border-t border-gray-200 p-4 dark:border-gray-800">
+          <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800">
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Cần hỗ trợ?</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Hỗ trợ kỹ thuật hệ thống ITSS v2026.</p>
+            <a href="mailto:support@activegym.vn" className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
+              Gửi Ticket hỗ trợ &rarr;
             </a>
           </div>
         </div>
@@ -78,50 +85,54 @@ const TrainerLayout = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="h-13 bg-white border-b border-gray-200 flex items-center px-6 gap-4">
-          {/* Menu Toggle (Mobile) */}
+        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white/90 px-4 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/90 transition-colors">
           <button
             onClick={toggleSidebar}
-            className="lg:hidden text-gray-600 hover:text-gray-900"
+            className="mr-4 rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden focus:outline-none"
           >
-            {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          <div className="text-sm font-medium text-gray-900">Trang Quản Trị</div>
+          <div className="flex-1" />
 
-          <div className="ml-auto flex items-center gap-3">
-            <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50">
-              <Bell className="w-4 h-4" />
-            </button>
-            <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50">
-              <Moon className="w-4 h-4" />
+          <div className="flex items-center gap-3">
+            <button
+              className="relative rounded-full p-2.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white focus:outline-none"
+              title="Thông báo"
+            >
+              <Bell className="h-5 w-5" />
             </button>
 
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-600">
-                {user?.name?.charAt(0) || 'T'}
+            <button
+              onClick={toggleTheme}
+              className="rounded-full p-2.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white focus:outline-none"
+              title={theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+
+            <div className="flex items-center gap-2.5 px-2">
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-400">
+                {user?.username?.charAt(0)?.toUpperCase() || 'T'}
               </div>
-              <div>
-                <div className="text-xs font-medium text-gray-900">Người dùng TRAINER</div>
-                <div className="text-xs text-gray-500">TRAINER</div>
+              <div className="hidden sm:block">
+                <div className="text-xs font-semibold text-gray-900 dark:text-white">{user?.username || 'Huấn luyện viên'}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Trainer</div>
               </div>
             </div>
 
             <button
-              onClick={() => {
-                logout();
-                window.location.href = '/login';
-              }}
-              className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50"
-              title="Logout"
+              onClick={() => { logout(); window.location.href = '/login'; }}
+              className="rounded-full p-2.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-red-400 focus:outline-none"
+              title="Đăng xuất"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="h-5 w-5" />
             </button>
           </div>
-        </div>
+        </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto bg-gray-100">
+        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
           <Outlet />
         </main>
       </div>
