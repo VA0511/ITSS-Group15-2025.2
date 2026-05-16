@@ -8,6 +8,7 @@ import (
 type PTDetailRepository interface {
 	Create(ptDetail *entity.PTDetail) error
 	GetByID(id int) (*entity.PTDetail, error)
+	GetByAccountID(accountID int) (*entity.PTDetail, error)
 	GetAll() ([]*entity.PTDetail, error)
 	Update(ptDetail *entity.PTDetail) error
 	Delete(id int) error
@@ -28,11 +29,24 @@ func (r *ptDetailRepository) Create(ptDetail *entity.PTDetail) error {
 }
 
 func (r *ptDetailRepository) GetByID(employeeID int) (*entity.PTDetail, error) {
-	query := `SELECT employee_id, professional_profile, body_index, experience_years, COALESCE(achievements, ''), COALESCE(available_schedule, '') FROM "PT_Detail" WHERE employee_id = $1`
+	query := `SELECT pd.employee_id, COALESCE(e.full_name, ''), COALESCE(e.phone, ''), COALESCE(e.email, ''), COALESCE(e.dob, CURRENT_DATE), pd.professional_profile, pd.body_index, pd.experience_years, COALESCE(pd.achievements, ''), COALESCE(pd.available_schedule, '') FROM "PT_Detail" pd JOIN "Employee" e ON e.id = pd.employee_id WHERE pd.employee_id = $1`
 	row := r.db.QueryRow(query, employeeID)
 
 	var ptDetail entity.PTDetail
-	err := row.Scan(&ptDetail.EmployeeID, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
+	err := row.Scan(&ptDetail.EmployeeID, &ptDetail.FullName, &ptDetail.Phone, &ptDetail.Email, &ptDetail.DOB, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ptDetail, nil
+}
+
+func (r *ptDetailRepository) GetByAccountID(accountID int) (*entity.PTDetail, error) {
+	query := `SELECT pd.employee_id, COALESCE(e.full_name, ''), COALESCE(e.phone, ''), COALESCE(e.email, ''), COALESCE(e.dob, CURRENT_DATE), pd.professional_profile, pd.body_index, pd.experience_years, COALESCE(pd.achievements, ''), COALESCE(pd.available_schedule, '') FROM "PT_Detail" pd JOIN "Employee" e ON e.id = pd.employee_id WHERE e.account_id = $1`
+	row := r.db.QueryRow(query, accountID)
+
+	var ptDetail entity.PTDetail
+	err := row.Scan(&ptDetail.EmployeeID, &ptDetail.FullName, &ptDetail.Phone, &ptDetail.Email, &ptDetail.DOB, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +55,7 @@ func (r *ptDetailRepository) GetByID(employeeID int) (*entity.PTDetail, error) {
 }
 
 func (r *ptDetailRepository) GetAll() ([]*entity.PTDetail, error) {
-	query := `SELECT employee_id, professional_profile, body_index, experience_years, COALESCE(achievements, ''), COALESCE(available_schedule, '') FROM "PT_Detail"`
+	query := `SELECT pd.employee_id, COALESCE(e.full_name, ''), COALESCE(e.phone, ''), COALESCE(e.email, ''), COALESCE(e.dob, CURRENT_DATE), pd.professional_profile, pd.body_index, pd.experience_years, COALESCE(pd.achievements, ''), COALESCE(pd.available_schedule, '') FROM "PT_Detail" pd JOIN "Employee" e ON e.id = pd.employee_id`
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -51,7 +65,7 @@ func (r *ptDetailRepository) GetAll() ([]*entity.PTDetail, error) {
 	var ptDetails []*entity.PTDetail
 	for rows.Next() {
 		var ptDetail entity.PTDetail
-		err := rows.Scan(&ptDetail.EmployeeID, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
+		err := rows.Scan(&ptDetail.EmployeeID, &ptDetail.FullName, &ptDetail.Phone, &ptDetail.Email, &ptDetail.DOB, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
 		if err != nil {
 			return nil, err
 		}

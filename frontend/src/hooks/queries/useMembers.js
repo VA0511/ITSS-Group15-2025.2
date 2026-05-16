@@ -25,3 +25,10 @@ export const useMemberDetails = (id) => {
     enabled: !!id,
   });
 };
+
+export const useAllMembers = () => {
+  return useQuery({
+    queryKey: ['allMembers'],
+    queryFn: () => memberService.getAllMembers(),
+  });
+};

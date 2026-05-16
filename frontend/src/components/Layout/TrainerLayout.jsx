@@ -4,7 +4,7 @@ import useAuthStore from '@/store/useAuthStore';
 import useUIStore from '@/store/useUIStore';
 import { cn } from '@/lib/utils';
 import {
-  User, Users, Calendar, CheckSquare, Bell, Moon, LogOut, Menu, X
+  User, Users, Calendar, CheckSquare, Bell, Moon, LogOut, Menu, X, Settings
 } from 'lucide-react';
 
 const TrainerLayout = () => {
@@ -16,7 +16,8 @@ const TrainerLayout = () => {
   const trainerMenuItems = [
     { title: 'Thông tin cá nhân', path: '/trainer/profile', icon: User },
     { title: 'Học viên', path: '/trainer/students', icon: Users },
-    { title: 'Lịch dạy', path: '/trainer/schedule', icon: Calendar }
+    { title: 'Lịch dạy', path: '/trainer/schedule', icon: Calendar },
+    { title: 'Thiết lập lịch', path: '/trainer/availability', icon: Settings }
   ];
 
   return (

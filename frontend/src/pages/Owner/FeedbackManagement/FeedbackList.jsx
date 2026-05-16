@@ -19,14 +19,13 @@ const FeedbackList = () => {
   const updateMutation = useUpdateFeedbackStatus();
 
   const [editModal, setEditModal] = useState({ isOpen: false, feedback: null });
-  const [editStatus, setEditStatus] = useState('pending');
+  const [editStatus, setEditStatus] = useState('Pending');
   const [editResponseText, setEditResponseText] = useState('');
 
   const handleEditClick = (fb) => {
     setEditModal({ isOpen: true, feedback: fb });
-    const currentStatus = fb.status?.toLowerCase() || 'pending';
-    setEditStatus(currentStatus);
-    setEditResponseText(fb.response_text || fb.responseText || '');
+    setEditStatus(fb.status || 'Pending');
+    setEditResponseText(fb.resolution_note || fb.response_text || fb.responseText || '');
   };
 
   const handleSaveEdit = () => {
@@ -155,9 +154,9 @@ const FeedbackList = () => {
               className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-slate-400 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             >
               <option value="">Tất cả</option>
-              <option value="pending">Chờ xử lý</option>
-              <option value="processing">Đang xử lý</option>
-              <option value="resolved">Đã xử lý</option>
+              <option value="Pending">Chờ xử lý</option>
+              <option value="Processing">Đang xử lý</option>
+              <option value="Resolved">Đã xử lý</option>
             </select>
           </div>
           <div className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
@@ -295,9 +294,9 @@ const FeedbackList = () => {
               onChange={(e) => setEditStatus(e.target.value)}
               className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             >
-              <option value="pending">Chờ xử lý</option>
-              <option value="processing">Đang xử lý</option>
-              <option value="resolved">Đã xử lý</option>
+              <option value="Pending">Chờ xử lý</option>
+              <option value="Processing">Đang xử lý</option>
+              <option value="Resolved">Đã xử lý</option>
             </select>
           </div>
           <div>

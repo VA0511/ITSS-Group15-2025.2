@@ -12,6 +12,7 @@ type TrainingSessionUsecase interface {
 	GetAllTrainingSessions() ([]*entity.TrainingSession, error)
 	UpdateTrainingSession(trainingSession *entity.TrainingSession) error
 	DeleteTrainingSession(id int) error
+	ConfirmAttendance(id int, memberID int) error
 }
 
 type trainingSessionUsecase struct {
@@ -20,6 +21,7 @@ type trainingSessionUsecase struct {
 	list   IListTrainingSessionsUseCase
 	update IUpdateTrainingSessionUseCase
 	delete IDeleteTrainingSessionUseCase
+	repo   adapter.TrainingSessionRepository
 }
 
 func NewTrainingSessionUsecase(repo adapter.TrainingSessionRepository) TrainingSessionUsecase {
@@ -29,6 +31,7 @@ func NewTrainingSessionUsecase(repo adapter.TrainingSessionRepository) TrainingS
 		list:   NewListTrainingSessionsUseCase(repo),
 		update: NewUpdateTrainingSessionUseCase(repo),
 		delete: NewDeleteTrainingSessionUseCase(repo),
+		repo:   repo,
 	}
 }
 
@@ -60,4 +63,8 @@ func (u *trainingSessionUsecase) UpdateTrainingSession(trainingSession *entity.T
 
 func (u *trainingSessionUsecase) DeleteTrainingSession(id int) error {
 	return u.delete.Execute(context.Background(), id)
+}
+
+func (u *trainingSessionUsecase) ConfirmAttendance(id int, memberID int) error {
+	return u.repo.ConfirmAttendance(id, memberID)
 }

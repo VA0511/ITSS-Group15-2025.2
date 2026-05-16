@@ -1,135 +1,73 @@
 import React from 'react';
-import { Users, UserCheck, Calendar } from 'lucide-react';
+import { Users, UserCheck, UserX, Calendar, Dumbbell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '@/components/Common/Button';
 import StatsCard from '@/components/Dashboard/StatsCard';
 import { useMembers } from '@/hooks/queries/useMembers';
-import { useEmployees } from '@/hooks/queries/useEmployees';
-import { useTrainingBookings } from '@/hooks/queries/useTrainingBookings';
+
+// Mock Data - Stats
+const dashboardStats = [
+  {
+    title: 'Tổng hội viên',
+    value: '128',
+    icon: Users,
+    trend: 'up',
+    trendValue: '+12',
+    trendLabel: 'tháng này'
+  },
+  {
+    title: 'Hội viên đang active',
+    value: '102',
+    icon: UserCheck,
+    trend: 'up',
+    trendValue: '+8',
+    trendLabel: 'so với tuần trước'
+  },
+  {
+    title: 'Lịch PT hôm nay',
+    value: '24',
+    icon: Calendar,
+    trend: 'neutral',
+    trendValue: 'Bình thường'
+  },
+  {
+    title: 'PT đang làm việc',
+    value: '12',
+    icon: Dumbbell,
+    trend: 'up',
+    trendValue: '+3',
+    trendLabel: 'hôm nay'
+  }
+];
+
+// Mock Data - Hội viên mới
+const newMembers = [
+  { id: 1, name: 'Nguyễn Văn A', phone: '0901234567', package: 'Gói VIP', joinDate: '2026-04-10' },
+  { id: 2, name: 'Trần Thị B', phone: '0912345678', package: 'Gói Cơ Bản', joinDate: '2026-04-11' },
+  { id: 3, name: 'Lê Văn C', phone: '0923456789', package: 'Lớp Nhóm', joinDate: '2026-04-12' },
+];
+
+// Mock Data - Hội viên sắp hết hạn (tối đa 7 ngày nữa)
+const expiringMembers = [
+  { id: 10, name: 'Phạm Minh D', phone: '0934567890', package: 'Gói Nâng Cao', expiresIn: '2 ngày' },
+  { id: 11, name: 'Hoàng Thị E', phone: '0945678901', package: 'Gói Cơ Bản', expiresIn: '5 ngày' },
+  { id: 12, name: 'Vũ Văn F', phone: '0956789012', package: 'Gói VIP', expiresIn: '7 ngày' },
+];
+
+// Mock Data - Lịch PT hôm nay
+const todaySchedules = [
+  { id: 1, time: '06:00', pt: 'Hùng Gym', member: 'Nguyễn A', status: 'Done' },
+  { id: 2, time: '07:30', pt: 'Tùng PT', member: 'Trần B', status: 'InProgress' },
+  { id: 3, time: '09:00', pt: 'Lan Coach', member: 'Lê C', status: 'Scheduled' },
+  { id: 4, time: '10:30', pt: 'Hùng Gym', member: 'Phạm D', status: 'Scheduled' },
+];
 
 const ManagerDashboard = () => {
   const { data: memberResponse = {} } = useMembers(1, 1000);
-  const { data: employeeResponse = {} } = useEmployees(1, 1000);
-  const { data: bookingResponse = {} } = useTrainingBookings();
 
   const members = Array.isArray(memberResponse?.data) ? memberResponse.data : [];
-  const employees = Array.isArray(employeeResponse?.data) ? employeeResponse.data : (Array.isArray(employeeResponse) ? employeeResponse : []);
-  const bookings = Array.isArray(bookingResponse?.data) ? bookingResponse.data : (Array.isArray(bookingResponse) ? bookingResponse : []);
   const totalMembers = memberResponse?.total ?? members.length;
   const activeMembers = members.filter((member) => member?.is_active === true || member?.status === 'active').length;
-
-  const getMemberCreatedDate = (member) => {
-    const rawDate =
-      member?.created_at ||
-      member?.createdAt ||
-      member?.registration_date ||
-      member?.registered_at ||
-      member?.joinDate ||
-      member?.joined_at ||
-      null;
-
-    if (!rawDate) return null;
-    const parsed = new Date(rawDate);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-  };
-
-  const startOfCurrentWeek = (() => {
-    const now = new Date();
-    const day = now.getDay();
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-    const start = new Date(now);
-    start.setDate(now.getDate() + diffToMonday);
-    start.setHours(0, 0, 0, 0);
-    return start;
-  })();
-
-  const endOfCurrentWeek = new Date(startOfCurrentWeek);
-  endOfCurrentWeek.setDate(startOfCurrentWeek.getDate() + 7);
-
-  const weeklyNewMembers = members
-    .filter((member) => {
-      const createdDate = getMemberCreatedDate(member);
-      return createdDate && createdDate >= startOfCurrentWeek && createdDate < endOfCurrentWeek;
-    })
-    .sort((a, b) => {
-      const dateA = getMemberCreatedDate(a)?.getTime() ?? 0;
-      const dateB = getMemberCreatedDate(b)?.getTime() ?? 0;
-      return dateB - dateA;
-    });
-
-  const recentWeeklyMembers = weeklyNewMembers.slice(0, 5);
-
-  const getEmployeeNameById = (employeeId) => {
-    const employee = employees.find((item) => item.id === employeeId);
-    return employee?.full_name || employee?.name || `PT #${employeeId}`;
-  };
-
-  const getMemberNameById = (memberId) => {
-    const member = members.find((item) => item.id === memberId);
-    return member?.full_name || member?.name || `Member #${memberId}`;
-  };
-
-  const isSameDate = (dateA, dateB) =>
-    dateA.getFullYear() === dateB.getFullYear() &&
-    dateA.getMonth() === dateB.getMonth() &&
-    dateA.getDate() === dateB.getDate();
-
-  const getScheduleStatus = (booking) => {
-    const rawStatus = String(booking?.status || '').toLowerCase();
-    if (rawStatus === 'cancelled' || rawStatus === 'rejected') return 'Cancelled';
-
-    const now = new Date();
-    const start = new Date(booking?.requested_start);
-    const end = new Date(booking?.requested_end);
-
-    if (!Number.isNaN(end.getTime()) && end < now) return 'Done';
-    if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && start <= now && now <= end) return 'InProgress';
-    return 'Scheduled';
-  };
-
-  const formatTime = (isoString) => {
-    const date = new Date(isoString);
-    if (Number.isNaN(date.getTime())) return '--:--';
-    return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const today = new Date();
-  const todaySchedules = bookings
-    .filter((booking) => {
-      const start = new Date(booking?.requested_start);
-      return !Number.isNaN(start.getTime()) && isSameDate(start, today);
-    })
-    .map((booking) => ({
-      id: booking.id,
-      time: formatTime(booking.requested_start),
-      pt: getEmployeeNameById(booking.pt_id),
-      member: getMemberNameById(booking.member_id),
-      status: getScheduleStatus(booking),
-    }))
-    .sort((a, b) => a.time.localeCompare(b.time));
-
-  const getRemainingSessions = (member) => {
-    const rawValue =
-      member?.sessionsRemaining ??
-      member?.remaining_sessions ??
-      member?.remainingSessions ??
-      member?.session_remaining ??
-      member?.sessions_remaining ??
-      member?.remainingBuoi ??
-      null;
-
-    const parsed = Number(rawValue);
-    return Number.isFinite(parsed) ? parsed : null;
-  };
-
-  const expiringMembers = members
-    .map((member) => ({
-      ...member,
-      remainingSessions: getRemainingSessions(member),
-    }))
-    .filter((member) => member.remainingSessions !== null && member.remainingSessions < 7)
-    .sort((a, b) => a.remainingSessions - b.remainingSessions)
-    .slice(0, 5);
 
   const dashboardStats = [
     {
@@ -150,10 +88,18 @@ const ManagerDashboard = () => {
     },
     {
       title: 'Lịch PT hôm nay',
-      value: String(todaySchedules.length),
+      value: '24',
       icon: Calendar,
       trend: 'neutral',
       trendValue: 'Bình thường'
+    },
+    {
+      title: 'PT đang làm việc',
+      value: '12',
+      icon: Dumbbell,
+      trend: 'up',
+      trendValue: '+3',
+      trendLabel: 'hôm nay'
     }
   ];
 
@@ -170,7 +116,7 @@ const ManagerDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {dashboardStats.map((stat) => (
           <StatsCard key={stat.title} {...stat} />
         ))}
@@ -182,21 +128,18 @@ const ManagerDashboard = () => {
         {/* Hội viên mới */}
         <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Hội viên mới (tuần này)</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Hội viên mới</h3>
             <Link to="/manager/members">
               <Button variant="ghost" size="sm">Xem tất cả</Button>
             </Link>
           </div>
           <div className="space-y-3">
-            {recentWeeklyMembers.length === 0 && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">Chưa có hội viên đăng ký trong tuần hiện tại</p>
-            )}
-            {recentWeeklyMembers.map((member) => (
+            {newMembers.map((member) => (
               <div key={member.id} className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-b-0 dark:border-gray-800">
                 <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30"></div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 dark:text-white truncate">{member.full_name || member.name || `Member #${member.id}`}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{member.phone || 'N/A'} • {getMemberCreatedDate(member)?.toLocaleDateString('vi-VN') || 'N/A'}</p>
+                  <p className="font-medium text-gray-900 dark:text-white truncate">{member.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{member.phone} • {member.package}</p>
                 </div>
               </div>
             ))}
@@ -206,21 +149,18 @@ const ManagerDashboard = () => {
         {/* Hội viên sắp hết hạn */}
         <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Sắp hết hạn (&lt; 7 buổi)</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Sắp hết hạn</h3>
             <Link to="/manager/members">
               <Button variant="ghost" size="sm">Xem tất cả</Button>
             </Link>
           </div>
           <div className="space-y-3">
-            {expiringMembers.length === 0 && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">Không có hội viên nào còn dưới 7 buổi tập</p>
-            )}
             {expiringMembers.map((member) => (
               <div key={member.id} className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-b-0 dark:border-gray-800">
                 <div className="h-8 w-8 rounded-full bg-red-100 dark:bg-red-900/30"></div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 dark:text-white truncate">{member.full_name || member.name || `Member #${member.id}`}</p>
-                  <p className="text-xs text-red-600 dark:text-red-400 font-medium">Còn {member.remainingSessions} buổi</p>
+                  <p className="font-medium text-gray-900 dark:text-white truncate">{member.name}</p>
+                  <p className="text-xs text-red-600 dark:text-red-400 font-medium">{member.expiresIn}</p>
                 </div>
               </div>
             ))}
@@ -236,9 +176,6 @@ const ManagerDashboard = () => {
             </Link>
           </div>
           <div className="space-y-3">
-            {todaySchedules.length === 0 && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">Không có lịch PT trong hôm nay</p>
-            )}
             {todaySchedules.map((schedule) => (
               <div key={schedule.id} className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-b-0 dark:border-gray-800">
                 <div className="rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
@@ -248,13 +185,11 @@ const ManagerDashboard = () => {
                   <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{schedule.pt} • {schedule.member}</p>
                   <span className={`text-xs font-medium ${schedule.status === 'Done' ? 'text-green-600 dark:text-green-400' :
                     schedule.status === 'InProgress' ? 'text-blue-600 dark:text-blue-400' :
-                      schedule.status === 'Cancelled' ? 'text-red-600 dark:text-red-400' :
-                        'text-gray-600 dark:text-gray-400'
+                      'text-gray-600 dark:text-gray-400'
                     }`}>
                     {schedule.status === 'Done' ? '✓ Hoàn thành' :
                       schedule.status === 'InProgress' ? '⏱ Đang diễn ra' :
-                        schedule.status === 'Cancelled' ? '✕ Đã hủy' :
-                          '○ Đã lên lịch'}
+                        '○ Đã lên lịch'}
                   </span>
                 </div>
               </div>

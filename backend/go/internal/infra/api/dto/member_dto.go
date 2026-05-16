@@ -10,6 +10,7 @@ type MemberListItemDTO struct {
 	ExpiryDate        string `json:"expiryDate"`        // từ Subscription.end_date
 	JoinDate          string `json:"joinDate"`          // từ Subscription.start_date
 	SessionsRemaining int    `json:"sessionsRemaining"` // số ngày còn lại = end_date - today
+	RoadmapGoal       string `json:"roadmap_goal"`      // từ Member.roadmap_goal
 }
 
 // MemberDetailDTO - dữ liệu chi tiết member

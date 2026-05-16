@@ -14,6 +14,7 @@ type MemberUsecase interface {
 	GetAllMembersPaginated(page, limit int) ([]*entity.Member, int, error)
 	GetAllMembersWithDetails() ([]*dto.MemberListItemDTO, error)
 	GetMemberByIDWithDetails(id int) (*dto.MemberDetailDTO, error)
+	GetMemberByAccountID(accountID int) (*entity.Member, error)
 	UpdateMember(member *entity.Member) error
 	UpdateMemberStatus(id int, isActive bool) error
 	DeleteMember(id int) error
@@ -68,6 +69,10 @@ func (u *memberUsecase) GetAllMembersWithDetails() ([]*dto.MemberListItemDTO, er
 
 func (u *memberUsecase) GetMemberByIDWithDetails(id int) (*dto.MemberDetailDTO, error) {
 	return u.repo.GetMemberByIDWithDetails(id)
+}
+
+func (u *memberUsecase) GetMemberByAccountID(accountID int) (*entity.Member, error) {
+	return u.repo.GetByAccountID(accountID)
 }
 
 func (u *memberUsecase) UpdateMember(member *entity.Member) error {

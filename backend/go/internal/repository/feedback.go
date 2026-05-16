@@ -15,8 +15,20 @@ func NewFeedbackRepository(db *sql.DB) adapter.FeedbackRepository {
 }
 
 func (r *feedbackRepository) Create(feedback *entity.Feedback) error {
-	query := `INSERT INTO "Feedback" (member_id, processor_id, equipment_id, content, sent_at, resolution_note, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
-	return r.db.QueryRow(query, feedback.MemberID, feedback.ProcessorID, feedback.EquipmentID, feedback.Content, feedback.SentAt, feedback.ResolutionNote, feedback.Status).Scan(&feedback.ID)
+	var memberID interface{} = feedback.MemberID
+	if feedback.MemberID == 0 {
+		memberID = nil
+	}
+	var processorID interface{} = feedback.ProcessorID
+	if feedback.ProcessorID == 0 {
+		processorID = nil
+	}
+	var equipmentID interface{} = feedback.EquipmentID
+	if feedback.EquipmentID == 0 {
+		equipmentID = nil
+	}
+	query := `INSERT INTO "Feedback" (member_id, processor_id, equipment_id, content, sent_at, resolution_note, status, rating) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
+	return r.db.QueryRow(query, memberID, processorID, equipmentID, feedback.Content, feedback.SentAt, feedback.ResolutionNote, feedback.Status, feedback.Rating).Scan(&feedback.ID)
 }
 
 func (r *feedbackRepository) GetByID(id int) (*entity.Feedback, error) {
@@ -110,6 +122,29 @@ func (r *feedbackRepository) GetAllPaginated(page, limit int, status string) ([]
 		feedbacks = append(feedbacks, feedback)
 	}
 	return feedbacks, total, nil
+}
+
+func (r *feedbackRepository) GetByMemberID(memberID int) ([]*entity.Feedback, error) {
+	query := `SELECT f.id, COALESCE(f.member_id, 0), COALESCE(m.full_name, 'Unknown'), COALESCE(f.processor_id, 0), COALESCE(f.equipment_id, 0), COALESCE(f.content, ''), f.sent_at, COALESCE(f.resolution_note, ''), COALESCE(f.status, ''), COALESCE(f.rating, 0)
+	FROM "Feedback" f
+	LEFT JOIN "Member" m ON f.member_id = m.id
+	WHERE f.member_id = $1
+	ORDER BY f.sent_at DESC`
+	rows, err := r.db.Query(query, memberID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var feedbacks []*entity.Feedback
+	for rows.Next() {
+		feedback := &entity.Feedback{}
+		err := rows.Scan(&feedback.ID, &feedback.MemberID, &feedback.MemberName, &feedback.ProcessorID, &feedback.EquipmentID, &feedback.Content, &feedback.SentAt, &feedback.ResolutionNote, &feedback.Status, &feedback.Rating)
+		if err != nil {
+			return nil, err
+		}
+		feedbacks = append(feedbacks, feedback)
+	}
+	return feedbacks, nil
 }
 
 func (r *feedbackRepository) Update(feedback *entity.Feedback) error {

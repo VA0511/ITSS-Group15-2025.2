@@ -3,7 +3,6 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { Download, Filter } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import Badge from '@/components/Common/Badge';
-import { useMembers } from '@/hooks/queries/useMembers';
 
 // Mock Report Data
 const newMembersData = [
@@ -46,7 +45,6 @@ const ptPerformanceData = [
 
 const ReportsView = () => {
     const [timeframe, setTimeframe] = useState('6months');
-    const { data: membersResponse } = useMembers(1, 1000);
 
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
@@ -55,16 +53,6 @@ const ReportsView = () => {
     const totalRevenue = revenueData.reduce((sum, item) => sum + item.revenue, 0);
     const totalNewMembers = newMembersData.reduce((sum, item) => sum + item.members, 0);
     const avgRevenue = totalRevenue / revenueData.length;
-    const members = Array.isArray(membersResponse?.data)
-        ? membersResponse.data
-        : Array.isArray(membersResponse)
-            ? membersResponse
-            : [];
-    const totalMembers = typeof membersResponse?.total === 'number' ? membersResponse.total : members.length;
-    const activeMembers = members.filter((member) =>
-        member?.is_active === true || String(member?.status || '').toLowerCase() === 'active'
-    ).length;
-    const activeMemberPercent = totalMembers > 0 ? ((activeMembers / totalMembers) * 100).toFixed(1) : '0.0';
 
     return (
         <div className="space-y-6">
@@ -97,28 +85,33 @@ const ReportsView = () => {
             </div>
 
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 min-h-[140px] flex flex-col justify-between">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
                     <p className="text-sm text-gray-500 dark:text-gray-400">Tổng doanh thu</p>
-                    <p className="mt-2 text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 break-words">{formatCurrency(totalRevenue)}</p>
+                    <p className="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(totalRevenue)}</p>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Trung bình {formatCurrency(avgRevenue)}/tháng</p>
                 </div>
 
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 min-h-[140px] flex flex-col justify-between">
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
                     <p className="text-sm text-gray-500 dark:text-gray-400">Hội viên mới</p>
                     <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">{totalNewMembers}</p>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Trung bình {(totalNewMembers / newMembersData.length).toFixed(1)}/tháng</p>
                 </div>
 
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 min-h-[140px] flex flex-col justify-between">
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
                     <p className="text-sm text-gray-500 dark:text-gray-400">Tổng hội viên</p>
-                    <p className="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">{totalMembers}</p>
+                    <p className="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">128</p>
                     <div className="mt-1 flex gap-2">
-                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs">{activeMemberPercent}%</Badge>
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs">79.7%</Badge>
                         <span className="text-xs text-gray-500 dark:text-gray-400">đang hoạt động</span>
                     </div>
                 </div>
 
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">PT hiệu suất cao</p>
+                    <p className="mt-2 text-3xl font-bold text-orange-600 dark:text-orange-400">4</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Rating ≥ 4.5 sao</p>
+                </div>
             </div>
 
             {/* Charts */}
@@ -197,8 +190,50 @@ const ReportsView = () => {
                 </div>
             </div>
 
+            {/* PT Performance */}
+            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">Hiệu suất huấn luyện viên</h3>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className="border-b border-gray-200 dark:border-gray-700">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Huấn luyện viên</th>
+                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Lịch tập</th>
+                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Đánh giá</th>
+                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                            {ptPerformanceData.map((pt, index) => (
+                                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-900">
+                                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{pt.name}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{pt.sessions} buổi</td>
+                                    <td className="px-4 py-3">
+                                        <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                            ⭐ {pt.rating}
+                                        </Badge>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                            Hoạt động
+                                        </Badge>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-
+            {/* Quick Actions */}
+            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+                <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">Hành động nhanh</h3>
+                <div className="flex flex-wrap gap-3">
+                    <Button>Xuất báo cáo hàng tháng</Button>
+                    <Button variant="outline">Gửi email báo cáo</Button>
+                    <Button variant="outline">In báo cáo</Button>
+                </div>
+            </div>
         </div>
     );
 };

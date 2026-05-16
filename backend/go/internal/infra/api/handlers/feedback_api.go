@@ -6,24 +6,40 @@ import (
 	"strconv"
 
 	"gym-management/internal/domain/entity"
+	"gym-management/internal/domain/usecase/employee_usecase"
 	"gym-management/internal/domain/usecase/feedback_usecase"
+	"gym-management/internal/domain/usecase/member_usecase"
 	"gym-management/internal/infra/api/dto"
 	"gym-management/internal/infra/api/mappers"
+	"gym-management/internal/infra/api/middleware"
 
 	"github.com/gorilla/mux"
 )
 
 type FeedbackHandler struct {
-	usecase feedback_usecase.FeedbackUsecase
+	usecase         feedback_usecase.FeedbackUsecase
+	memberUsecase   member_usecase.MemberUsecase
+	employeeUsecase employee_usecase.EmployeeUsecase
 }
 
-func NewFeedbackHandler(u feedback_usecase.FeedbackUsecase) *FeedbackHandler {
-	return &FeedbackHandler{usecase: u}
+func NewFeedbackHandler(u feedback_usecase.FeedbackUsecase, mu member_usecase.MemberUsecase, eu employee_usecase.EmployeeUsecase) *FeedbackHandler {
+	return &FeedbackHandler{usecase: u, memberUsecase: mu, employeeUsecase: eu}
 }
 
 func (h *FeedbackHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var feedback entity.Feedback
 	json.NewDecoder(r.Body).Decode(&feedback)
+
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if ok && currentUser.Role == "MEMBER" {
+		member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
+		if err != nil {
+			http.Error(w, "member not found", http.StatusInternalServerError)
+			return
+		}
+		feedback.MemberID = member.ID
+	}
+
 	err := h.usecase.CreateFeedback(&feedback)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -117,6 +133,15 @@ func (h *FeedbackHandler) Update(w http.ResponseWriter, r *http.Request) {
 		existing.ResolutionNote = resolutionNote
 	}
 
+	// Set ProcessorID from current user if they are staff/owner
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if ok && (currentUser.Role == "OWNER" || currentUser.Role == "MANAGER" || currentUser.Role == "PT") {
+		employee, err := h.employeeUsecase.GetEmployeeByAccountID(currentUser.AccountID)
+		if err == nil {
+			existing.ProcessorID = employee.ID
+		}
+	}
+
 	err = h.usecase.UpdateFeedback(existing)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -133,4 +158,32 @@ func (h *FeedbackHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h *FeedbackHandler) GetMyFeedbacks(w http.ResponseWriter, r *http.Request) {
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
+	if err != nil {
+		http.Error(w, "member not found", http.StatusInternalServerError)
+		return
+	}
+
+	feedbacks, err := h.usecase.GetFeedbacksByMemberID(member.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	responses := make([]*dto.FeedbackResponse, len(feedbacks))
+	for i, fb := range feedbacks {
+		responses[i] = mappers.FeedbackEntityToResponse(fb)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(responses)
 }

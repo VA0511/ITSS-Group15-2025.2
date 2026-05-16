@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 
@@ -108,17 +109,29 @@ func main() {
 	employeeHandler := handlers.NewEmployeeHandler(employeeUsecase)
 	packageHandler := handlers.NewPackageHandler(packageUsecase)
 	equipmentHandler := handlers.NewEquipmentHandler(equipmentUsecase)
-	feedbackHandler := handlers.NewFeedbackHandler(feedbackUsecase)
+	feedbackHandler := handlers.NewFeedbackHandler(feedbackUsecase, memberUsecase, employeeUsecase)
 	invoiceHandler := handlers.NewInvoiceHandler(invoiceUsecase)
 	roleHandler := handlers.NewRoleHandler(roleUsecase)
 	facilityHandler := handlers.NewFacilityHandler(facilityUsecase)
 	accountHandler := handlers.NewAccountHandler(accountUsecase)
 	authHandler := handlers.NewAuthHandler(authUsecase)
 	serviceCategoryHandler := handlers.NewServiceCategoryHandler(serviceCategoryUsecase)
-	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase)
-	trainingBookingHandler := handlers.NewTrainingBookingHandler(trainingBookingUsecase)
-	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase)
+	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase, memberUsecase)
+	trainingBookingHandler := handlers.NewTrainingBookingHandler(trainingBookingUsecase, memberUsecase, employeeUsecase, trainingSessionUsecase)
+	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase, memberUsecase)
 	ptDetailHandler := handlers.NewPTDetailHandler(ptDetailUsecase)
+
+	// Auto-confirm member attendance 3 hours before session start
+	go func() {
+		ticker := time.NewTicker(5 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			_, err := db.Exec(`UPDATE "TrainingSession" SET member_confirmed_at = NOW() WHERE member_confirmed_at IS NULL AND session_time <= NOW() + INTERVAL '3 hours'`)
+			if err != nil {
+				log.Println("auto-confirm error:", err)
+			}
+		}
+	}()
 
 	// Setup routes
 	router := routes.NewRouter(authHandler, memberHandler, employeeHandler, packageHandler, equipmentHandler, feedbackHandler, invoiceHandler, roleHandler, facilityHandler, accountHandler, serviceCategoryHandler, subscriptionHandler, trainingBookingHandler, trainingSessionHandler, ptDetailHandler)

@@ -9,6 +9,7 @@ import (
 type EmployeeUsecase interface {
 	CreateEmployee(employee *entity.Employee) error
 	GetEmployeeByID(id int) (*entity.Employee, error)
+	GetEmployeeByAccountID(accountID int) (*entity.Employee, error)
 	GetAllEmployees() ([]*entity.Employee, error)
 	GetAllEmployeesPaginated(page, limit int) ([]*entity.Employee, int, error)
 	UpdateEmployee(employee *entity.Employee) error
@@ -16,6 +17,7 @@ type EmployeeUsecase interface {
 }
 
 type employeeUsecase struct {
+	repo          adapter.EmployeeRepository
 	create        ICreateEmployeeUseCase
 	get           IGetEmployeeUseCase
 	list          IListEmployeesUseCase
@@ -26,6 +28,7 @@ type employeeUsecase struct {
 
 func NewEmployeeUsecase(repo adapter.EmployeeRepository) EmployeeUsecase {
 	return &employeeUsecase{
+		repo:          repo,
 		create:        NewCreateEmployeeUseCase(repo),
 		get:           NewGetEmployeeUseCase(repo),
 		list:          NewListEmployeesUseCase(repo),
@@ -46,6 +49,10 @@ func (u *employeeUsecase) CreateEmployee(employee *entity.Employee) error {
 
 func (u *employeeUsecase) GetEmployeeByID(id int) (*entity.Employee, error) {
 	return u.get.Execute(context.Background(), id)
+}
+
+func (u *employeeUsecase) GetEmployeeByAccountID(accountID int) (*entity.Employee, error) {
+	return u.repo.GetByAccountID(accountID)
 }
 
 func (u *employeeUsecase) GetAllEmployees() ([]*entity.Employee, error) {

@@ -7,6 +7,7 @@ import (
 
 	"gym-management/internal/domain/entity"
 	"gym-management/internal/domain/usecase/pt_detail_usecase"
+	"gym-management/internal/infra/api/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -34,6 +35,52 @@ func (h *PTDetailHandler) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(ptDetail)
+}
+
+func (h *PTDetailHandler) GetMe(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetAuthenticatedUser(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	ptDetail, err := h.usecase.GetMyPTDetail(user.AccountID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ptDetail)
+}
+
+func (h *PTDetailHandler) UpdateMe(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetAuthenticatedUser(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	existing, err := h.usecase.GetMyPTDetail(user.AccountID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var updates entity.PTDetail
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	updates.EmployeeID = existing.EmployeeID
+
+	if err := h.usecase.UpdatePTDetail(&updates); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updates)
 }
 
 func (h *PTDetailHandler) GetByID(w http.ResponseWriter, r *http.Request) {

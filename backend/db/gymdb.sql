@@ -40,7 +40,6 @@ CREATE TABLE "PT_Detail" (
   "experience_years" text,
   "achievements" text,
   "available_schedule" text,
-  -- Khóa ngoại trỏ về Employee
   FOREIGN KEY ("employee_id") REFERENCES "Employee" ("id") ON DELETE CASCADE
 );
 
@@ -163,7 +162,7 @@ COMMENT ON COLUMN "Facility"."status" IS 'Operating, Maintenance';
 
 COMMENT ON COLUMN "Equipment"."status" IS 'New, Old, Broken';
 
-COMMENT ON COLUMN "TrainingBooking"."status" IS 'Pending, Accepted, Rejected, Cancelled';
+COMMENT ON COLUMN "TrainingBooking"."status" IS 'Pending, Accepted, Rejected';
 
 COMMENT ON COLUMN "TrainingSession"."attendance_status" IS 'Present, Absent';
 

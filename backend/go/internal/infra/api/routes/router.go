@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"gym-management/internal/infra/api/handlers"
 	"gym-management/internal/infra/api/middleware"
 
@@ -32,16 +34,26 @@ func NewRouter(
 	authenticated := r.PathPrefix("").Subrouter()
 	authenticated.Use(middleware.AuthJWTMiddleware)
 
-	ownerManager := authenticated.NewRoute().Subrouter()
-	ownerManager.Use(middleware.Authorize("OWNER", "MANAGER"))
+	// Authorization levels
+	isOwnerManager := middleware.Authorize("OWNER", "MANAGER")
+	isStaff := middleware.Authorize("OWNER", "MANAGER", "PT")
+	isAnyRole := middleware.Authorize("OWNER", "MANAGER", "PT", "MEMBER")
 
-	staff := authenticated.NewRoute().Subrouter()
-	staff.Use(middleware.Authorize("OWNER", "MANAGER", "PT"))
+	// Helper to apply middleware to a handler
+	auth := func(mw mux.MiddlewareFunc, handler http.HandlerFunc) http.Handler {
+		return mw(handler)
+	}
 
-	allRoles := authenticated.NewRoute().Subrouter()
-	allRoles.Use(middleware.Authorize("OWNER", "MANAGER", "PT", "MEMBER"))
+	// /pt-details/me must be registered BEFORE the wildcard /pt-details/{employeeID}
+	// in ownerManager — gorilla/mux matches in registration order, so the wildcard
+	// would intercept and block PT users before reaching allRoles otherwise.
+	authenticated.Handle("/pt-details/me", auth(isAnyRole, ptDetailHandler.GetMe)).Methods("GET")
+	authenticated.Handle("/pt-details/me", auth(isAnyRole, ptDetailHandler.UpdateMe)).Methods("PUT")
 
 	// Owner/Manager only routes (admin and configuration)
+	ownerManager := authenticated.PathPrefix("").Subrouter()
+	ownerManager.Use(isOwnerManager)
+
 	ownerManager.HandleFunc("/employees", employeeHandler.Create).Methods("POST")
 	ownerManager.HandleFunc("/employees", employeeHandler.GetAll).Methods("GET")
 	ownerManager.HandleFunc("/employees/{id}", employeeHandler.GetByID).Methods("GET")
@@ -105,31 +117,56 @@ func NewRouter(
 	ownerManager.HandleFunc("/pt-details/{employeeID}", ptDetailHandler.Update).Methods("PUT")
 	ownerManager.HandleFunc("/pt-details/{employeeID}", ptDetailHandler.Delete).Methods("DELETE")
 
-	// Staff routes (Owner/Manager/PT)
-	staff.HandleFunc("/members", memberHandler.GetAll).Methods("GET")
+	// Shared routes for Staff (Owner/Manager/PT) - Only define what's NOT in allRoles
+	staff := authenticated.PathPrefix("").Subrouter()
+	staff.Use(isStaff)
+
 	staff.HandleFunc("/subscriptions", subscriptionHandler.GetAll).Methods("GET")
-	staff.HandleFunc("/training-bookings", trainingBookingHandler.GetAll).Methods("GET")
 	staff.HandleFunc("/training-bookings/{id}", trainingBookingHandler.Update).Methods("PUT")
 	staff.HandleFunc("/training-bookings/{id}", trainingBookingHandler.Delete).Methods("DELETE")
 	staff.HandleFunc("/training-sessions", trainingSessionHandler.Create).Methods("POST")
-	staff.HandleFunc("/training-sessions", trainingSessionHandler.GetAll).Methods("GET")
 	staff.HandleFunc("/training-sessions/{id}", trainingSessionHandler.Update).Methods("PUT")
 	staff.HandleFunc("/training-sessions/{id}", trainingSessionHandler.Delete).Methods("DELETE")
-	staff.HandleFunc("/pt-details", ptDetailHandler.GetAll).Methods("GET")
-	staff.HandleFunc("/feedbacks", feedbackHandler.GetAll).Methods("GET")
-	staff.HandleFunc("/feedbacks/{id}", feedbackHandler.Update).Methods("PUT")
-	staff.HandleFunc("/feedbacks/{id}", feedbackHandler.Delete).Methods("DELETE")
 
 	// All authenticated roles (Owner/Manager/PT/Member)
+	// These must not overlap in a way that blocks specific methods in earlier groups
+	allRoles := authenticated.PathPrefix("").Subrouter()
+	allRoles.Use(isAnyRole)
+
+	// IMPORTANT: Use specific handlers for shared paths to avoid Method conflicts
+	allRoles.HandleFunc("/members", memberHandler.GetAll).Methods("GET")
 	allRoles.HandleFunc("/packages", packageHandler.GetAll).Methods("GET")
 	allRoles.HandleFunc("/packages/{id}", packageHandler.GetByID).Methods("GET")
+
+	// Member-specific: specific paths first
+	allRoles.HandleFunc("/members/me/subscriptions", subscriptionHandler.GetMySubscriptions).Methods("GET")
+	allRoles.HandleFunc("/members/me/feedbacks", feedbackHandler.GetMyFeedbacks).Methods("GET")
+	allRoles.HandleFunc("/members/account/{id}", memberHandler.GetByAccountID).Methods("GET")
 	allRoles.HandleFunc("/members/{id}", memberHandler.GetByID).Methods("GET")
+	allRoles.HandleFunc("/members/{id}", memberHandler.Update).Methods("PUT")
+	allRoles.HandleFunc("/members/{memberId}/subscriptions", subscriptionHandler.GetHistoryByMemberID).Methods("GET")
+
+	// Subscription routes
+	allRoles.HandleFunc("/subscriptions", subscriptionHandler.Create).Methods("POST")
 	allRoles.HandleFunc("/subscriptions/{id}", subscriptionHandler.GetByID).Methods("GET")
+
+	// PT details (GET/PUT /pt-details/me registered early above to beat the wildcard)
+	allRoles.HandleFunc("/pt-details/{employeeID}", ptDetailHandler.GetByID).Methods("GET")
+	allRoles.HandleFunc("/pt-details", ptDetailHandler.GetAll).Methods("GET")
+
+	// Training routes
+	allRoles.HandleFunc("/training-bookings", trainingBookingHandler.GetAll).Methods("GET")
 	allRoles.HandleFunc("/training-bookings", trainingBookingHandler.Create).Methods("POST")
 	allRoles.HandleFunc("/training-bookings/{id}", trainingBookingHandler.GetByID).Methods("GET")
+	allRoles.HandleFunc("/training-sessions", trainingSessionHandler.GetAll).Methods("GET")
 	allRoles.HandleFunc("/training-sessions/{id}", trainingSessionHandler.GetByID).Methods("GET")
-	allRoles.HandleFunc("/feedbacks", feedbackHandler.Create).Methods("POST")
-	allRoles.HandleFunc("/feedbacks/{id}", feedbackHandler.GetByID).Methods("GET")
+	allRoles.HandleFunc("/training-sessions/{id}/confirm", trainingSessionHandler.ConfirmAttendance).Methods("POST")
+
+	// Feedback routes
+	allRoles.HandleFunc("/feedbacks", feedbackHandler.GetAll).Methods("GET")
+	allRoles.Handle("/feedbacks", auth(isAnyRole, feedbackHandler.Create)).Methods("POST")
+	allRoles.Handle("/feedbacks/{id}", auth(isAnyRole, feedbackHandler.GetByID)).Methods("GET")
+	allRoles.Handle("/feedbacks/{id}", auth(isStaff, feedbackHandler.Update)).Methods("PUT")
 
 	return r
 }

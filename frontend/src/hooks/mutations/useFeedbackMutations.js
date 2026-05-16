@@ -9,6 +9,7 @@ export const useCreateFeedback = () => {
     mutationFn: (data) => feedbackService.createFeedback(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feedbacks'] });
+      queryClient.invalidateQueries({ queryKey: ['myFeedbacks'] });
       toast.success('Gửi phản hồi thành công! Cán bộ sẽ liên hệ bạn sớm nhất.');
     },
   });

@@ -5,12 +5,21 @@ import Loading from '@/components/Common/Loading';
 import { useNavigate } from 'react-router-dom';
 
 const PackageInfo = () => {
-  const { data: packages = [], isLoading, error } = useMemberPackages();
+  const { data: rawData = [], isLoading, error } = useMemberPackages();
   const navigate = useNavigate();
 
   if (isLoading) {
     return <Loading />;
   }
+
+  // API trả về cấu trúc { data: { data: [...], total, page } } hoặc { data: [...] } hoặc [...]
+  const packages = Array.isArray(rawData)
+    ? rawData
+    : Array.isArray(rawData?.data?.data)
+    ? rawData.data.data
+    : Array.isArray(rawData?.data)
+    ? rawData.data
+    : [];
 
   if (error) {
     return (
@@ -48,11 +57,14 @@ const PackageInfo = () => {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gói Tập Của Tôi</h1>
       
       {/* Display all packages */}
-      {packages.map((pkg, idx) => {
-        const isActive = pkg.status === 'active' || idx === 0;
-        const endDate = new Date(pkg.endDate);
+      {packages.map((pkg) => {
+        const pkgName = pkg.package_name || pkg.name;
+        const isActive = pkg.status === 'active' || pkg.status === 'Active';
+        const endDateStr = pkg.end_date || pkg.endDate;
+        const endDate = endDateStr ? new Date(endDateStr) : null;
         const today = new Date();
-        const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+        const daysRemaining = endDate && !isNaN(endDate) ? Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)) : null;
+        const price = pkg.price ? (typeof pkg.price === 'number' ? pkg.price.toLocaleString('vi-VN') + ' đ' : pkg.price) : '0 đ';
         
         return (
           <div
@@ -73,8 +85,8 @@ const PackageInfo = () => {
               isActive
                 ? 'text-emerald-800 dark:text-emerald-400'
                 : 'text-gray-900 dark:text-white'
-            } ${isActive ? 'pr-24' : ''} leading-snug`}>
-              {pkg.name}
+            } pr-24 leading-snug`}>
+              {pkgName}
             </h2>
             
             <p className={`mt-2 font-bold text-lg ${
@@ -82,30 +94,21 @@ const PackageInfo = () => {
                 ? 'text-emerald-600 dark:text-emerald-500'
                 : 'text-gray-600 dark:text-gray-400'
             }`}>
-              {pkg.price}
+              {price}
             </p>
             
-            {pkg.facilities && pkg.facilities.length > 0 && (
+            {pkg.benefits_description && (
               <div className="mt-6 space-y-3">
-                {pkg.facilities.slice(0, 3).map((facility, fidx) => (
-                  <div key={fidx} className={`flex items-center gap-3 ${
+                {pkg.benefits_description.split(',').slice(0, 3).map((benefit, bidx) => (
+                  <div key={bidx} className={`flex items-center gap-3 ${
                     isActive
                       ? 'text-emerald-700 dark:text-emerald-300'
                       : 'text-gray-700 dark:text-gray-300'
                   }`}>
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
-                    <span className="text-sm font-medium">{facility}</span>
+                    <span className="text-sm font-medium">{benefit.trim()}</span>
                   </div>
                 ))}
-                {pkg.facilities.length > 3 && (
-                  <p className={`text-xs italic ${
-                    isActive
-                      ? 'text-emerald-600 dark:text-emerald-500'
-                      : 'text-gray-500 dark:text-gray-500'
-                  }`}>
-                    + {pkg.facilities.length - 3} quyền lợi khác...
-                  </p>
-                )}
               </div>
             )}
 
@@ -127,12 +130,12 @@ const PackageInfo = () => {
                     ? 'text-emerald-900 dark:text-emerald-200'
                     : 'text-gray-900 dark:text-white'
                 }`}>
-                  {endDate.toLocaleDateString('vi-VN')}
+                  {endDate ? endDate.toLocaleDateString('vi-VN') : 'Chưa xác định'}
                 </p>
                 <p className={`text-xs mt-1 ${
                   isActive ? 'text-emerald-600' : 'text-gray-500'
                 }`}>
-                  ({daysRemaining > 0 ? `Còn ${daysRemaining} ngày` : 'Đã hết hạn'})
+                  {daysRemaining === null ? '' : daysRemaining > 0 ? `(Còn ${daysRemaining} ngày)` : '(Đã hết hạn)'}
                 </p>
               </div>
               <div className="flex items-center gap-3">

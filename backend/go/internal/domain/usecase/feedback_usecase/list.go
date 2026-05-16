@@ -37,3 +37,19 @@ func NewListFeedbacksPaginatedUseCase(repo adapter.FeedbackRepository) IListFeed
 func (u *ListFeedbacksPaginatedUseCase) Execute(ctx context.Context, page, limit int, status string) ([]*entity.Feedback, int, error) {
 	return u.repo.GetAllPaginated(page, limit, status)
 }
+
+type IListFeedbacksByMemberIDUseCase interface {
+	Execute(ctx context.Context, memberID int) ([]*entity.Feedback, error)
+}
+
+type ListFeedbacksByMemberIDUseCase struct {
+	repo adapter.FeedbackRepository
+}
+
+func NewListFeedbacksByMemberIDUseCase(repo adapter.FeedbackRepository) IListFeedbacksByMemberIDUseCase {
+	return &ListFeedbacksByMemberIDUseCase{repo: repo}
+}
+
+func (u *ListFeedbacksByMemberIDUseCase) Execute(ctx context.Context, memberID int) ([]*entity.Feedback, error) {
+	return u.repo.GetByMemberID(memberID)
+}

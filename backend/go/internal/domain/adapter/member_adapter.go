@@ -14,5 +14,6 @@ type MemberRepository interface {
 	GetMemberByIDWithDetails(id int) (*dto.MemberDetailDTO, error)
 	Update(member *entity.Member) error
 	UpdateStatus(id int, isActive bool) error
+	GetByAccountID(accountID int) (*entity.Member, error)
 	Delete(id int) error
 }

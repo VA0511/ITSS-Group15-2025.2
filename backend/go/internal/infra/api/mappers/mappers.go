@@ -94,17 +94,59 @@ func SubscriptionEntityToResponse(ent *entity.Subscription) *dto.SubscriptionRes
 }
 
 func TrainingBookingRequestToEntity(req *dto.TrainingBookingRequest) *entity.TrainingBooking {
-	return &entity.TrainingBooking{MemberID: req.MemberID, PTID: req.PTID, RequestedStart: req.RequestedStart, RequestedEnd: req.RequestedEnd, TrainingPlanNote: req.TrainingPlanNote, Status: req.Status}
+	return &entity.TrainingBooking{
+		MemberID:           req.MemberID,
+		PTID:               req.PTID,
+		RequestedStart:     req.RequestedStart,
+		RequestedEnd:       req.RequestedEnd,
+		TrainingPlanNote:   req.TrainingPlanNote,
+		Status:             req.Status,
+		Intensity:          req.Intensity,
+		RoadmapGoal:        req.RoadmapGoal,
+		MemberFreeSchedule: req.MemberFreeSchedule,
+	}
 }
 
 func TrainingBookingEntityToResponse(ent *entity.TrainingBooking) *dto.TrainingBookingResponse {
-	return &dto.TrainingBookingResponse{ID: ent.ID, MemberID: ent.MemberID, PTID: ent.PTID, RequestedStart: ent.RequestedStart, RequestedEnd: ent.RequestedEnd, TrainingPlanNote: ent.TrainingPlanNote, Status: ent.Status}
+	return &dto.TrainingBookingResponse{
+		ID:                 ent.ID,
+		MemberID:           ent.MemberID,
+		PTID:               ent.PTID,
+		RequestedStart:     ent.RequestedStart,
+		RequestedEnd:       ent.RequestedEnd,
+		TrainingPlanNote:   ent.TrainingPlanNote,
+		Status:             ent.Status,
+		Intensity:          ent.Intensity,
+		RoadmapGoal:        ent.RoadmapGoal,
+		MemberFreeSchedule: ent.MemberFreeSchedule,
+	}
 }
 
 func TrainingSessionRequestToEntity(req *dto.TrainingSessionRequest) *entity.TrainingSession {
-	return &entity.TrainingSession{BookingID: req.BookingID, FacilityID: req.FacilityID, SessionTime: req.SessionTime, AttendanceStatus: req.AttendanceStatus, PTFeedback: req.PTFeedback}
+	return &entity.TrainingSession{
+		BookingID:         req.BookingID,
+		FacilityID:        req.FacilityID,
+		SessionTime:       req.SessionTime,
+		AttendanceStatus:  req.AttendanceStatus,
+		PTFeedback:        req.PTFeedback,
+		MemberConfirmedAt: req.MemberConfirmedAt,
+		PhysicalCondition: req.PhysicalCondition,
+		SessionResult:     req.SessionResult,
+		NutritionAdvice:   req.NutritionAdvice,
+	}
 }
 
 func TrainingSessionEntityToResponse(ent *entity.TrainingSession) *dto.TrainingSessionResponse {
-	return &dto.TrainingSessionResponse{ID: ent.ID, BookingID: ent.BookingID, FacilityID: ent.FacilityID, SessionTime: ent.SessionTime, AttendanceStatus: ent.AttendanceStatus, PTFeedback: ent.PTFeedback}
+	return &dto.TrainingSessionResponse{
+		ID:                ent.ID,
+		BookingID:         ent.BookingID,
+		FacilityID:        ent.FacilityID,
+		SessionTime:       ent.SessionTime,
+		AttendanceStatus:  ent.AttendanceStatus,
+		PTFeedback:        ent.PTFeedback,
+		MemberConfirmedAt: ent.MemberConfirmedAt,
+		PhysicalCondition: ent.PhysicalCondition,
+		SessionResult:     ent.SessionResult,
+		NutritionAdvice:   ent.NutritionAdvice,
+	}
 }

@@ -175,39 +175,53 @@ type SubscriptionResponse struct {
 }
 
 type TrainingBookingRequest struct {
-	MemberID         int       `json:"member_id"`
-	PTID             int       `json:"pt_id"`
-	RequestedStart   time.Time `json:"requested_start"`
-	RequestedEnd     time.Time `json:"requested_end"`
-	TrainingPlanNote string    `json:"training_plan_note"`
-	Status           string    `json:"status"`
+	MemberID           int       `json:"member_id"`
+	PTID               int       `json:"pt_id"`
+	RequestedStart     time.Time `json:"requested_start"`
+	RequestedEnd       time.Time `json:"requested_end"`
+	TrainingPlanNote   string    `json:"training_plan_note"`
+	Status             string    `json:"status"`
+	Intensity          string    `json:"intensity"`
+	RoadmapGoal        string    `json:"roadmap_goal"`
+	MemberFreeSchedule string    `json:"member_free_schedule"`
 }
 
 type TrainingBookingResponse struct {
-	ID               int       `json:"id"`
-	MemberID         int       `json:"member_id"`
-	PTID             int       `json:"pt_id"`
-	RequestedStart   time.Time `json:"requested_start"`
-	RequestedEnd     time.Time `json:"requested_end"`
-	TrainingPlanNote string    `json:"training_plan_note"`
-	Status           string    `json:"status"`
+	ID                 int       `json:"id"`
+	MemberID           int       `json:"member_id"`
+	PTID               int       `json:"pt_id"`
+	RequestedStart     time.Time `json:"requested_start"`
+	RequestedEnd       time.Time `json:"requested_end"`
+	TrainingPlanNote   string    `json:"training_plan_note"`
+	Status             string    `json:"status"`
+	Intensity          string    `json:"intensity"`
+	RoadmapGoal        string    `json:"roadmap_goal"`
+	MemberFreeSchedule string    `json:"member_free_schedule"`
 }
 
 type TrainingSessionRequest struct {
-	BookingID        int       `json:"booking_id"`
-	FacilityID       int       `json:"facility_id"`
-	SessionTime      time.Time `json:"session_time"`
-	AttendanceStatus string    `json:"attendance_status"`
-	PTFeedback       string    `json:"pt_feedback"`
+	BookingID         int        `json:"booking_id"`
+	FacilityID        int        `json:"facility_id"`
+	SessionTime       time.Time  `json:"session_time"`
+	AttendanceStatus  string     `json:"attendance_status"`
+	PTFeedback        string     `json:"pt_feedback"`
+	MemberConfirmedAt *time.Time `json:"member_confirmed_at"`
+	PhysicalCondition string     `json:"physical_condition"`
+	SessionResult     string     `json:"session_result"`
+	NutritionAdvice   string     `json:"nutrition_advice"`
 }
 
 type TrainingSessionResponse struct {
-	ID               int       `json:"id"`
-	BookingID        int       `json:"booking_id"`
-	FacilityID       int       `json:"facility_id"`
-	SessionTime      time.Time `json:"session_time"`
-	AttendanceStatus string    `json:"attendance_status"`
-	PTFeedback       string    `json:"pt_feedback"`
+	ID                int        `json:"id"`
+	BookingID         int        `json:"booking_id"`
+	FacilityID        int        `json:"facility_id"`
+	SessionTime       time.Time  `json:"session_time"`
+	AttendanceStatus  string     `json:"attendance_status"`
+	PTFeedback        string     `json:"pt_feedback"`
+	MemberConfirmedAt *time.Time `json:"member_confirmed_at"`
+	PhysicalCondition string     `json:"physical_condition"`
+	SessionResult     string     `json:"session_result"`
+	NutritionAdvice   string     `json:"nutrition_advice"`
 }
 
 // Pagination Request

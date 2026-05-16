@@ -4,7 +4,7 @@ import { ShoppingCart, ArrowRight, CheckCircle2, AlertCircle, ChevronDown } from
 import Button from '@/components/Common/Button';
 import { useMemberPackages } from '@/hooks/queries/usePackages';
 import Loading from '@/components/Common/Loading';
-import { toast } from '@/utils/toast';
+import { toast } from 'sonner';
 
 const renewalMonthOptions = [1, 3, 6, 12];
 
@@ -16,7 +16,22 @@ const generateRandomRenewalPrice = (months) => {
 
 const RenewPackage = () => {
   const navigate = useNavigate();
-  const { data: packages = [], isLoading } = useMemberPackages();
+  const { data: packagesRes, isLoading } = useMemberPackages();
+  const packages = (() => {
+    const raw = Array.isArray(packagesRes)
+      ? packagesRes
+      : Array.isArray(packagesRes?.data?.data)
+      ? packagesRes.data.data
+      : Array.isArray(packagesRes?.data)
+      ? packagesRes.data
+      : [];
+    return raw.map(pkg => ({
+      ...pkg,
+      name: pkg.package_name || pkg.name || 'Gói tập',
+      endDate: pkg.end_date || pkg.endDate,
+      registeredDate: pkg.registration_date || pkg.registeredDate,
+    }));
+  })();
   const [selectedPkg, setSelectedPkg] = useState(null);
   const [renewalMonths, setRenewalMonths] = useState(1);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

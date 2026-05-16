@@ -40,6 +40,8 @@ import TrainerProfile from '@/pages/Trainer/TrainerProfile';
 import StudentList from '@/pages/Trainer/StudentManagement/StudentList';
 import TrackProgress from '@/pages/Trainer/StudentManagement/TrackProgress';
 import ScheduleList from '@/pages/Trainer/Schedule/ScheduleList';
+import TrainerAvailability from '@/pages/Trainer/Availability/TrainerAvailability';
+import EvaluationList from '@/pages/Trainer/Evaluation/EvaluationList';
 import MemberDashboard from '@/pages/Member/MemberDashboard';
 import PackageInfo from '@/pages/Member/MyPackage/PackageInfo';
 import TrainingHistory from '@/pages/Member/MyPackage/TrainingHistory';
@@ -82,7 +84,9 @@ export const router = createBrowserRouter([
               { path: 'dashboard', element: <TrainerDashboard /> },
               { path: 'students', element: <StudentList /> },
               { path: 'students/:id/progress', element: <TrackProgress /> },
-              { path: 'schedule', element: <ScheduleList /> }
+              { path: 'schedule', element: <ScheduleList /> },
+              { path: 'availability', element: <TrainerAvailability /> },
+              { path: 'evaluation', element: <EvaluationList /> }
             ]
           }
         ]

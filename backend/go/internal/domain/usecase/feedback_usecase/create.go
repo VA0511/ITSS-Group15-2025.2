@@ -2,6 +2,8 @@ package feedback_usecase
 
 import (
 	"context"
+	"time"
+
 	"gym-management/internal/domain/adapter"
 	"gym-management/internal/domain/entity"
 )
@@ -19,7 +21,9 @@ func NewCreateFeedbackUseCase(repo adapter.FeedbackRepository) ICreateFeedbackUs
 }
 
 func (u *CreateFeedbackUseCase) Execute(ctx context.Context, feedback *entity.Feedback) (*entity.Feedback, error) {
-
+	if feedback.SentAt.IsZero() {
+		feedback.SentAt = time.Now()
+	}
 	err := u.repo.Create(feedback)
 	return feedback, err
 }

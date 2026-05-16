@@ -8,3 +8,11 @@ export const useFeedbacks = (page = 1, limit = 10, status = '') => {
     queryFn: () => feedbackService.getFeedbacks(page, limit, status),
   });
 };
+
+export const useMyFeedbacks = () => {
+  return useQuery({
+    queryKey: ['myFeedbacks'],
+    queryFn: () => feedbackService.getMyFeedbacks(),
+    staleTime: 0,
+  });
+};

@@ -9,26 +9,29 @@ import (
 type PTDetailUsecase interface {
 	CreatePTDetail(pTDetail *entity.PTDetail) error
 	GetPTDetailByID(id int) (*entity.PTDetail, error)
+	GetMyPTDetail(accountID int) (*entity.PTDetail, error)
 	GetAllPTDetails() ([]*entity.PTDetail, error)
 	UpdatePTDetail(pTDetail *entity.PTDetail) error
 	DeletePTDetail(id int) error
 }
 
 type pTDetailUsecase struct {
-	create ICreatePTDetailUseCase
-	get    IGetPTDetailUseCase
-	list   IListPTDetailsUseCase
-	update IUpdatePTDetailUseCase
-	delete IDeletePTDetailUseCase
+	create         ICreatePTDetailUseCase
+	get            IGetPTDetailUseCase
+	getByAccountID IGetPTDetailByAccountIDUseCase
+	list           IListPTDetailsUseCase
+	update         IUpdatePTDetailUseCase
+	delete         IDeletePTDetailUseCase
 }
 
 func NewPTDetailUsecase(repo adapter.PTDetailRepository) PTDetailUsecase {
 	return &pTDetailUsecase{
-		create: NewCreatePTDetailUseCase(repo),
-		get:    NewGetPTDetailUseCase(repo),
-		list:   NewListPTDetailsUseCase(repo),
-		update: NewUpdatePTDetailUseCase(repo),
-		delete: NewDeletePTDetailUseCase(repo),
+		create:         NewCreatePTDetailUseCase(repo),
+		get:            NewGetPTDetailUseCase(repo),
+		getByAccountID: NewGetPTDetailByAccountIDUseCase(repo),
+		list:           NewListPTDetailsUseCase(repo),
+		update:         NewUpdatePTDetailUseCase(repo),
+		delete:         NewDeletePTDetailUseCase(repo),
 	}
 }
 
@@ -43,6 +46,10 @@ func (u *pTDetailUsecase) CreatePTDetail(pTDetail *entity.PTDetail) error {
 
 func (u *pTDetailUsecase) GetPTDetailByID(id int) (*entity.PTDetail, error) {
 	return u.get.Execute(context.Background(), id)
+}
+
+func (u *pTDetailUsecase) GetMyPTDetail(accountID int) (*entity.PTDetail, error) {
+	return u.getByAccountID.Execute(context.Background(), accountID)
 }
 
 func (u *pTDetailUsecase) GetAllPTDetails() ([]*entity.PTDetail, error) {

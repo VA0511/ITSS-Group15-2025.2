@@ -30,6 +30,13 @@ func (r *employeeRepository) GetByID(id int) (*entity.Employee, error) {
 	return employee, err
 }
 
+func (r *employeeRepository) GetByAccountID(accountID int) (*entity.Employee, error) {
+	employee := &entity.Employee{}
+	query := `SELECT id, COALESCE(full_name, ''), COALESCE(phone, ''), COALESCE(position, ''), COALESCE(salary, 0), COALESCE(account_id, 0), COALESCE(gender, ''), COALESCE(dob, CURRENT_DATE), COALESCE(email, ''), COALESCE(address, '') FROM "Employee" WHERE account_id = $1`
+	err := r.db.QueryRow(query, accountID).Scan(&employee.ID, &employee.FullName, &employee.Phone, &employee.Position, &employee.Salary, &employee.AccountID, &employee.Gender, &employee.DOB, &employee.Email, &employee.Address)
+	return employee, err
+}
+
 func (r *employeeRepository) GetAll() ([]*entity.Employee, error) {
 	rows, err := r.db.Query(`SELECT id, COALESCE(full_name, ''), COALESCE(phone, ''), COALESCE(position, ''), COALESCE(salary, 0), COALESCE(account_id, 0), COALESCE(gender, ''), COALESCE(dob, CURRENT_DATE), COALESCE(email, ''), COALESCE(address, '') FROM "Employee"`)
 	if err != nil {

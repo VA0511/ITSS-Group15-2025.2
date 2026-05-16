@@ -8,6 +8,7 @@ import (
 	"gym-management/internal/domain/entity"
 	"gym-management/internal/domain/usecase/member_usecase"
 	"gym-management/internal/infra/api/dto"
+	"gym-management/internal/infra/api/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -35,6 +36,16 @@ func (h *MemberHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *MemberHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
+	// Security check: Member can only see their own profile
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if ok && currentUser.Role == "MEMBER" {
+		member, err := h.usecase.GetMemberByAccountID(currentUser.AccountID)
+		if err != nil || member.ID != id {
+			http.Error(w, "forbidden: cannot view other member's profile", http.StatusForbidden)
+			return
+		}
+	}
+
 	// Try to get member with details first
 	memberDetail, err := h.usecase.GetMemberByIDWithDetails(id)
 	if err == nil && memberDetail != nil {
@@ -48,6 +59,29 @@ func (h *MemberHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(member)
+}
+
+func (h *MemberHandler) GetByAccountID(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	member, err := h.usecase.GetMemberByAccountID(id)
+	if err != nil {
+		// Auto create a default member profile if not found (for demo purposes)
+		newMember := &entity.Member{
+			AccountID: id,
+			FullName:  "",
+			Gender:    "Khác",
+			Phone:     "",
+		}
+		createErr := h.usecase.CreateMember(newMember)
+		if createErr != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		member = newMember
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(member)
@@ -151,6 +185,16 @@ func (h *MemberHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil || id <= 0 {
 		http.Error(w, "invalid member id", http.StatusBadRequest)
 		return
+	}
+
+	// Security check: Member can only update their own profile
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if ok && currentUser.Role == "MEMBER" {
+		member, err := h.usecase.GetMemberByAccountID(currentUser.AccountID)
+		if err != nil || member.ID != id {
+			http.Error(w, "forbidden: cannot update other member's profile", http.StatusForbidden)
+			return
+		}
 	}
 
 	var member entity.Member

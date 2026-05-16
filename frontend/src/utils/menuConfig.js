@@ -18,13 +18,15 @@ export const menus = {
     { title: "Giao dịch", path: "/manager/transactions", icon: "CreditCard" },
     { title: "Lịch PT", path: "/manager/schedule", icon: "Calendar" },
     { title: "Phản hồi", path: "/manager/feedbacks", icon: "MessageSquare" },
-    { title: "Gói tập", path: "/manager/packages", icon: "Package" },
     { title: "Báo cáo", path: "/manager/report", icon: "BarChartBig" },
+    { title: "Gói tập", path: "/manager/packages", icon: "Package" },
   ],
   [ROLES.TRAINER]: [
     { title: "Thông tin cá nhân", path: "/trainer/profile", icon: "User" },
     { title: "Học viên", path: "/trainer/students", icon: "Users" },
-    { title: "Lịch dạy", path: "/trainer/schedule", icon: "CalendarCheck" }
+    { title: "Lịch dạy", path: "/trainer/schedule", icon: "CalendarCheck" },
+    { title: "Thiết lập lịch", path: "/trainer/availability", icon: "Settings" },
+    { title: "Đánh giá buổi tập", path: "/trainer/evaluation", icon: "ClipboardList" }
   ],
   [ROLES.MEMBER]: [
     { title: "Tổng quan", path: "/member/dashboard", icon: "LayoutDashboard" },
