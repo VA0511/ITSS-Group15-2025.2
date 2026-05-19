@@ -30,6 +30,7 @@ import ReportsOverview from '@/pages/Owner/Reports/ReportsOverview';
 import ManagerDashboard from '@/pages/Manager/ManagerDashboard';
 import MemberListView from '@/pages/Manager/MemberManagement/MemberListView';
 import MemberDetailView from '@/pages/Manager/MemberManagement/MemberDetailView';
+import CreateMemberWithAccount from '@/pages/Manager/MemberManagement/CreateMemberWithAccount';
 import TransactionsView from '@/pages/Manager/Transactions/TransactionsView';
 import ScheduleCalendarView from '@/pages/Manager/Schedule/ScheduleCalendarView';
 import FeedbacksView from '@/pages/Manager/FeedbackManagement/FeedbacksView';
@@ -53,6 +54,7 @@ import RegisterGymPackageCheckout from '@/pages/Member/RegisterPackage/RegisterG
 import SendFeedback from '@/pages/Member/Feedback/SendFeedback';
 import ProfileInfo from '@/pages/Member/Profile/ProfileInfo';
 import EditProfile from '@/pages/Member/Profile/EditProfile';
+import ChangePassword from '@/pages/Member/Profile/ChangePassword';
 import Schedule from '@/pages/Member/Schedule/Schedule';
 
 export const router = createBrowserRouter([
@@ -111,7 +113,8 @@ export const router = createBrowserRouter([
               { path: 'renew/checkout', element: <PaymentCheckout /> },
               { path: 'feedback', element: <SendFeedback /> },
               { path: 'profile', element: <ProfileInfo /> },
-              { path: 'profile/edit', element: <EditProfile /> }
+              { path: 'profile/edit', element: <EditProfile /> },
+              { path: 'change-password', element: <ChangePassword /> }
             ]
           },
           // System Owner Area
@@ -154,6 +157,7 @@ export const router = createBrowserRouter([
               { path: 'dashboard', element: <ManagerDashboard /> },
               // Members Management
               { path: 'members', element: <MemberListView /> },
+              { path: 'members/create-with-account', element: <CreateMemberWithAccount /> },
               { path: 'members/:id', element: <MemberDetailView /> },
               // Transactions
               { path: 'transactions', element: <TransactionsView /> },

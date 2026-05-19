@@ -112,6 +112,7 @@ func toAuthResponse(result *auth_usecase.AuthResult) *dto.AuthResponse {
 		RefreshToken:  result.RefreshToken,
 		TokenType:     result.TokenType,
 		ExpiresInSecs: result.ExpiresInSecs,
+		IsFirstLogin:  result.IsFirstLogin,
 		User: &dto.AuthUserResponse{
 			ID:       result.AccountID,
 			Email:    result.Username,
@@ -120,6 +121,32 @@ func toAuthResponse(result *auth_usecase.AuthResult) *dto.AuthResponse {
 		},
 		Token: result.AccessToken,
 	}
+}
+
+func (h *AuthHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetAuthenticatedUser(r)
+	if !ok {
+		http.Error(w, auth_usecase.ErrUnauthorized.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	var req dto.ChangePasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err := h.usecase.ChangePassword(r.Context(), auth_usecase.ChangePasswordInput{
+		AccountID:   user.AccountID,
+		OldPassword: req.OldPassword,
+		NewPassword: req.NewPassword,
+	})
+	if err != nil {
+		writeAuthError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func pickUsername(username, email string) string {

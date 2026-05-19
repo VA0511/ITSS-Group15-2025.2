@@ -33,19 +33,27 @@ type LogoutInput struct {
 }
 
 type AuthResult struct {
-	AccountID     int
-	Username      string
-	Role          string
-	AccessToken   string
+	AccountID    int
+	Username     string
+	Role         string
+	AccessToken  string
 	RefreshToken  string
 	TokenType     string
 	ExpiresInSecs int64
+	IsFirstLogin  bool
+}
+
+type ChangePasswordInput struct {
+	AccountID   int
+	OldPassword string
+	NewPassword string
 }
 
 type AuthUsecase interface {
 	Login(ctx context.Context, input LoginInput) (*AuthResult, error)
 	Refresh(ctx context.Context, input RefreshInput) (*AuthResult, error)
 	Logout(ctx context.Context, input LogoutInput) error
+	ChangePassword(ctx context.Context, input ChangePasswordInput) error
 }
 
 type authUsecase struct {

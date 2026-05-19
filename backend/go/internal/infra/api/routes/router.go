@@ -26,6 +26,7 @@ func NewRouter(
 	trainingSessionHandler *handlers.TrainingSessionHandler,
 	ptDetailHandler *handlers.PTDetailHandler,
 	notificationHandler *handlers.NotificationHandler,
+	memberRegHandler *handlers.MemberRegistrationHandler,
 ) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(middleware.LoggingMiddleware)
@@ -58,6 +59,9 @@ func NewRouter(
 	authenticated.Handle("/members/me/feedbacks", auth(isAnyRole, feedbackHandler.GetMyFeedbacks)).Methods("GET")
 	// Member self-update: handler internally restricts MEMBER to their own profile only
 	authenticated.Handle("/members/{id}", auth(isAnyRole, memberHandler.Update)).Methods("PUT")
+
+	// Change password — available to all authenticated users
+	authenticated.Handle("/auth/change-password", auth(isAnyRole, authHandler.ChangePassword)).Methods("PUT")
 
 	// Owner/Manager only routes (admin and configuration)
 	ownerManager := authenticated.PathPrefix("").Subrouter()
@@ -106,6 +110,7 @@ func NewRouter(
 	ownerManager.HandleFunc("/packages/{id}/status", packageHandler.UpdateStatus).Methods("PATCH")
 	ownerManager.HandleFunc("/packages/{id}", packageHandler.Delete).Methods("DELETE")
 
+	ownerManager.HandleFunc("/members/create-with-account", memberRegHandler.CreateMemberWithAccount).Methods("POST")
 	ownerManager.HandleFunc("/members", memberHandler.Create).Methods("POST")
 	ownerManager.HandleFunc("/members", memberHandler.GetAll).Methods("GET")
 	ownerManager.HandleFunc("/members/{id}", memberHandler.Update).Methods("PUT")

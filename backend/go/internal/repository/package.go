@@ -56,7 +56,6 @@ func (r *packageRepository) GetAll() ([]*entity.MembershipPackage, error) {
 }
 
 func (r *packageRepository) GetAllPaginated(page, limit int) ([]*entity.MembershipPackage, int, error) {
-	// Count total items
 	var total int
 	countQuery := `SELECT COUNT(*) FROM "MembershipPackage"`
 	err := r.db.QueryRow(countQuery).Scan(&total)
@@ -64,10 +63,8 @@ func (r *packageRepository) GetAllPaginated(page, limit int) ([]*entity.Membersh
 		return nil, 0, err
 	}
 
-	// Calculate offset
 	offset := (page - 1) * limit
 
-	// Get paginated data
 	query := `SELECT p.id, COALESCE(p.category_id, 0), COALESCE(p.package_name, ''), COALESCE(p.duration_days, 0), COALESCE(p.price, 0), COALESCE(p.is_active, true), COALESCE(c.benefits_description, ''), COALESCE(c.category_name, ''), COALESCE(c.allowed_gender, 'All')
 	FROM "MembershipPackage" p
 	LEFT JOIN "ServiceCategory" c ON p.category_id = c.id

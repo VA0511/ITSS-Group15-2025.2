@@ -26,6 +26,7 @@ import (
 	"gym-management/internal/domain/usecase/training_session_usecase"
 	"gym-management/internal/infra/api/handlers"
 	"gym-management/internal/infra/api/routes"
+	"gym-management/internal/infra/email"
 	"gym-management/internal/infra/notification"
 	"gym-management/internal/infra/postgresql"
 	"gym-management/internal/repository"
@@ -108,6 +109,9 @@ func main() {
 	// Initialize notification hub (in-memory, no persistence)
 	notifHub := notification.NewHub()
 
+	// Initialize email service
+	emailSvc := email.NewService()
+
 	// Initialize handlers
 	memberHandler := handlers.NewMemberHandler(memberUsecase)
 	employeeHandler := handlers.NewEmployeeHandler(employeeUsecase)
@@ -125,6 +129,7 @@ func main() {
 	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase, memberUsecase)
 	ptDetailHandler := handlers.NewPTDetailHandler(ptDetailUsecase)
 	notificationHandler := handlers.NewNotificationHandler(notifHub)
+	memberRegHandler := handlers.NewMemberRegistrationHandler(authRepo, memberUsecase, subscriptionUsecase, packageUsecase, emailSvc)
 
 	// Auto-confirm member attendance 3 hours before session start
 	go func() {
@@ -139,7 +144,7 @@ func main() {
 	}()
 
 	// Setup routes
-	router := routes.NewRouter(authHandler, memberHandler, employeeHandler, packageHandler, equipmentHandler, feedbackHandler, invoiceHandler, roleHandler, facilityHandler, accountHandler, serviceCategoryHandler, subscriptionHandler, trainingBookingHandler, trainingSessionHandler, ptDetailHandler, notificationHandler)
+	router := routes.NewRouter(authHandler, memberHandler, employeeHandler, packageHandler, equipmentHandler, feedbackHandler, invoiceHandler, roleHandler, facilityHandler, accountHandler, serviceCategoryHandler, subscriptionHandler, trainingBookingHandler, trainingSessionHandler, ptDetailHandler, notificationHandler, memberRegHandler)
 
 	// Bọc router trong CORS middleware
 	handler := corsMiddleware(router)

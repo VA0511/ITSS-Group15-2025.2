@@ -42,6 +42,8 @@ func (u *authUsecase) Login(ctx context.Context, input LoginInput) (*AuthResult,
 		return nil, err
 	}
 
+	authResult.IsFirstLogin = account.IsFirstLogin
+
 	refreshHash, err := hashRefreshToken(authResult.RefreshToken)
 	if err != nil {
 		return nil, err

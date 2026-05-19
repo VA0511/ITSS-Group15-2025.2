@@ -34,8 +34,8 @@ func (r *authRepository) CreateAccount(ctx context.Context, account *entity.Acco
 		return errors.New("invalid role id")
 	}
 
-	query := `INSERT INTO "Account" (username, password, role_id) VALUES ($1, $2, $3) RETURNING id`
-	return r.db.QueryRowContext(ctx, query, account.Username, account.Password, account.RoleID).Scan(&account.ID)
+	query := `INSERT INTO "Account" (username, password, role_id, email, is_first_login) VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	return r.db.QueryRowContext(ctx, query, account.Username, account.Password, account.RoleID, account.Email, account.IsFirstLogin).Scan(&account.ID)
 }
 
 func (r *authRepository) FindAccountByUsername(ctx context.Context, username string) (*entity.Account, error) {
@@ -43,19 +43,55 @@ func (r *authRepository) FindAccountByUsername(ctx context.Context, username str
 		return nil, errors.New("username cannot be empty")
 	}
 
-	query := `SELECT id, username, password, role_id FROM "Account" WHERE username = $1`
+	query := `SELECT id, username, password, role_id, COALESCE(email, ''), COALESCE(is_first_login, false) FROM "Account" WHERE username = $1`
 	account := &entity.Account{}
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
 		&account.ID,
 		&account.Username,
 		&account.Password,
 		&account.RoleID,
+		&account.Email,
+		&account.IsFirstLogin,
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	return account, nil
+}
+
+func (r *authRepository) GetAccountByID(ctx context.Context, id int) (*entity.Account, error) {
+	if id <= 0 {
+		return nil, errors.New("invalid account id")
+	}
+
+	query := `SELECT id, username, password, role_id, COALESCE(email, ''), COALESCE(is_first_login, false) FROM "Account" WHERE id = $1`
+	account := &entity.Account{}
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&account.ID,
+		&account.Username,
+		&account.Password,
+		&account.RoleID,
+		&account.Email,
+		&account.IsFirstLogin,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return account, nil
+}
+
+func (r *authRepository) UpdatePassword(ctx context.Context, accountID int, newPassword string, isFirstLogin bool) error {
+	if accountID <= 0 {
+		return errors.New("invalid account id")
+	}
+	if newPassword == "" {
+		return errors.New("new password cannot be empty")
+	}
+
+	_, err := r.db.ExecContext(ctx, `UPDATE "Account" SET password = $1, is_first_login = $2 WHERE id = $3`, newPassword, isFirstLogin, accountID)
+	return err
 }
 
 func (r *authRepository) GetRoleNameByID(ctx context.Context, roleID int) (string, error) {

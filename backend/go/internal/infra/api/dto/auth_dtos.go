@@ -29,6 +29,12 @@ type AuthResponse struct {
 	RefreshToken  string            `json:"refresh_token,omitempty"`
 	TokenType     string            `json:"token_type"`
 	ExpiresInSecs int64             `json:"expires_in_secs"`
+	IsFirstLogin  bool              `json:"is_first_login"`
 	User          *AuthUserResponse `json:"user,omitempty"`
 	Token         string            `json:"token,omitempty"`
+}
+
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
 }

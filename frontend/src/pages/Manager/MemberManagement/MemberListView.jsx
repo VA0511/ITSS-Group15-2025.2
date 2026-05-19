@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Filter, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Filter, ChevronRight, UserPlus } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import Input from '@/components/Common/Input';
 import Badge from '@/components/Common/Badge';
@@ -14,6 +14,7 @@ const statusConfig = {
 };
 
 const MemberListView = () => {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
@@ -104,6 +105,13 @@ const MemberListView = () => {
                         Danh sách tất cả hội viên tại phòng gym
                     </p>
                 </div>
+                <button
+                    onClick={() => navigate('/manager/members/create-with-account')}
+                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm"
+                >
+                    <UserPlus className="h-4 w-4" />
+                    Tạo tài khoản hội viên
+                </button>
             </div>
 
             {/* Filters */}

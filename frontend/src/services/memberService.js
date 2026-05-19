@@ -27,4 +27,7 @@ export const memberService = {
 
   getAllMembers: () =>
     axios.get('/members'),
+
+  createMemberWithAccount: (data) =>
+    axios.post('/members/create-with-account', data),
 };

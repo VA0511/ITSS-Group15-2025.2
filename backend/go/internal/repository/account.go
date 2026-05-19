@@ -23,16 +23,16 @@ func NewAccountRepository(db *sql.DB) AccountRepository {
 }
 
 func (r *accountRepository) Create(account *entity.Account) error {
-	query := `INSERT INTO "Account" (username, password, role_id) VALUES ($1, $2, $3) RETURNING id`
-	return r.db.QueryRow(query, account.Username, account.Password, account.RoleID).Scan(&account.ID)
+	query := `INSERT INTO "Account" (username, password, role_id, email, is_first_login) VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	return r.db.QueryRow(query, account.Username, account.Password, account.RoleID, account.Email, account.IsFirstLogin).Scan(&account.ID)
 }
 
 func (r *accountRepository) GetByID(id int) (*entity.Account, error) {
-	query := `SELECT id, username, password, role_id FROM "Account" WHERE id = $1`
+	query := `SELECT id, username, password, role_id, COALESCE(email, ''), COALESCE(is_first_login, false) FROM "Account" WHERE id = $1`
 	row := r.db.QueryRow(query, id)
 
 	var account entity.Account
-	err := row.Scan(&account.ID, &account.Username, &account.Password, &account.RoleID)
+	err := row.Scan(&account.ID, &account.Username, &account.Password, &account.RoleID, &account.Email, &account.IsFirstLogin)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (r *accountRepository) GetByID(id int) (*entity.Account, error) {
 }
 
 func (r *accountRepository) GetAll() ([]*entity.Account, error) {
-	query := `SELECT id, username, password, role_id FROM "Account" WHERE role_id != 4`
+	query := `SELECT id, username, password, role_id, COALESCE(email, ''), COALESCE(is_first_login, false) FROM "Account" WHERE role_id != 4`
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (r *accountRepository) GetAll() ([]*entity.Account, error) {
 	var accounts []*entity.Account
 	for rows.Next() {
 		var account entity.Account
-		err := rows.Scan(&account.ID, &account.Username, &account.Password, &account.RoleID)
+		err := rows.Scan(&account.ID, &account.Username, &account.Password, &account.RoleID, &account.Email, &account.IsFirstLogin)
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +62,6 @@ func (r *accountRepository) GetAll() ([]*entity.Account, error) {
 }
 
 func (r *accountRepository) GetAllPaginated(page, limit int) ([]*entity.Account, int, error) {
-	// Count total items
 	var total int
 	countQuery := `SELECT COUNT(*) FROM "Account" WHERE role_id != 4`
 	err := r.db.QueryRow(countQuery).Scan(&total)
@@ -70,11 +69,9 @@ func (r *accountRepository) GetAllPaginated(page, limit int) ([]*entity.Account,
 		return nil, 0, err
 	}
 
-	// Calculate offset
 	offset := (page - 1) * limit
 
-	// Get paginated data (exclude password from results for security, exclude MEMBER role)
-	query := `SELECT id, username, role_id FROM "Account" WHERE role_id != 4 ORDER BY id LIMIT $1 OFFSET $2`
+	query := `SELECT id, username, role_id, COALESCE(email, ''), COALESCE(is_first_login, false) FROM "Account" WHERE role_id != 4 ORDER BY id LIMIT $1 OFFSET $2`
 	rows, err := r.db.Query(query, limit, offset)
 	if err != nil {
 		return nil, 0, err
@@ -84,7 +81,7 @@ func (r *accountRepository) GetAllPaginated(page, limit int) ([]*entity.Account,
 	var accounts []*entity.Account
 	for rows.Next() {
 		var account entity.Account
-		err := rows.Scan(&account.ID, &account.Username, &account.RoleID)
+		err := rows.Scan(&account.ID, &account.Username, &account.RoleID, &account.Email, &account.IsFirstLogin)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -94,8 +91,8 @@ func (r *accountRepository) GetAllPaginated(page, limit int) ([]*entity.Account,
 }
 
 func (r *accountRepository) Update(account *entity.Account) error {
-	query := `UPDATE "Account" SET username = $1, password = $2, role_id = $3 WHERE id = $4`
-	_, err := r.db.Exec(query, account.Username, account.Password, account.RoleID, account.ID)
+	query := `UPDATE "Account" SET username = $1, password = $2, role_id = $3, email = $4 WHERE id = $5`
+	_, err := r.db.Exec(query, account.Username, account.Password, account.RoleID, account.Email, account.ID)
 	return err
 }
 

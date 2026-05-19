@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { QrCode, Calendar, Activity, Loader2, CheckCircle2 } from 'lucide-react';
+import { QrCode, Calendar, Activity, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import useAuthStore from '@/store/useAuthStore';
 import { memberService } from '@/services/memberService';
@@ -76,6 +76,21 @@ const MemberDashboard = () => {
 
   return (
     <div className="space-y-6 max-w-lg mx-auto md:max-w-full pb-20">
+      {user?.isFirstLogin && (
+        <div className="flex items-start gap-3 rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
+          <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">Bạn đang dùng mật khẩu tạm thời</p>
+            <p className="mt-0.5 text-sm text-yellow-700 dark:text-yellow-400">Vui lòng đổi mật khẩu để bảo mật tài khoản.</p>
+          </div>
+          <Link
+            to="/member/change-password"
+            className="flex-shrink-0 rounded-lg bg-yellow-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-yellow-700"
+          >
+            Đổi ngay
+          </Link>
+        </div>
+      )}
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           Xin chào, {member?.full_name || user?.username} 👋

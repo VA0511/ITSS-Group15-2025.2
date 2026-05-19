@@ -11,15 +11,22 @@ export const authService = {
     };
     const data = await axios.post('/auth/login', payload);
 
+    const user = data?.user
+      ? { ...data.user, isFirstLogin: data?.is_first_login ?? false }
+      : { id: data?.account_id, email: data?.username, role: data?.role, isFirstLogin: data?.is_first_login ?? false };
+
     return {
-      user: data?.user || {
-        id: data?.account_id,
-        email: data?.username,
-        role: data?.role,
-      },
+      user,
       token: data?.token || data?.access_token,
       refreshToken: data?.refresh_token,
     };
+  },
+
+  changePassword: async ({ oldPassword, newPassword }) => {
+    return axios.put('/auth/change-password', {
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
   },
 
   getCurrentUser: async () => {

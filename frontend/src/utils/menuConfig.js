@@ -36,5 +36,6 @@ export const menus = {
     { title: "Gia hạn", path: "/member/renew", icon: "CreditCard" },
     { title: "Gửi phản hồi", path: "/member/feedback", icon: "MessageCircle" },
     { title: "Hồ sơ cá nhân", path: "/member/profile", icon: "User" },
+    { title: "Đổi mật khẩu", path: "/member/change-password", icon: "Lock" },
   ],
 };
