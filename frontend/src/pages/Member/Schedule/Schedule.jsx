@@ -302,6 +302,7 @@ const Schedule = () => {
           selectedDate={selectedDate}
           selectDay={selectDay}
           getCalendarDotClass={getCalendarDotClass}
+          activeTab={activeTab}
         />
 
         {activeTab === 'booking' ? (

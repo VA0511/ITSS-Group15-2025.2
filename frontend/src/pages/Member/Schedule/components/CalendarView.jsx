@@ -1,18 +1,19 @@
 import React from 'react';
 
-const CalendarView = ({ 
-  currentDate, 
-  prevMonth, 
-  nextMonth, 
-  monthName, 
-  calendarDays, 
-  dateKey, 
-  year, 
-  month, 
-  displayData, 
-  selectedDate, 
+const CalendarView = ({
+  currentDate,
+  prevMonth,
+  nextMonth,
+  monthName,
+  calendarDays,
+  dateKey,
+  year,
+  month,
+  displayData,
+  selectedDate,
   selectDay,
-  getCalendarDotClass
+  getCalendarDotClass,
+  activeTab,
 }) => {
   return (
     <div className="p-4 sm:p-6 bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800">
@@ -61,14 +62,18 @@ const CalendarView = ({
           const isPast = dayObj.isCurrentMonth
             && new Date(year, month, dayObj.day) < new Date(todayObj.getFullYear(), todayObj.getMonth(), todayObj.getDate());
 
+          // booking tab: past dates are locked; other tabs: fully clickable
+          const isBookingTab = activeTab === 'booking';
+          const pastLocked = isPast && isBookingTab;
+
           return (
             <div
               key={idx}
-              onClick={() => dayObj.isCurrentMonth && !isPast && selectDay(dayObj.day)}
+              onClick={() => dayObj.isCurrentMonth && !pastLocked && selectDay(dayObj.day)}
               className={`h-14 flex flex-col items-center justify-center rounded text-xs transition-all ${
                 isSelected
                   ? "bg-blue-600 text-white font-bold cursor-pointer"
-                  : isPast
+                  : pastLocked
                     ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
                     : dayObj.isCurrentMonth
                       ? "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer"

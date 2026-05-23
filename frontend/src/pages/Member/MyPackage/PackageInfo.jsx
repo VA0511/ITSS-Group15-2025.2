@@ -13,13 +13,23 @@ const PackageInfo = () => {
   }
 
   // API trả về cấu trúc { data: { data: [...], total, page } } hoặc { data: [...] } hoặc [...]
-  const packages = Array.isArray(rawData)
+  const allPackages = Array.isArray(rawData)
     ? rawData
     : Array.isArray(rawData?.data?.data)
     ? rawData.data.data
     : Array.isArray(rawData?.data)
     ? rawData.data
     : [];
+
+  // Only show currently active packages (status active AND not past end date)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const packages = allPackages.filter(p => {
+    const isActive = p.status === 'active' || p.status === 'Active';
+    const endDateStr = p.end_date || p.endDate;
+    const notExpired = !endDateStr || new Date(endDateStr) >= today;
+    return isActive && notExpired;
+  });
 
   if (error) {
     return (

@@ -61,15 +61,39 @@ func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if member already has an active subscription in the same category
-	activeSub, err := h.usecase.GetActiveSubscriptionByMemberIDAndCategoryID(subscription.MemberID, newPkg.CategoryID)
-	if err != nil {
-		http.Error(w, "failed to check active subscription", http.StatusInternalServerError)
-		return
+	// Basic gym categories (VIP=1, Normal=2, Female-only=3): only 1 active at a time across ALL basic categories
+	// Specialty categories (4+): only 1 active per same category
+	basicCategoryIDs := []int{1, 2, 3}
+	isBasic := false
+	for _, id := range basicCategoryIDs {
+		if newPkg.CategoryID == id {
+			isBasic = true
+			break
+		}
 	}
-	if activeSub != nil {
-		http.Error(w, "already_have_active_subscription_in_this_category", http.StatusConflict)
-		return
+
+	if isBasic {
+		for _, catID := range basicCategoryIDs {
+			existing, err := h.usecase.GetActiveSubscriptionByMemberIDAndCategoryID(subscription.MemberID, catID)
+			if err != nil {
+				http.Error(w, "failed to check active subscription", http.StatusInternalServerError)
+				return
+			}
+			if existing != nil {
+				http.Error(w, "already_have_active_basic_subscription", http.StatusConflict)
+				return
+			}
+		}
+	} else {
+		activeSub, err := h.usecase.GetActiveSubscriptionByMemberIDAndCategoryID(subscription.MemberID, newPkg.CategoryID)
+		if err != nil {
+			http.Error(w, "failed to check active subscription", http.StatusInternalServerError)
+			return
+		}
+		if activeSub != nil {
+			http.Error(w, "already_have_active_subscription_in_this_category", http.StatusConflict)
+			return
+		}
 	}
 
 	if err := h.usecase.CreateSubscription(&subscription); err != nil {
