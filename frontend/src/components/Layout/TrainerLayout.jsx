@@ -128,7 +128,7 @@ const TrainerLayout = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+        <main className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900 flex flex-col">
           <Outlet />
         </main>
       </div>

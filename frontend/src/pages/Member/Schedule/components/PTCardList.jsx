@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Star, MapPin, ChevronRight, Clock } from 'lucide-react';
+import { User, ChevronRight, Clock } from 'lucide-react';
 
 const PTCardList = ({ ptDetails, setSelectedTrainer, bookings = [] }) => {
   // Identify PTs who have a pending booking from this member
@@ -35,24 +35,16 @@ const PTCardList = ({ ptDetails, setSelectedTrainer, bookings = [] }) => {
                 </div>
 
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="mb-1">
                     <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
                       {pt.full_name}
                     </h3>
-                    <div className="flex items-center gap-1 text-xs font-bold text-yellow-600">
-                      <Star className="h-3 w-3 fill-current" />
-                      4.9
-                    </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-3">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {pt.experience_years || 0} năm KN
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      Cơ sở 1
                     </span>
                   </div>
 

@@ -10,6 +10,7 @@ type TrainingSessionUsecase interface {
 	CreateTrainingSession(trainingSession *entity.TrainingSession) error
 	GetTrainingSessionByID(id int) (*entity.TrainingSession, error)
 	GetAllTrainingSessions() ([]*entity.TrainingSession, error)
+	GetSessionsByPTEmployeeID(employeeID int) ([]*entity.TrainingSession, error)
 	UpdateTrainingSession(trainingSession *entity.TrainingSession) error
 	DeleteTrainingSession(id int) error
 	ConfirmAttendance(id int, memberID int) error
@@ -63,6 +64,10 @@ func (u *trainingSessionUsecase) UpdateTrainingSession(trainingSession *entity.T
 
 func (u *trainingSessionUsecase) DeleteTrainingSession(id int) error {
 	return u.delete.Execute(context.Background(), id)
+}
+
+func (u *trainingSessionUsecase) GetSessionsByPTEmployeeID(employeeID int) ([]*entity.TrainingSession, error) {
+	return u.repo.GetByPTEmployeeID(employeeID)
 }
 
 func (u *trainingSessionUsecase) ConfirmAttendance(id int, memberID int) error {

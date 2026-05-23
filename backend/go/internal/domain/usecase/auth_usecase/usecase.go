@@ -67,7 +67,7 @@ func NewAuthUsecase(repo adapter.AuthRepository) AuthUsecase {
 	return &authUsecase{
 		repo:       repo,
 		jwtSecret:  []byte(getEnv("JWT_SECRET", "dev-only-secret-change-me")),
-		accessTTL:  time.Duration(getEnvInt("JWT_ACCESS_TTL_MINUTES", 15)) * time.Minute,
+		accessTTL:  time.Duration(getEnvInt("JWT_ACCESS_TTL_MINUTES", 480)) * time.Minute,
 		refreshTTL: time.Duration(getEnvInt("JWT_REFRESH_TTL_HOURS", 24*7)) * time.Hour,
 	}
 }

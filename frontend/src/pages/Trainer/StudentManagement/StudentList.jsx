@@ -75,7 +75,7 @@ const StudentList = () => {
   const isLoading = loadingBookings || loadingMembers;
 
   return (
-    <div className="px-6 py-6 max-w-7xl mx-auto">
+    <div className="flex-1 overflow-y-auto px-6 py-6">
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Danh sách Học Viên</h1>

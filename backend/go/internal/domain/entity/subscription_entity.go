@@ -14,6 +14,9 @@ type Subscription struct {
 
 type SubscriptionHistory struct {
 	ID               int       `json:"id"`
+	PackageID        int       `json:"package_id"`
+	CategoryID       int       `json:"category_id"`
+	CategoryName     string    `json:"category_name"`
 	PackageName      string    `json:"package_name"`
 	RegistrationDate time.Time `json:"registration_date"`
 	StartDate        time.Time `json:"start_date"`

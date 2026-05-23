@@ -4,4 +4,5 @@ import "gym-management/internal/domain/entity"
 
 type InvoiceRepository interface {
 	GetAllTransactions() ([]*entity.InvoiceTransaction, error)
+	CreateInvoice(invoice *entity.Invoice) error
 }

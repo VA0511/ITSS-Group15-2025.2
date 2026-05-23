@@ -7,6 +7,7 @@ import (
 
 type InvoiceUsecase interface {
 	GetAllTransactions() ([]*entity.InvoiceTransaction, error)
+	CreateInvoice(invoice *entity.Invoice) error
 }
 
 type invoiceUsecase struct {
@@ -19,4 +20,8 @@ func NewInvoiceUsecase(repo adapter.InvoiceRepository) InvoiceUsecase {
 
 func (u *invoiceUsecase) GetAllTransactions() ([]*entity.InvoiceTransaction, error) {
 	return u.repo.GetAllTransactions()
+}
+
+func (u *invoiceUsecase) CreateInvoice(invoice *entity.Invoice) error {
+	return u.repo.CreateInvoice(invoice)
 }

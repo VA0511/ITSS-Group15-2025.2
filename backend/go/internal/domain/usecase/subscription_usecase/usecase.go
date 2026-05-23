@@ -16,6 +16,7 @@ type SubscriptionUsecase interface {
 	UpdateSubscription(subscription *entity.Subscription) error
 	DeleteSubscription(id int) error
 	GetActiveSubscriptionByMemberID(memberID int) (*entity.Subscription, error)
+	GetActiveSubscriptionByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error)
 	RenewSubscription(id int, newEndDate time.Time) error
 }
 
@@ -76,6 +77,10 @@ func (u *subscriptionUsecase) GetAllSubscriptions() ([]*entity.Subscription, err
 
 func (u *subscriptionUsecase) GetActiveSubscriptionByMemberID(memberID int) (*entity.Subscription, error) {
 	return u.repo.GetActiveByMemberID(memberID)
+}
+
+func (u *subscriptionUsecase) GetActiveSubscriptionByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error) {
+	return u.repo.GetActiveByMemberIDAndCategoryID(memberID, categoryID)
 }
 
 func (u *subscriptionUsecase) RenewSubscription(id int, newEndDate time.Time) error {

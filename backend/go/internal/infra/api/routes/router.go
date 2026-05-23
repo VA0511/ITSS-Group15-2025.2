@@ -63,6 +63,10 @@ func NewRouter(
 	// Change password — available to all authenticated users
 	authenticated.Handle("/auth/change-password", auth(isAnyRole, authHandler.ChangePassword)).Methods("PUT")
 
+	// Facilities GET — readable by all roles (PT needs it for session evaluation)
+	authenticated.Handle("/facilities", auth(isAnyRole, facilityHandler.GetAll)).Methods("GET")
+	authenticated.Handle("/facilities/{id}", auth(isAnyRole, facilityHandler.GetByID)).Methods("GET")
+
 	// Owner/Manager only routes (admin and configuration)
 	ownerManager := authenticated.PathPrefix("").Subrouter()
 	ownerManager.Use(isOwnerManager)

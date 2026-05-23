@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"gym-management/internal/domain/entity"
+	"gym-management/internal/domain/usecase/employee_usecase"
 	"gym-management/internal/domain/usecase/member_usecase"
 	"gym-management/internal/domain/usecase/training_session_usecase"
 	"gym-management/internal/infra/api/middleware"
@@ -14,12 +15,13 @@ import (
 )
 
 type TrainingSessionHandler struct {
-	usecase      training_session_usecase.TrainingSessionUsecase
-	memberUsecase member_usecase.MemberUsecase
+	usecase         training_session_usecase.TrainingSessionUsecase
+	memberUsecase   member_usecase.MemberUsecase
+	employeeUsecase employee_usecase.EmployeeUsecase
 }
 
-func NewTrainingSessionHandler(u training_session_usecase.TrainingSessionUsecase, mu member_usecase.MemberUsecase) *TrainingSessionHandler {
-	return &TrainingSessionHandler{usecase: u, memberUsecase: mu}
+func NewTrainingSessionHandler(u training_session_usecase.TrainingSessionUsecase, mu member_usecase.MemberUsecase, eu employee_usecase.EmployeeUsecase) *TrainingSessionHandler {
+	return &TrainingSessionHandler{usecase: u, memberUsecase: mu, employeeUsecase: eu}
 }
 
 func (h *TrainingSessionHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -58,17 +60,32 @@ func (h *TrainingSessionHandler) GetByID(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *TrainingSessionHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if ok && currentUser.Role == "PT" {
+		employee, err := h.employeeUsecase.GetEmployeeByAccountID(currentUser.AccountID)
+		if err == nil {
+			sessions, err := h.usecase.GetSessionsByPTEmployeeID(employee.ID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if sessions == nil {
+				sessions = []*entity.TrainingSession{}
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(sessions)
+			return
+		}
+	}
+
 	trainingSessions, err := h.usecase.GetAllTrainingSessions()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// Security check: Member can only see their own sessions (via bookings)
-	// For now, simpler implementation: if MEMBER, we would need to join.
-	// To keep it simple, we let Member see all for now or skip filtering if too complex.
-	// Actually, let's just send all and filter on frontend for now, or implement a proper GetByMemberID.
-
+	if trainingSessions == nil {
+		trainingSessions = []*entity.TrainingSession{}
+	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(trainingSessions)
 }

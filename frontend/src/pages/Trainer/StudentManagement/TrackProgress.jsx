@@ -8,7 +8,7 @@ const TrackProgress = () => {
   const { id } = useParams();
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="flex-1 overflow-y-auto p-6 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <Link to="/trainer/students">
           <Button variant="outline" size="icon" className="shrink-0 h-10 w-10">

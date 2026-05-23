@@ -15,6 +15,7 @@ type SubscriptionRepository interface {
 	Update(subscription *entity.Subscription) error
 	Delete(id int) error
 	GetActiveByMemberID(memberID int) (*entity.Subscription, error)
+	GetActiveByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error)
 	Renew(id int, newEndDate time.Time) error
 }
 
@@ -83,9 +84,11 @@ func (r *subscriptionRepository) GetByMemberID(memberID int, page, limit int) ([
 	// Calculate offset
 	offset := (page - 1) * limit
 
-	query := `SELECT s.id, p.package_name, s.registration_date, s.start_date, s.end_date, s.status, p.price
+	query := `SELECT s.id, s.package_id, COALESCE(sc.id, 0), COALESCE(sc.category_name, ''), p.package_name,
+	          s.registration_date, s.start_date, s.end_date, s.status, COALESCE(p.price, 0)
 	FROM "Subscription" s
 	LEFT JOIN "MembershipPackage" p ON s.package_id = p.id
+	LEFT JOIN "ServiceCategory" sc ON p.category_id = sc.id
 	WHERE s.member_id = $1
 	ORDER BY s.registration_date DESC LIMIT $2 OFFSET $3`
 	rows, err := r.db.Query(query, memberID, limit, offset)
@@ -97,7 +100,9 @@ func (r *subscriptionRepository) GetByMemberID(memberID int, page, limit int) ([
 	var histories []*entity.SubscriptionHistory
 	for rows.Next() {
 		var history entity.SubscriptionHistory
-		err := rows.Scan(&history.ID, &history.PackageName, &history.RegistrationDate, &history.StartDate, &history.EndDate, &history.Status, &history.Price)
+		err := rows.Scan(&history.ID, &history.PackageID, &history.CategoryID, &history.CategoryName,
+			&history.PackageName, &history.RegistrationDate, &history.StartDate, &history.EndDate,
+			&history.Status, &history.Price)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -129,6 +134,25 @@ func (r *subscriptionRepository) Renew(id int, newEndDate time.Time) error {
 func (r *subscriptionRepository) GetActiveByMemberID(memberID int) (*entity.Subscription, error) {
 	query := `SELECT id, member_id, package_id, registration_date, start_date, end_date, status FROM "Subscription" WHERE member_id = $1 AND end_date >= CURRENT_DATE AND status = 'active' LIMIT 1`
 	row := r.db.QueryRow(query, memberID)
+	var sub entity.Subscription
+	err := row.Scan(&sub.ID, &sub.MemberID, &sub.PackageID, &sub.RegistrationDate, &sub.StartDate, &sub.EndDate, &sub.Status)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &sub, nil
+}
+
+func (r *subscriptionRepository) GetActiveByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error) {
+	query := `SELECT s.id, s.member_id, s.package_id, s.registration_date, s.start_date, s.end_date, s.status
+	          FROM "Subscription" s
+	          JOIN "MembershipPackage" mp ON s.package_id = mp.id
+	          WHERE s.member_id = $1 AND mp.category_id = $2
+	            AND s.end_date >= CURRENT_DATE AND s.status = 'active'
+	          LIMIT 1`
+	row := r.db.QueryRow(query, memberID, categoryID)
 	var sub entity.Subscription
 	err := row.Scan(&sub.ID, &sub.MemberID, &sub.PackageID, &sub.RegistrationDate, &sub.StartDate, &sub.EndDate, &sub.Status)
 	if err == sql.ErrNoRows {

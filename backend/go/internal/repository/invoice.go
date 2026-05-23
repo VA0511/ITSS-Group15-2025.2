@@ -7,6 +7,7 @@ import (
 
 type InvoiceRepository interface {
 	GetAllTransactions() ([]*entity.InvoiceTransaction, error)
+	CreateInvoice(invoice *entity.Invoice) error
 }
 
 type invoiceRepository struct {
@@ -87,4 +88,13 @@ func (r *invoiceRepository) GetAllTransactions() ([]*entity.InvoiceTransaction, 
 	}
 
 	return transactions, nil
+}
+
+func (r *invoiceRepository) CreateInvoice(invoice *entity.Invoice) error {
+	query := `INSERT INTO "Invoice" (member_id, subscription_id, total_amount, payment_status, payment_method, notes)
+	          VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, invoice_date`
+	return r.db.QueryRow(query,
+		invoice.MemberID, invoice.SubscriptionID, invoice.TotalAmount,
+		invoice.PaymentStatus, invoice.PaymentMethod, invoice.Notes,
+	).Scan(&invoice.ID, &invoice.InvoiceDate)
 }

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
-import { X, Phone, Mail, User, Clock, Target, BookOpen, Zap, MapPin, Calendar, Package, Loader2 } from 'lucide-react';
+import { X, Phone, Mail, User, Clock, Target, BookOpen, Zap, MapPin, Calendar, Package, Loader2, Inbox } from 'lucide-react';
 
 import { useMyBookings } from '@/hooks/queries/useTraining';
 import { useUpdateBooking } from '@/hooks/mutations/useTrainingMutations';
@@ -161,96 +161,104 @@ const TrainerSchedule = () => {
 
   return (
     <>
-    <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full pb-20">
-      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl">
-        <div className="p-5 border-b border-gray-100 dark:border-gray-800">
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={previousMonth}
-              className="w-7 h-7 rounded border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+    <div className="flex-1 p-4 lg:p-6 w-full overflow-hidden flex flex-col">
+      <div
+        className="flex-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden flex flex-col lg:flex-row min-h-0"
+        style={{ minHeight: '560px' }}
+      >
+        {/* Left panel: Calendar + Tabs */}
+        <div className="lg:w-[45%] shrink-0 border-b lg:border-b-0 lg:border-r border-gray-100 dark:border-gray-800 flex flex-col">
+          <div className="p-5 flex-1 flex flex-col overflow-hidden">
+            {/* Month nav */}
+            <div className="flex items-center justify-between mb-3 shrink-0">
+              <button
+                onClick={previousMonth}
+                className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 text-lg font-bold"
+              >‹</button>
+              <div className="text-sm font-bold text-gray-800 dark:text-white capitalize">{monthName}</div>
+              <button
+                onClick={nextMonth}
+                className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 text-lg font-bold"
+              >›</button>
+            </div>
+
+            {/* Day headers */}
+            <div className="grid grid-cols-7 mb-1 shrink-0">
+              {DAYS.map((day) => (
+                <div key={day} className="text-xs font-bold text-gray-400 dark:text-gray-500 text-center py-1">
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            {/* Calendar cells — fill remaining height */}
+            <div
+              className="flex-1 grid grid-cols-7 gap-0.5"
+              style={{ gridTemplateRows: `repeat(${calendarDays.length / 7}, 1fr)` }}
             >
-              ‹
-            </button>
-            <div className="text-sm font-bold text-gray-800 dark:text-white capitalize">{monthName}</div>
-            <button
-              onClick={nextMonth}
-              className="w-7 h-7 rounded border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              ›
-            </button>
+              {calendarDays.map((dayObj, idx) => {
+                const key = dayObj.isCurrentMonth ? dateKey(year, month, dayObj.day) : null;
+                const dotClass = key ? getCalendarDotClass(key) : null;
+                const isSelected = selectedDate === key;
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => dayObj.isCurrentMonth && selectDay(dayObj.day)}
+                    className={`flex flex-col items-center justify-center rounded text-xs cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-blue-600 text-white font-bold'
+                        : dayObj.isCurrentMonth
+                          ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
+                          : 'text-gray-300 dark:text-gray-600'
+                    }`}
+                  >
+                    <span className="text-sm font-semibold leading-none">{dayObj.day}</span>
+                    {dotClass && (
+                      <div className={`w-1.5 h-1.5 rounded-full mt-0.5 ${dotClass} ${isSelected ? 'opacity-70' : ''}`} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-0 mb-2">
-            {DAYS.map((day) => (
-              <div key={day} className="text-xs font-bold text-gray-400 dark:text-gray-500 text-center py-2">
-                {day}
-              </div>
+          {/* Tabs */}
+          <div className="border-t border-gray-100 dark:border-gray-800 p-3 flex gap-2 shrink-0">
+            {[['mySchedule', 'Lịch của tôi'], ['memberRequests', 'Yêu cầu hội viên']].map(([tab, label]) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 px-2 py-2 rounded-lg font-semibold text-xs transition-colors ${
+                  activeTab === tab
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {label}
+              </button>
             ))}
           </div>
-
-          <div className="grid grid-cols-7 gap-1">
-            {calendarDays.map((dayObj, idx) => {
-              const key = dayObj.isCurrentMonth ? dateKey(year, month, dayObj.day) : null;
-              const dotClass = key ? getCalendarDotClass(key) : null;
-              const isSelected = selectedDate === key;
-              return (
-                <div
-                  key={idx}
-                  onClick={() => dayObj.isCurrentMonth && selectDay(dayObj.day)}
-                  className={`h-14 flex flex-col items-center justify-center rounded text-xs cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-blue-600 text-white font-bold'
-                      : dayObj.isCurrentMonth
-                        ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
-                        : 'text-gray-300 dark:text-gray-600'
-                  }`}
-                >
-                  <span className="text-sm font-semibold">{dayObj.day}</span>
-                  {dotClass && <div className={`w-1.5 h-1.5 rounded-full mt-1 ${dotClass}`} />}
-                </div>
-              );
-            })}
-          </div>
         </div>
 
-        <div className="border-t border-gray-100 dark:border-gray-800 p-4 flex gap-2">
-          <button
-            onClick={() => setActiveTab('mySchedule')}
-            className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-              activeTab === 'mySchedule'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
-          >
-            Lịch của tôi
-          </button>
-          <button
-            onClick={() => setActiveTab('memberRequests')}
-            className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
-              activeTab === 'memberRequests'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
-          >
-            Yêu cầu hội viên
-          </button>
-        </div>
-
-        <div className="border-t border-gray-100 dark:border-gray-800 p-6">
+        {/* Right panel: Content */}
+        <div className="flex-1 overflow-y-auto p-5 lg:p-6">
           {!selectedDate ? (
-            <div className="flex flex-col items-center justify-center h-40 gap-3">
-              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center text-3xl">
-                📅
-              </div>
-              <div className="text-sm text-gray-400 dark:text-gray-500">Chọn một ngày để xem lịch</div>
+            <div className="flex flex-col items-center justify-center h-full gap-3">
+              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center text-3xl">📅</div>
+              <div className="text-sm font-medium text-gray-400 dark:text-gray-500">Chọn một ngày để xem lịch</div>
             </div>
           ) : (
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-                  {selectedDateObject
-                    ? `${dayNames[selectedDateObject.getDay()]}, ${selectedDateObject.getDate()}/${String(selectedDateObject.getMonth() + 1).padStart(2, '0')}/${selectedDateObject.getFullYear()}`
-                    : ''}
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <div className="text-base font-bold text-gray-800 dark:text-white">
+                    {selectedDateObject
+                      ? `${dayNames[selectedDateObject.getDay()]}, ${selectedDateObject.getDate()}/${String(selectedDateObject.getMonth() + 1).padStart(2, '0')}/${selectedDateObject.getFullYear()}`
+                      : ''}
+                  </div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                    {activeTab === 'memberRequests' ? 'Yêu cầu đặt lịch' : 'Lịch dạy của bạn'}
+                  </div>
                 </div>
                 {selectedItems.length > 0 && (
                   <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -260,8 +268,16 @@ const TrainerSchedule = () => {
               </div>
 
               {selectedItems.length === 0 ? (
-                <div className="text-sm text-gray-400 dark:text-gray-500 italic">
-                  {activeTab === 'memberRequests' ? 'Chưa có yêu cầu nào' : 'Không có lịch dạy nào'}
+                <div className="flex flex-col items-center justify-center py-16 gap-3">
+                  <div className="w-14 h-14 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center">
+                    {activeTab === 'memberRequests'
+                      ? <Inbox className="h-7 w-7 text-gray-400 dark:text-gray-500" />
+                      : <Calendar className="h-7 w-7 text-gray-400 dark:text-gray-500" />
+                    }
+                  </div>
+                  <div className="text-sm text-gray-400 dark:text-gray-500 italic">
+                    {activeTab === 'memberRequests' ? 'Chưa có yêu cầu nào' : 'Không có lịch dạy nào'}
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -269,28 +285,25 @@ const TrainerSchedule = () => {
                     <div
                       key={idx}
                       onClick={() => activeTab === 'memberRequests' ? setSelectedRequest(item) : undefined}
-                      className={`bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex gap-3.5 relative overflow-hidden ${activeTab === 'memberRequests' ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900/60 transition-colors' : ''}`}
+                      className={`bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex gap-3.5 relative overflow-hidden ${
+                        activeTab === 'memberRequests' ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900/60 transition-colors' : ''
+                      }`}
                     >
                       <div
                         className="absolute left-0 top-0 bottom-0 w-1"
                         style={{ backgroundColor: getAccentColor(item.status) }}
                       />
-
                       <div className="flex flex-col items-center min-w-12">
                         <div className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.startTime}</div>
                         <div className="w-px h-2 bg-gray-300 dark:bg-gray-600 my-1" />
                         <div className="text-xs text-gray-400 dark:text-gray-500">{item.endTime}</div>
                       </div>
-
                       <div className="flex-1 ml-2">
                         <div className="text-sm font-bold text-gray-800 dark:text-white mb-1">{item.memberName}</div>
                         {item.note && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400 italic">
-                            Ghi chú: {item.note}
-                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 italic">Ghi chú: {item.note}</div>
                         )}
                       </div>
-
                       <div className="flex flex-col gap-2 items-end">
                         <div className={`text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap ${getStatusBadgeClass(item.status)}`}>
                           {item.status}
@@ -333,7 +346,6 @@ const TrainerSchedule = () => {
           </div>
 
           <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
-            {/* Member info */}
             <div className="space-y-1.5">
               <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">Thông tin hội viên</p>
               {loadingMember ? (
@@ -414,7 +426,6 @@ const TrainerSchedule = () => {
               )}
             </div>
 
-            {/* Booking request info */}
             <div className="space-y-1.5">
               <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">Yêu cầu buổi tập</p>
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 space-y-3">
@@ -472,6 +483,7 @@ const TrainerSchedule = () => {
         </div>
       </div>
     )}
+
     {rejectTarget && (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={() => { setRejectTarget(null); setRejectReason(''); }}>
         <div className="bg-white dark:bg-gray-950 rounded-xl max-w-sm w-full border border-gray-200 dark:border-gray-800 shadow-2xl p-5 space-y-4" onClick={(e) => e.stopPropagation()}>

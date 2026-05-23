@@ -25,7 +25,16 @@ const RenewPackage = () => {
       : Array.isArray(packagesRes?.data)
       ? packagesRes.data
       : [];
-    return raw.map(pkg => ({
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return raw
+      .filter(pkg => {
+        const isActive = pkg.status === 'active' || pkg.status === 'Active';
+        const endDateStr = pkg.end_date || pkg.endDate;
+        const notExpired = !endDateStr || new Date(endDateStr) >= today;
+        return isActive && notExpired;
+      })
+      .map(pkg => ({
       ...pkg,
       name: pkg.package_name || pkg.name || 'Gói tập',
       endDate: pkg.end_date || pkg.endDate,

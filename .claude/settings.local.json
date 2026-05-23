@@ -10,7 +10,22 @@
       "Bash(./gym-management.exe)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/notifications)",
       "PowerShell(Stop-Process -Name \"gym-management\" -Force -ErrorAction SilentlyContinue)",
-      "PowerShell(Start-Process -FilePath \"e:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\backend\\\\go\\\\gym-management.exe\" -WorkingDirectory \"e:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\backend\\\\go\" -WindowStyle Hidden)"
+      "PowerShell(Start-Process -FilePath \"e:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\backend\\\\go\\\\gym-management.exe\" -WorkingDirectory \"e:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\backend\\\\go\" -WindowStyle Hidden)",
+      "Bash(PGPASSWORD=\"Megake123\" psql -h localhost -p 5432 -U postgres -d gymdb -c \"UPDATE \\\\\"Subscription\\\\\" SET status = 'expired' WHERE end_date < CURRENT_DATE AND status = 'active';\")",
+      "Bash(PGPASSWORD=\"Megake123\" psql -h localhost -p 5432 -U postgres -d gymdb -c \"UPDATE \\\\\"Subscription\\\\\" SET status = 'superseded' WHERE id = 11;\")",
+      "Bash(psql -U postgres -d gymdb -c \"SELECT id, facility_name, facility_type, status, description FROM \\\\\"Facility\\\\\" ORDER BY id;\")",
+      "Bash(\"C:\\\\Program Files\\\\PostgreSQL\\\\17\\\\bin\\\\psql.exe\" -U postgres -d gymdb -c \"SELECT id, facility_name, facility_type, status, max_capacity, current_capacity FROM \\\\\"Facility\\\\\" ORDER BY id;\")",
+      "PowerShell(& \"C:\\\\Program Files\\\\PostgreSQL\\\\17\\\\bin\\\\psql.exe\" -U postgres -d gymdb -c \"SELECT id, facility_name, facility_type, status, max_capacity, current_capacity FROM `\"Facility`\" ORDER BY id;\" 2>&1)",
+      "Read(//c/Program Files/**)",
+      "Read(//c//**)",
+      "Read(//e/postgres17/**)",
+      "Read(//e//**)",
+      "Bash(xargs grep -l \"trainer.*student\\\\|trainer.*session\" -i)",
+      "Bash(Get-ChildItem -Path \"E:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\frontend\\\\src\\\\pages\\\\Member\" -Recurse -Directory)",
+      "Bash(grep -E \"\\\\.\\(js|ts|py\\)$\")",
+      "Bash(Get-ChildItem -Path \"E:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\frontend\\\\src\\\\pages\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(xargs grep -l \"status\")"
     ]
   }
 }

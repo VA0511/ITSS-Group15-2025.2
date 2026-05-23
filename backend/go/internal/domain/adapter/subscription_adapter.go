@@ -14,5 +14,6 @@ type SubscriptionRepository interface {
 	Delete(id int) error
 	GetByMemberID(memberID int, page, limit int) ([]*entity.SubscriptionHistory, int, error)
 	GetActiveByMemberID(memberID int) (*entity.Subscription, error)
+	GetActiveByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error)
 	Renew(id int, newEndDate time.Time) error
 }

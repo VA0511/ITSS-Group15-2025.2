@@ -25,8 +25,8 @@ const WorkoutList = ({
 }) => {
   if (!selectedDate) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-gray-50 dark:bg-gray-900/20 rounded-xl m-4">
-        <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-xl mb-4 opacity-50">
+      <div className="flex flex-col items-center justify-center h-full min-h-64 px-4 text-center">
+        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-xl mb-3 opacity-60">
           📅
         </div>
         <div className="text-sm text-gray-400 dark:text-gray-500">
@@ -39,7 +39,7 @@ const WorkoutList = ({
   }
 
   return (
-    <div className="p-4 sm:p-6 bg-white dark:bg-gray-950">
+    <div className="p-5 sm:p-6 bg-white dark:bg-gray-950 h-full">
       <div className="flex items-center justify-between mb-5">
         <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">
           {selectedDateObject
@@ -54,10 +54,13 @@ const WorkoutList = ({
       </div>
 
       {selectedWorkouts.length === 0 ? (
-        <div className="text-sm text-gray-400 dark:text-gray-500 py-4 italic">
-          {activeTab === "requests"
-            ? "Chưa có yêu cầu nào"
-            : "Không có buổi tập nào"}
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-xl mb-3 opacity-60">
+            {activeTab === "requests" ? "📋" : "🏋️"}
+          </div>
+          <div className="text-sm text-gray-400 dark:text-gray-500">
+            {activeTab === "requests" ? "Chưa có yêu cầu nào trong ngày này" : "Không có buổi tập nào trong ngày này"}
+          </div>
         </div>
       ) : (
         <div className="space-y-3">

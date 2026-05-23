@@ -126,10 +126,10 @@ func main() {
 	serviceCategoryHandler := handlers.NewServiceCategoryHandler(serviceCategoryUsecase)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase, memberUsecase, packageUsecase)
 	trainingBookingHandler := handlers.NewTrainingBookingHandler(trainingBookingUsecase, memberUsecase, employeeUsecase, trainingSessionUsecase, notifHub)
-	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase, memberUsecase)
+	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase, memberUsecase, employeeUsecase)
 	ptDetailHandler := handlers.NewPTDetailHandler(ptDetailUsecase)
 	notificationHandler := handlers.NewNotificationHandler(notifHub)
-	memberRegHandler := handlers.NewMemberRegistrationHandler(authRepo, memberUsecase, subscriptionUsecase, packageUsecase, emailSvc)
+	memberRegHandler := handlers.NewMemberRegistrationHandler(authRepo, memberUsecase, subscriptionUsecase, packageUsecase, emailSvc, invoiceUsecase)
 
 	// Auto-confirm member attendance 3 hours before session start
 	go func() {

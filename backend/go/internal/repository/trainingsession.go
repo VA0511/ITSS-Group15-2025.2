@@ -76,6 +76,36 @@ func (r *trainingSessionRepository) Update(trainingSession *entity.TrainingSessi
 	return err
 }
 
+func (r *trainingSessionRepository) GetByPTEmployeeID(employeeID int) ([]*entity.TrainingSession, error) {
+	query := `SELECT ts.id, ts.booking_id, ts.facility_id, ts.session_time, ts.attendance_status,
+	          COALESCE(ts.pt_feedback, ''), ts.member_confirmed_at, COALESCE(ts.physical_condition, ''),
+	          COALESCE(ts.session_result, ''), COALESCE(ts.nutrition_advice, '')
+	          FROM "TrainingSession" ts
+	          JOIN "TrainingBooking" tb ON ts.booking_id = tb.id
+	          WHERE tb.pt_id = $1`
+	rows, err := r.db.Query(query, employeeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sessions []*entity.TrainingSession
+	for rows.Next() {
+		var ts entity.TrainingSession
+		var facilityID sql.NullInt64
+		err := rows.Scan(&ts.ID, &ts.BookingID, &facilityID, &ts.SessionTime, &ts.AttendanceStatus,
+			&ts.PTFeedback, &ts.MemberConfirmedAt, &ts.PhysicalCondition, &ts.SessionResult, &ts.NutritionAdvice)
+		if err != nil {
+			return nil, err
+		}
+		if facilityID.Valid {
+			ts.FacilityID = int(facilityID.Int64)
+		}
+		sessions = append(sessions, &ts)
+	}
+	return sessions, nil
+}
+
 func (r *trainingSessionRepository) Delete(id int) error {
 	query := `DELETE FROM "TrainingSession" WHERE id = $1`
 	_, err := r.db.Exec(query, id)

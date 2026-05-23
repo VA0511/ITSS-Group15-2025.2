@@ -54,33 +54,44 @@ func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 		subscription.MemberID = member.ID
 	}
 
-	// Check if member already has an active subscription
-	activeSub, err := h.usecase.GetActiveSubscriptionByMemberID(subscription.MemberID)
-	if err != nil {
-		http.Error(w, "failed to check active subscription", http.StatusInternalServerError)
+	// Validate the requested package exists
+	newPkg, err := h.packageUsecase.GetPackageByID(subscription.PackageID)
+	if err != nil || newPkg == nil {
+		http.Error(w, "invalid package", http.StatusBadRequest)
 		return
 	}
-	if activeSub != nil {
-		newPkg, err := h.packageUsecase.GetPackageByID(subscription.PackageID)
-		if err != nil || newPkg == nil {
-			http.Error(w, "invalid package", http.StatusBadRequest)
+
+	// Basic gym categories (VIP=1, Normal=2, Female-only=3): only 1 active at a time across ALL basic categories
+	// Specialty categories (4+): only 1 active per same category
+	basicCategoryIDs := []int{1, 2, 3}
+	isBasic := false
+	for _, id := range basicCategoryIDs {
+		if newPkg.CategoryID == id {
+			isBasic = true
+			break
+		}
+	}
+
+	if isBasic {
+		for _, catID := range basicCategoryIDs {
+			existing, err := h.usecase.GetActiveSubscriptionByMemberIDAndCategoryID(subscription.MemberID, catID)
+			if err != nil {
+				http.Error(w, "failed to check active subscription", http.StatusInternalServerError)
+				return
+			}
+			if existing != nil {
+				http.Error(w, "already_have_active_basic_subscription", http.StatusConflict)
+				return
+			}
+		}
+	} else {
+		activeSub, err := h.usecase.GetActiveSubscriptionByMemberIDAndCategoryID(subscription.MemberID, newPkg.CategoryID)
+		if err != nil {
+			http.Error(w, "failed to check active subscription", http.StatusInternalServerError)
 			return
 		}
-		activePkg, err := h.packageUsecase.GetPackageByID(activeSub.PackageID)
-		if err != nil || activePkg == nil {
-			http.Error(w, "failed to check active package", http.StatusInternalServerError)
-			return
-		}
-		// VIP is the highest tier — if already on VIP, no upgrade possible
-		activeIsVip := activePkg.CategoryName == "VIP"
-		newIsVip := newPkg.CategoryName == "VIP"
-		if activeIsVip {
-			http.Error(w, "already_on_highest_tier", http.StatusConflict)
-			return
-		}
-		// Allow only Normal → VIP upgrade
-		if !newIsVip {
-			http.Error(w, "upgrade_to_vip_only", http.StatusConflict)
+		if activeSub != nil {
+			http.Error(w, "already_have_active_subscription_in_this_category", http.StatusConflict)
 			return
 		}
 	}
