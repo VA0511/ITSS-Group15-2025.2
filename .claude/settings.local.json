@@ -19,7 +19,13 @@
       "Read(//c/Program Files/**)",
       "Read(//c//**)",
       "Read(//e/postgres17/**)",
-      "Read(//e//**)"
+      "Read(//e//**)",
+      "Bash(xargs grep -l \"trainer.*student\\\\|trainer.*session\" -i)",
+      "Bash(Get-ChildItem -Path \"E:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\frontend\\\\src\\\\pages\\\\Member\" -Recurse -Directory)",
+      "Bash(grep -E \"\\\\.\\(js|ts|py\\)$\")",
+      "Bash(Get-ChildItem -Path \"E:\\\\New folder\\\\ProjectGym\\\\ITSS-Group15-2025.2\\\\frontend\\\\src\\\\pages\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(xargs grep -l \"status\")"
     ]
   }
 }
