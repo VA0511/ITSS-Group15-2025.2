@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/schemas/authSchemas';
 import { useLogin } from '@/hooks/mutations/useAuthMutations';
 import { Dumbbell, User, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
-import gigachadVideo from '@/assets/gigachad.mp4';
+import gigachadVideo from '@/assets/mp_.mp4';
 
 
 const Login = () => {
