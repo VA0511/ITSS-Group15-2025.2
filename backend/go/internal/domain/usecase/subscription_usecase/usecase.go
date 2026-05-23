@@ -18,6 +18,7 @@ type SubscriptionUsecase interface {
 	GetActiveSubscriptionByMemberID(memberID int) (*entity.Subscription, error)
 	GetActiveSubscriptionByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error)
 	RenewSubscription(id int, newEndDate time.Time) error
+	UpgradeSubscription(id, newPackageID int, newEndDate time.Time) error
 }
 
 type subscriptionUsecase struct {
@@ -85,4 +86,8 @@ func (u *subscriptionUsecase) GetActiveSubscriptionByMemberIDAndCategoryID(membe
 
 func (u *subscriptionUsecase) RenewSubscription(id int, newEndDate time.Time) error {
 	return u.repo.Renew(id, newEndDate)
+}
+
+func (u *subscriptionUsecase) UpgradeSubscription(id, newPackageID int, newEndDate time.Time) error {
+	return u.repo.Upgrade(id, newPackageID, newEndDate)
 }

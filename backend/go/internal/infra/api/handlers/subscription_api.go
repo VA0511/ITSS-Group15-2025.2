@@ -259,6 +259,62 @@ func (h *SubscriptionHandler) GetHistoryByMemberID(w http.ResponseWriter, r *htt
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+func (h *SubscriptionHandler) Upgrade(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var body struct {
+		NewPackageID int       `json:"new_package_id"`
+		NewEndDate   time.Time `json:"new_end_date"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validate new package exists and is VIP (category_id = 1)
+	newPkg, err := h.packageUsecase.GetPackageByID(body.NewPackageID)
+	if err != nil || newPkg == nil {
+		http.Error(w, "invalid package", http.StatusBadRequest)
+		return
+	}
+	if newPkg.CategoryID != 1 {
+		http.Error(w, "can_only_upgrade_to_vip", http.StatusBadRequest)
+		return
+	}
+
+	// Security: MEMBER can only upgrade their own subscription
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if ok && currentUser.Role == "MEMBER" {
+		member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
+		if err != nil {
+			http.Error(w, "member not found", http.StatusInternalServerError)
+			return
+		}
+		sub, err := h.usecase.GetSubscriptionByID(id)
+		if err != nil {
+			http.Error(w, "subscription not found", http.StatusNotFound)
+			return
+		}
+		if sub.MemberID != member.ID {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+	}
+
+	if err := h.usecase.UpgradeSubscription(id, body.NewPackageID, body.NewEndDate); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "subscription upgraded successfully"})
+}
+
 func (h *SubscriptionHandler) Renew(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])

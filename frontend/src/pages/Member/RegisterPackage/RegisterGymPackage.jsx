@@ -127,6 +127,7 @@ const RegisterGymPackage = () => {
         package: { ...selectedPkg, name: selectedPkg.package_name, priceRaw: selectedPkg.price, duration: selectedPkg.duration_days },
         isUpgrade: action === 'upgrade',
         activePackageName: activeBasicSub?.package_name,
+        activeSubscription: activeBasicSub ?? null,
       }
     });
   };

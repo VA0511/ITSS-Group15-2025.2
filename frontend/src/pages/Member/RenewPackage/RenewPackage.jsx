@@ -8,12 +8,6 @@ import { toast } from 'sonner';
 
 const renewalMonthOptions = [1, 3, 6, 12];
 
-const generateRandomRenewalPrice = (months) => {
-  const basePrice = 500000;
-  const pricePerMonth = basePrice + Math.random() * 100000;
-  return Math.floor(pricePerMonth * months);
-};
-
 const RenewPackage = () => {
   const navigate = useNavigate();
   const { data: packagesRes, isLoading } = useMemberPackages();
@@ -47,7 +41,10 @@ const RenewPackage = () => {
 
   const renewalPrice = useMemo(() => {
     if (!selectedPkg) return 0;
-    return generateRandomRenewalPrice(renewalMonths);
+    const pricePerMonth = typeof selectedPkg.price === 'number'
+      ? selectedPkg.price
+      : parseInt(String(selectedPkg.price ?? 0).replace(/[^\d]/g, ''), 10) || 0;
+    return pricePerMonth * renewalMonths;
   }, [selectedPkg, renewalMonths]);
 
   const calculateNewEndDate = () => {

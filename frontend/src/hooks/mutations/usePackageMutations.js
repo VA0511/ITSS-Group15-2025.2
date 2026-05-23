@@ -118,6 +118,21 @@ export const useRegisterPackage = () => {
   });
 };
 
+export const useUpgradePackage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (upgradeData) => packageService.upgradePackage(upgradeData),
+    onError: () => {
+      toast.error('Nâng cấp gói tập thất bại. Vui lòng thử lại.');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['memberPackages'] });
+      toast.success('Nâng cấp gói tập thành công!');
+    },
+  });
+};
+
 export const useRenewPackage = () => {
   const queryClient = useQueryClient();
 

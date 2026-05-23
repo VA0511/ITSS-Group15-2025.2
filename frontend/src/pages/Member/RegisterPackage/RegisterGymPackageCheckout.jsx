@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -9,10 +9,11 @@ import {
   CheckCircle2,
   Landmark,
   TrendingUp,
+  Gift,
 } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import { toast } from '@/utils/toast';
-import { useRegisterPackage } from '@/hooks/mutations/usePackageMutations';
+import { useRegisterPackage, useUpgradePackage } from '@/hooks/mutations/usePackageMutations';
 
 const RegisterGymPackageCheckout = () => {
   const navigate = useNavigate();
@@ -20,13 +21,35 @@ const RegisterGymPackageCheckout = () => {
   const selectedPackage = location.state?.package;
   const isUpgrade = location.state?.isUpgrade;
   const activePackageName = location.state?.activePackageName;
+  const activeSubscription = location.state?.activeSubscription;
   const [paymentMethod, setPaymentMethod] = useState('vnpay');
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   const registerPackageMutation = useRegisterPackage();
+  const upgradePackageMutation = useUpgradePackage();
+
+  // Pro-rate calculation: remaining value of old package → extra VIP days
+  const upgradeCalc = useMemo(() => {
+    if (!isUpgrade || !activeSubscription) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const oldEnd = new Date(activeSubscription.end_date || activeSubscription.endDate);
+    const remainingDays = Math.max(0, Math.ceil((oldEnd - today) / (1000 * 60 * 60 * 24)));
+    const oldStart = new Date(activeSubscription.start_date || activeSubscription.startDate || activeSubscription.registration_date);
+    const oldDuration = Math.max(1, Math.ceil((oldEnd - oldStart) / (1000 * 60 * 60 * 24)));
+    const oldDailyRate = (activeSubscription.price || 0) / oldDuration;
+    const remainingValue = remainingDays * oldDailyRate;
+    const vipDuration = selectedPackage?.duration_days || selectedPackage?.duration || 30;
+    const vipPrice = selectedPackage?.price || 0;
+    const vipDailyRate = vipDuration > 0 ? vipPrice / vipDuration : 0;
+    const extraDays = vipDailyRate > 0 ? Math.floor(remainingValue / vipDailyRate) : remainingDays;
+    const newEnd = new Date();
+    newEnd.setDate(newEnd.getDate() + vipDuration + extraDays);
+    return { remainingDays, remainingValue: Math.round(remainingValue), extraDays, newEndDate: newEnd, vipDuration };
+  }, [isUpgrade, activeSubscription, selectedPackage]);
 
   // Xử lý tính toán giá tiền
-  const priceValue = parseInt(selectedPackage?.price?.replace(/[^\d]/g, "") || "0", 10) || 0;
+  const priceValue = parseInt(String(selectedPackage?.price ?? 0).replace(/[^\d]/g, ""), 10) || 0;
   const vat = priceValue * 0.1; // VAT 10%
   const totalAmount = priceValue + vat;
 
@@ -41,32 +64,30 @@ const RegisterGymPackageCheckout = () => {
   }
 
   const handlePayment = async () => {
+    if (isProcessing || registerPackageMutation.isPending || upgradePackageMutation.isPending) return;
     setIsProcessing(true);
-    
     try {
-      // Simulate payment processing for new registrations
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await registerPackageMutation.mutateAsync({
-        ...selectedPackage,
-        paymentMethod,
-        registrationDate: new Date().toISOString(),
-      });
-      
-      toast.success("Thanh toán thành công! Gói tập đã được kích hoạt.");
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      if (isUpgrade && activeSubscription && upgradeCalc) {
+        await upgradePackageMutation.mutateAsync({
+          subscriptionId: activeSubscription.id,
+          newPackageId: selectedPackage.id,
+          newEndDate: upgradeCalc.newEndDate.toISOString(),
+        });
+        toast.success(`Nâng cấp thành công! Gói VIP có hiệu lực đến ${upgradeCalc.newEndDate.toLocaleDateString('vi-VN')}.`);
+      } else {
+        await registerPackageMutation.mutateAsync({
+          ...selectedPackage,
+          paymentMethod,
+          registrationDate: new Date().toISOString(),
+        });
+        toast.success("Thanh toán thành công! Gói tập đã được kích hoạt.");
+      }
       navigate("/member/my-package");
     } catch (error) {
       console.error('Checkout error:', error);
-      const status = error?.response?.status || (error?.message?.includes('409') ? 409 : null);
-      const errMsg = typeof error?.response?.data === 'string' ? error.response.data.trim() : '';
-      if (status === 409) {
-        if (errMsg === 'already_on_highest_tier') {
-          toast.error('Gói của bạn đã là VIP — tier cao nhất. Dùng chức năng Gia hạn để kéo dài thời gian.');
-        } else {
-          toast.error('Chỉ có thể nâng cấp từ gói thường lên gói VIP.');
-        }
-      } else {
-        toast.error('Đăng ký gói tập thất bại. Vui lòng thử lại.');
-      }
+      toast.error('Thanh toán thất bại. Vui lòng thử lại.');
     } finally {
       setIsProcessing(false);
     }
@@ -93,10 +114,13 @@ const RegisterGymPackageCheckout = () => {
       {isUpgrade && activePackageName && (
         <div className="mb-6 rounded-xl border border-blue-300 bg-blue-50 dark:bg-blue-900/10 dark:border-blue-700 p-4 flex items-start gap-3">
           <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">Nâng cấp gói tập</p>
             <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-              Bạn đang nâng cấp từ <strong>{activePackageName}</strong> lên <strong>{selectedPackage?.name}</strong>. Gói cũ sẽ bị thay thế.
+              Nâng cấp từ <strong>{activePackageName}</strong> lên <strong>{selectedPackage?.name}</strong>.
+              {upgradeCalc && upgradeCalc.extraDays > 0 && (
+                <> {upgradeCalc.remainingDays} ngày còn lại được quy đổi thành <strong>{upgradeCalc.extraDays} ngày VIP</strong> cộng thêm.</>
+              )}
             </p>
           </div>
         </div>
@@ -386,45 +410,58 @@ const RegisterGymPackageCheckout = () => {
             <div className="space-y-4 text-sm mb-6">
               <div className="flex justify-between items-start">
                 <span className="text-gray-600 dark:text-gray-400 font-medium">
-                  Gói tập:
+                  {isUpgrade ? 'Nâng cấp lên:' : 'Gói tập:'}
                 </span>
                 <span className="font-bold text-gray-900 dark:text-white text-right break-words w-1/2">
                   {selectedPackage?.name}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  Loại gói:
-                </span>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {selectedPackage?.type === 'vip' ? 'Gói VIP' : 'Gói Cơ Bản'}
-                </span>
-              </div>
-              
-              {selectedPackage?.gender === 'female' && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Loại hành động:
-                  </span>
-                  <span className="text-sm px-2 py-1 rounded bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 font-semibold">Khu vực nữ</span>
-                </div>
+
+              {isUpgrade && upgradeCalc ? (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Thời hạn VIP mới:</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{upgradeCalc.vipDuration} ngày</span>
+                  </div>
+                  {upgradeCalc.extraDays > 0 && (
+                    <div className="flex justify-between items-center p-2.5 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800">
+                      <span className="text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                        <Gift className="h-3.5 w-3.5" />
+                        Cộng thêm ({upgradeCalc.remainingDays} ngày cũ):
+                      </span>
+                      <span className="font-bold text-green-700 dark:text-green-400">+{upgradeCalc.extraDays} ngày</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-semibold">
+                    <span className="text-gray-600 dark:text-gray-400">Tổng thời hạn:</span>
+                    <span className="text-blue-600 dark:text-blue-400">{upgradeCalc.vipDuration + upgradeCalc.extraDays} ngày</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Hết hạn mới:</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{upgradeCalc.newEndDate.toLocaleDateString('vi-VN')}</span>
+                  </div>
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Thanh toán:</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{priceValue.toLocaleString("vi-VN")} đ</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Thuế (VAT 10%):</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{vat.toLocaleString("vi-VN")} đ</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Tạm tính:</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{priceValue.toLocaleString("vi-VN")} đ</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Thuế (VAT 10%):</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{vat.toLocaleString("vi-VN")} đ</span>
+                  </div>
+                </>
               )}
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  Tạm tính:
-                </span>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {priceValue.toLocaleString("vi-VN")} đ
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  Thuế (VAT 10%):
-                </span>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {vat.toLocaleString("vi-VN")} đ
-                </span>
-              </div>
+
               <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-base font-bold text-gray-900 dark:text-white">
                   Tổng thanh toán:
@@ -439,12 +476,14 @@ const RegisterGymPackageCheckout = () => {
               className="w-full font-bold shadow-lg"
               size="lg"
               onClick={handlePayment}
-              disabled={isProcessing || registerPackageMutation.isPending}
+              disabled={isProcessing || registerPackageMutation.isPending || upgradePackageMutation.isPending}
               leftIcon={
-                isProcessing || registerPackageMutation.isPending ? undefined : <ShieldCheck className="h-5 w-5" />
+                isProcessing || registerPackageMutation.isPending || upgradePackageMutation.isPending
+                  ? undefined : <ShieldCheck className="h-5 w-5" />
               }
             >
-              {isProcessing || registerPackageMutation.isPending ? "Đang xử lý..." : "Xác nhận & Hoàn tất"}
+              {isProcessing || registerPackageMutation.isPending || upgradePackageMutation.isPending
+                ? "Đang xử lý..." : isUpgrade ? "Xác nhận Nâng Cấp" : "Xác nhận & Hoàn tất"}
             </Button>
 
             <p className="text-xs text-center text-gray-500 mt-4 leading-relaxed">

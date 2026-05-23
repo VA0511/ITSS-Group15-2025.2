@@ -33,7 +33,7 @@ const PaymentCheckout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Xử lý tính toán giá tiền
-  const priceValue = isRenewal ? selectedPkg.renewalPrice : (parseInt(selectedPkg.price?.replace(/[^\d]/g, "") || "0", 10) || 0);
+  const priceValue = isRenewal ? selectedPkg.renewalPrice : (parseInt(String(selectedPkg.price ?? 0).replace(/[^\d]/g, ""), 10) || 0);
   const vat = priceValue * 0.1; // VAT 10%
   const totalAmount = priceValue + vat;
 

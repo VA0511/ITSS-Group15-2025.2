@@ -16,4 +16,5 @@ type SubscriptionRepository interface {
 	GetActiveByMemberID(memberID int) (*entity.Subscription, error)
 	GetActiveByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error)
 	Renew(id int, newEndDate time.Time) error
+	Upgrade(id, newPackageID int, newEndDate time.Time) error
 }

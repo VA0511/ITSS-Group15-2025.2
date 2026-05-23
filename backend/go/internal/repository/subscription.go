@@ -17,6 +17,7 @@ type SubscriptionRepository interface {
 	GetActiveByMemberID(memberID int) (*entity.Subscription, error)
 	GetActiveByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error)
 	Renew(id int, newEndDate time.Time) error
+	Upgrade(id, newPackageID int, newEndDate time.Time) error
 }
 
 type subscriptionRepository struct {
@@ -143,6 +144,19 @@ func (r *subscriptionRepository) GetActiveByMemberID(memberID int) (*entity.Subs
 		return nil, err
 	}
 	return &sub, nil
+}
+
+func (r *subscriptionRepository) Upgrade(id, newPackageID int, newEndDate time.Time) error {
+	query := `UPDATE "Subscription" SET package_id = $1, end_date = $2 WHERE id = $3`
+	result, err := r.db.Exec(query, newPackageID, newEndDate, id)
+	if err != nil {
+		return err
+	}
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (r *subscriptionRepository) GetActiveByMemberIDAndCategoryID(memberID, categoryID int) (*entity.Subscription, error) {
