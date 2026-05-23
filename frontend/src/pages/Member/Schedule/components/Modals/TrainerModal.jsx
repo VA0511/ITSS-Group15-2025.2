@@ -32,7 +32,7 @@ const TrainerModal = ({ selectedTrainer, ptDetails = [], setSelectedTrainer, set
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-scrollbar">
-      <div className="bg-white dark:bg-gray-950 rounded-2xl max-w-2xl w-full my-auto border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-white dark:bg-gray-950 rounded-2xl max-w-3xl w-full my-auto border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header với ảnh nền hoặc gradient */}
         <div className="h-24 bg-gradient-to-r from-blue-600 to-indigo-700 relative">
           <button
@@ -96,13 +96,13 @@ const TrainerModal = ({ selectedTrainer, ptDetails = [], setSelectedTrainer, set
                 {hasAvailability ? (
                   <div className="space-y-4">
                     {Object.entries(availability).map(([dayKey, slots]) => slots.length > 0 && (
-                      <div key={dayKey} className="flex gap-4 items-start">
-                        <div className="min-w-[80px] text-xs font-bold text-gray-900 dark:text-white py-1">
+                      <div key={dayKey} className="flex gap-3 items-center">
+                        <div className="w-[64px] shrink-0 text-xs font-bold text-gray-900 dark:text-white">
                           {DAYS_MAP[dayKey]}
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5">
                           {slots.map(slot => (
-                            <span key={slot} className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 text-[10px] font-semibold rounded-md border border-gray-200 dark:border-gray-800">
+                            <span key={slot} className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 text-[10px] font-semibold rounded-md border border-gray-200 dark:border-gray-800 whitespace-nowrap">
                               {slot}
                             </span>
                           ))}
@@ -133,7 +133,7 @@ const TrainerModal = ({ selectedTrainer, ptDetails = [], setSelectedTrainer, set
                     <div className="h-8 w-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center text-blue-600 shadow-sm border border-gray-100 dark:border-gray-700">
                       <Mail className="h-4 w-4" />
                     </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 break-all">{pt.email || "N/A"}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{pt.email || "N/A"}</span>
                   </div>
                 </div>
               </div>

@@ -56,7 +56,7 @@ const MainLayout = () => {
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 relative">
           
           {/* Dùng div giới hạn chiều dài tối đa (max-w-7xl) để web không biến dạng với màn hình quá cong/to. Kèm hiệu ứng Fade-in ảo ma. */}
-          <div className="mx-auto w-full max-w-7xl animate-in fade-in zoom-in-95 duration-500 ease-in-out pb-10">
+          <div className="w-full animate-in fade-in zoom-in-95 duration-500 ease-in-out pb-10">
             {/* The Outlet is where nested routes render their element */}
             <Outlet />
           </div>

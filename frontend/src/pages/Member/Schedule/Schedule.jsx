@@ -278,58 +278,67 @@ const Schedule = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-4xl mx-auto w-full pb-20 no-scrollbar">
-      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 dark:shadow-none">
-        <ScheduleTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          setSelectedDate={setSelectedDate}
-          defaultRequestDate={defaultRequestDate}
-          openScheduledTab={openScheduledTab}
-          todayKey={todayKey}
-        />
+    <div className="pb-10">
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 dark:shadow-none flex flex-col lg:flex-row" style={{ minHeight: '680px' }}>
 
-        <CalendarView
-          currentDate={currentDate}
-          prevMonth={prevMonth}
-          nextMonth={nextMonth}
-          monthName={monthName}
-          calendarDays={buildCalendar()}
-          dateKey={dateKey}
-          year={currentDate.getFullYear()}
-          month={currentDate.getMonth()}
-          displayData={currentData}
-          selectedDate={selectedDate}
-          selectDay={selectDay}
-          getCalendarDotClass={getCalendarDotClass}
-          activeTab={activeTab}
-        />
-
-        {activeTab === 'booking' ? (
-          <PTCardList 
-            ptDetails={ptDetails} 
-            setSelectedTrainer={setSelectedTrainer} 
-            bookings={bookings}
-          />
-        ) : (
-          <WorkoutList
+        {/* Left panel: tabs + calendar */}
+        <div className="lg:w-[55%] shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-100 dark:border-gray-800">
+          <ScheduleTabs
             activeTab={activeTab}
-            selectedDate={selectedDate}
-            selectedDateObject={selectedDateObject}
-            dayNames={dayNames}
-            selectedWorkouts={selectedWorkouts}
-            getWorkoutDisplayName={(w) => (activeTab === 'booking' ? w.trainer : w.name)}
-            setSelectedWorkout={setSelectedWorkout}
-            getStatusBadgeClass={getStatusBadgeClass}
-            getAccentColor={getAccentColor}
-            setSelectedTrainer={setSelectedTrainer}
-            setBookingForm={setBookingForm}
-            handleConfirmAttendance={handleConfirmAttendance}
-            setSelectedDeniedRequest={setSelectedDeniedRequest}
-            nextUpcomingWorkout={null}
-            isPendingScheduledStatus={isPendingScheduledStatus}
+            setActiveTab={setActiveTab}
+            setSelectedDate={setSelectedDate}
+            defaultRequestDate={defaultRequestDate}
+            openScheduledTab={openScheduledTab}
+            todayKey={todayKey}
           />
-        )}
+          <div className="flex-1">
+            <CalendarView
+              currentDate={currentDate}
+              prevMonth={prevMonth}
+              nextMonth={nextMonth}
+              monthName={monthName}
+              calendarDays={buildCalendar()}
+              dateKey={dateKey}
+              year={currentDate.getFullYear()}
+              month={currentDate.getMonth()}
+              displayData={currentData}
+              selectedDate={selectedDate}
+              selectDay={selectDay}
+              getCalendarDotClass={getCalendarDotClass}
+              activeTab={activeTab}
+            />
+          </div>
+        </div>
+
+        {/* Right panel: content */}
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === 'booking' ? (
+            <PTCardList
+              ptDetails={ptDetails}
+              setSelectedTrainer={setSelectedTrainer}
+              bookings={bookings}
+            />
+          ) : (
+            <WorkoutList
+              activeTab={activeTab}
+              selectedDate={selectedDate}
+              selectedDateObject={selectedDateObject}
+              dayNames={dayNames}
+              selectedWorkouts={selectedWorkouts}
+              getWorkoutDisplayName={(w) => w.name}
+              setSelectedWorkout={setSelectedWorkout}
+              getStatusBadgeClass={getStatusBadgeClass}
+              getAccentColor={getAccentColor}
+              setSelectedTrainer={setSelectedTrainer}
+              setBookingForm={setBookingForm}
+              handleConfirmAttendance={handleConfirmAttendance}
+              setSelectedDeniedRequest={setSelectedDeniedRequest}
+              nextUpcomingWorkout={null}
+              isPendingScheduledStatus={isPendingScheduledStatus}
+            />
+          )}
+        </div>
+
       </div>
 
       <TrainerModal

@@ -242,7 +242,7 @@ const TrainerRequests = () => {
           />
         )}
 
-        <div className="flex-1 overflow-y-auto p-8 max-w-2xl mx-auto w-full">
+        <div className="flex-1 overflow-y-auto p-8 w-full">
           <button
             onClick={() => setViewingDetail(false)}
             className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-800 mb-6 transition-colors"
