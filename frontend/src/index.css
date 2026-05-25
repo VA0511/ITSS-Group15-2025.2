@@ -31,28 +31,27 @@
 }
 
 @media print {
-  /* Ẩn sidebar, header, footer khi in */
-  aside,
-  header,
-  footer {
-    display: none !important;
+  /* Ẩn tất cả, chỉ hiện nội dung trong <main> */
+  body * {
+    visibility: hidden;
   }
 
-  /* Bỏ overflow ẩn để nội dung hiển thị đầy đủ */
-  body,
-  #root,
-  .flex.h-screen,
-  .flex.flex-1.flex-col,
-  main {
-    display: block !important;
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
+  main,
+  main * {
+    visibility: visible;
   }
 
-  /* Nội dung báo cáo chiếm toàn bộ trang */
   main {
-    padding: 20px !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: auto;
+    padding: 24px;
+    overflow: visible;
+  }
+
+  @page {
+    margin: 1cm;
   }
 }
 

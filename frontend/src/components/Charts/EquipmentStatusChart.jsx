@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import useThemeStore from '@/store/useThemeStore';
 
@@ -24,16 +24,22 @@ const EquipmentStatusChart = ({ className }) => {
         <p className="text-sm text-gray-500 dark:text-gray-400">Theo dõi số thiết bị đang hoạt động, bảo trì và đã hỏng</p>
       </div>
 
-      <div className="h-[300px] w-full">
+      <div className="h-[320px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="45%" innerRadius={55} outerRadius={95} paddingAngle={4}>
+            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="42%" innerRadius={55} outerRadius={90} paddingAngle={4}>
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Pie>
             <Tooltip
               contentStyle={{ borderRadius: '12px', border: isDark ? '1px solid #374151' : '1px solid #e5e7eb', backgroundColor: isDark ? '#111827' : '#ffffff', color: isDark ? '#f9fafb' : '#111827' }}
+            />
+            <Legend
+              verticalAlign="bottom"
+              height={36}
+              iconType="circle"
+              wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
             />
           </PieChart>
         </ResponsiveContainer>

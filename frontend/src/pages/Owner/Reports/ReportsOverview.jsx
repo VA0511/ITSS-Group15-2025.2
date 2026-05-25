@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, BarChart3, Users, Download } from 'lucide-react';
-import Button from '@/components/Common/Button';
+import { FileText, BarChart3, Users } from 'lucide-react';
 
 const cards = [
   {
@@ -27,14 +26,11 @@ const cards = [
 const ReportsOverview = () => {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Báo cáo chủ phòng tập</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Tập trung tất cả các báo cáo chiến lược để ra quyết định nhanh và chính xác.
-          </p>
-        </div>
-        <Button leftIcon={<Download className="h-4 w-4" />}>Xuất báo cáo tổng hợp</Button>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Báo cáo chủ phòng tập</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Tập trung tất cả các báo cáo chiến lược để ra quyết định nhanh và chính xác.
+        </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
