@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -7,6 +7,17 @@ import { memberService } from '@/services/memberService';
 import { packageService } from '@/services/packageService';
 import { toast } from '@/utils/toast';
 import Button from '@/components/Common/Button';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+const getEmailErrorMsg = (error) => {
+  const status = error?.response?.status;
+  const raw = error?.response?.data?.message || error?.response?.data || '';
+  const msg = typeof raw === 'string' ? raw.toLowerCase() : '';
+  if (msg.includes('email') || msg.includes('mail')) return raw;
+  if (status === 409) return 'Email này đã được sử dụng bởi tài khoản khác.';
+  return null;
+};
 
 const CreateMemberWithAccount = () => {
   const navigate = useNavigate();
@@ -22,6 +33,8 @@ const CreateMemberWithAccount = () => {
     package_id: '',
   });
 
+  const [emailError, setEmailError] = useState('');
+
   const { data: packagesData } = useQuery({
     queryKey: ['packages'],
     queryFn: () => packageService.getPackages(),
@@ -32,6 +45,27 @@ const CreateMemberWithAccount = () => {
     : Array.isArray(packagesData?.data)
       ? packagesData.data
       : [];
+
+  const filteredPackages = packages.filter((pkg) => {
+    if (form.gender === 'Male') {
+      return !/nữ/i.test(pkg.package_name);
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    if (filteredPackages.length > 0 && !form.package_id) {
+      setForm((prev) => ({ ...prev, package_id: String(filteredPackages[0].id) }));
+    }
+  }, [packages]);
+
+  // Khi đổi giới tính, nếu gói đang chọn bị ẩn thì reset về gói đầu tiên còn lại
+  useEffect(() => {
+    const stillAvailable = filteredPackages.some((p) => String(p.id) === String(form.package_id));
+    if (!stillAvailable && filteredPackages.length > 0) {
+      setForm((prev) => ({ ...prev, package_id: String(filteredPackages[0].id) }));
+    }
+  }, [form.gender]);
 
   const mutation = useMutation({
     mutationFn: (data) => memberService.createMemberWithAccount(data),
@@ -45,21 +79,42 @@ const CreateMemberWithAccount = () => {
       navigate('/manager/members');
     },
     onError: (error) => {
-      toast.error(error?.response?.data || error?.message || 'Tạo tài khoản thất bại');
+      const emailMsg = getEmailErrorMsg(error);
+      if (emailMsg) {
+        setEmailError(emailMsg);
+      } else {
+        toast.error(error?.response?.data?.message || error?.response?.data || error?.message || 'Tạo tài khoản thất bại');
+      }
     },
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (name === 'email') setEmailError('');
+  };
+
+  const handleEmailBlur = () => {
+    if (form.email && !EMAIL_REGEX.test(form.email.trim())) {
+      setEmailError('Email không đúng định dạng. Ví dụ: example@gmail.com');
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.full_name.trim() || !form.email.trim()) {
-      toast.error('Vui lòng nhập họ tên và email');
+    if (!form.full_name.trim()) {
+      toast.error('Vui lòng nhập họ và tên');
       return;
     }
+    if (!form.email.trim()) {
+      setEmailError('Email là bắt buộc.');
+      return;
+    }
+    if (!EMAIL_REGEX.test(form.email.trim())) {
+      setEmailError('Email không đúng định dạng. Ví dụ: example@gmail.com');
+      return;
+    }
+    setEmailError('');
 
     const payload = {
       ...form,
@@ -111,14 +166,23 @@ const CreateMemberWithAccount = () => {
               Email <span className="text-red-500">*</span>
             </label>
             <input
-              type="email"
+              type="text"
               name="email"
               value={form.email}
               onChange={handleChange}
-              required
+              onBlur={handleEmailBlur}
               placeholder="member@example.com"
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+              className={`w-full rounded-lg border bg-gray-50 px-3 py-2.5 text-sm outline-none transition focus:ring-2 dark:bg-gray-900 dark:text-white ${
+                emailError
+                  ? 'border-red-400 focus:border-red-500 focus:ring-red-500/10'
+                  : 'border-gray-200 focus:border-blue-500 focus:ring-blue-500/10 dark:border-gray-700'
+              }`}
             />
+            {emailError && (
+              <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <span>⚠</span> {emailError}
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -172,16 +236,16 @@ const CreateMemberWithAccount = () => {
 
           <div className="space-y-1.5 sm:col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Gói tập đăng ký
+              Gói tập đăng ký <span className="text-red-500">*</span>
             </label>
             <select
               name="package_id"
               value={form.package_id}
               onChange={handleChange}
+              required
               className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             >
-              <option value="">-- Không chọn gói --</option>
-              {packages.map((pkg) => (
+              {filteredPackages.map((pkg) => (
                 <option key={pkg.id} value={pkg.id}>
                   {pkg.package_name} — {pkg.duration_days} ngày —{' '}
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(pkg.price)}
@@ -200,7 +264,7 @@ const CreateMemberWithAccount = () => {
                 <li>Tạo tài khoản với email làm tên đăng nhập</li>
                 <li>Tạo mật khẩu tạm thời ngẫu nhiên</li>
                 <li>Gửi thông tin đăng nhập đến email hội viên</li>
-                {form.package_id && <li>Đăng ký gói tập đã chọn</li>}
+                <li>Đăng ký gói tập đã chọn</li>
               </ul>
             </div>
           </div>

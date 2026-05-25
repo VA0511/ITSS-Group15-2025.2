@@ -7,6 +7,17 @@ import { Dumbbell, User, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import gigachadVideo from '@/assets/mp_.mp4';
 
 
+const getLoginError = (error) => {
+  const status = error?.response?.status;
+  const serverMsg = error?.response?.data?.message || error?.response?.data?.error;
+  if (serverMsg) return serverMsg;
+  if (status === 401) return 'Tên đăng nhập hoặc mật khẩu không chính xác.';
+  if (status === 403) return 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.';
+  if (status === 404) return 'Tài khoản không tồn tại trong hệ thống.';
+  if (!navigator.onLine || error?.code === 'ERR_NETWORK') return 'Không kết nối được tới server. Vui lòng kiểm tra mạng.';
+  return 'Có lỗi xảy ra, vui lòng thử lại.';
+};
+
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const loginMutation = useLogin();
@@ -51,7 +62,7 @@ const Login = () => {
             {/* Component báo lỗi trả về từ API Backend */}
             {loginMutation.isError && (
               <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400 animate-in shake">
-                {loginMutation.error?.response?.data?.message || loginMutation.error?.message || 'Có lỗi xảy ra, vui lòng thử lại.'}
+                {getLoginError(loginMutation.error)}
               </div>
             )}
 

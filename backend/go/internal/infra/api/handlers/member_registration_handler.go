@@ -79,6 +79,17 @@ func (h *MemberRegistrationHandler) CreateMemberWithAccount(w http.ResponseWrite
 
 	ctx := r.Context()
 
+	// Kiểm tra email đã được đăng ký chưa
+	existing, _ := h.authRepo.FindAccountByUsername(ctx, req.Email)
+	if existing != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Email này đã được sử dụng bởi một tài khoản khác.",
+		})
+		return
+	}
+
 	memberRoleID, err := h.authRepo.GetRoleIDByName(ctx, "MEMBER")
 	if err != nil {
 		http.Error(w, "failed to get member role: "+err.Error(), http.StatusInternalServerError)
@@ -95,7 +106,16 @@ func (h *MemberRegistrationHandler) CreateMemberWithAccount(w http.ResponseWrite
 		IsFirstLogin: true,
 	}
 	if err := h.authRepo.CreateAccount(ctx, account); err != nil {
-		http.Error(w, "failed to create account: "+err.Error(), http.StatusInternalServerError)
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "duplicate") || strings.Contains(errMsg, "unique") {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusConflict)
+			json.NewEncoder(w).Encode(map[string]string{
+				"message": "Email này đã được sử dụng bởi một tài khoản khác.",
+			})
+			return
+		}
+		http.Error(w, "failed to create account: "+errMsg, http.StatusInternalServerError)
 		return
 	}
 
