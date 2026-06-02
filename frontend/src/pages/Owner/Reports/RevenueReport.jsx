@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import RevenueChart from '@/components/Charts/RevenueChart';
 import { Download, TrendingUp, ShoppingBag, ReceiptText, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/Common/Button';
 import { useTransactions } from '@/hooks/queries/useTransactions';
 
@@ -16,13 +17,8 @@ const parseArr = (raw) => {
 const fmt = (n) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
 
-const PERIOD_LABELS = {
-  monthly: 'Theo tháng (12 tháng gần nhất)',
-  quarterly: 'Theo quý',
-  yearly: 'Theo năm',
-};
-
 const RevenueReport = () => {
+  const { t } = useTranslation('owner');
   const [period, setPeriod] = useState('monthly');
   const { data: txRaw, isLoading } = useTransactions();
   const transactions = useMemo(() => parseArr(txRaw), [txRaw]);
@@ -103,17 +99,17 @@ const RevenueReport = () => {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Báo cáo Doanh thu</h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Phân tích số liệu tài chính chuyên sâu.</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('revenue_report.title')}</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('revenue_report.subtitle')}</p>
           </div>
         </div>
-        <Button leftIcon={<Download className="h-4 w-4" />} onClick={() => window.print()}>Xuất báo cáo PDF</Button>
+        <Button leftIcon={<Download className="h-4 w-4" />} onClick={() => window.print()}>{t('revenue_report.export_btn')}</Button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Tổng doanh thu</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('revenue_report.stats.total_revenue')}</p>
             <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
               {isLoading ? '...' : fmt(totalRevenue)}
             </p>
@@ -125,7 +121,7 @@ const RevenueReport = () => {
 
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Số giao dịch</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('revenue_report.stats.transactions')}</p>
             <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
               {isLoading ? '...' : totalTransactions}
             </p>
@@ -136,15 +132,15 @@ const RevenueReport = () => {
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Lọc theo kỳ</label>
+          <label className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('revenue_report.filter.label')}</label>
           <select
             className="mt-3 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-slate-400 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
           >
-            <option value="monthly">Theo tháng</option>
-            <option value="quarterly">Theo quý</option>
-            <option value="yearly">Theo năm</option>
+            <option value="monthly">{t('revenue_report.filter.monthly')}</option>
+            <option value="quarterly">{t('revenue_report.filter.quarterly')}</option>
+            <option value="yearly">{t('revenue_report.filter.yearly')}</option>
           </select>
         </div>
       </div>
@@ -152,40 +148,40 @@ const RevenueReport = () => {
       <div className="mt-2">
         <RevenueChart
           data={selectedData}
-          title="Biểu đồ doanh thu"
-          description={PERIOD_LABELS[period]}
+          title={t('revenue_report.chart.title')}
+          description={t(`revenue_report.period.${period}`)}
         />
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <ReceiptText className="h-5 w-5 text-gray-400" />
-          Lịch sử giao dịch gần nhất
+          {t('revenue_report.history.title')}
         </h3>
         {isLoading ? (
-          <p className="text-sm text-gray-400 text-center py-8">Đang tải...</p>
+          <p className="text-sm text-gray-400 text-center py-8">{t('revenue_report.loading')}</p>
         ) : recentTx.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">Chưa có dữ liệu giao dịch.</p>
+          <p className="text-sm text-gray-400 text-center py-8">{t('revenue_report.no_data')}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <th className="pb-3 text-left font-semibold text-gray-500 dark:text-gray-400">Khách hàng</th>
-                  <th className="pb-3 text-left font-semibold text-gray-500 dark:text-gray-400">Gói tập</th>
-                  <th className="pb-3 text-left font-semibold text-gray-500 dark:text-gray-400">Loại</th>
-                  <th className="pb-3 text-right font-semibold text-gray-500 dark:text-gray-400">Số tiền</th>
-                  <th className="pb-3 text-right font-semibold text-gray-500 dark:text-gray-400">Ngày</th>
+                  <th className="pb-3 text-left font-semibold text-gray-500 dark:text-gray-400">{t('revenue_report.table.customer')}</th>
+                  <th className="pb-3 text-left font-semibold text-gray-500 dark:text-gray-400">{t('revenue_report.table.package')}</th>
+                  <th className="pb-3 text-left font-semibold text-gray-500 dark:text-gray-400">{t('revenue_report.table.type')}</th>
+                  <th className="pb-3 text-right font-semibold text-gray-500 dark:text-gray-400">{t('revenue_report.table.amount')}</th>
+                  <th className="pb-3 text-right font-semibold text-gray-500 dark:text-gray-400">{t('revenue_report.table.date')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800/60">
                 {recentTx.map((tx, i) => (
                   <tr key={tx.id ?? i} className="hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors">
-                    <td className="py-3 font-medium text-gray-900 dark:text-white">{tx.customerName || `Hội viên #${tx.memberId}`}</td>
+                    <td className="py-3 font-medium text-gray-900 dark:text-white">{tx.customerName || t('revenue_report.member_fallback', { id: tx.memberId })}</td>
                     <td className="py-3 text-gray-600 dark:text-gray-400">{tx.package || '—'}</td>
                     <td className="py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${tx.type === 'renewal' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}`}>
-                        {tx.type === 'renewal' ? 'Gia hạn' : 'Đăng ký'}
+                        {tx.type === 'renewal' ? t('revenue_report.type.renew') : t('revenue_report.type.new_registration')}
                       </span>
                     </td>
                     <td className="py-3 text-right font-semibold text-gray-900 dark:text-white">

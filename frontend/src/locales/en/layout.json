@@ -1,0 +1,31 @@
+{
+  "sidebar": {
+    "nav_label": "NAVIGATION",
+    "support_title": "Need help?",
+    "support_desc": "ITSS v2026 technical support.",
+    "support_link": "Submit a ticket →"
+  },
+  "menu": {
+    "overview": "Overview",
+    "rooms": "Gym Rooms",
+    "staffs": "Staff",
+    "members": "Members",
+    "packages": "Packages",
+    "equipment": "Equipment",
+    "feedback": "Feedback",
+    "accounts": "Accounts",
+    "reports": "Reports",
+    "profile": "My Profile",
+    "transactions": "Transactions",
+    "pt_schedule": "PT Schedule",
+    "students": "Students",
+    "teaching_schedule": "Teaching Schedule",
+    "availability": "Set Availability",
+    "evaluation": "Training Evaluation",
+    "register_package": "Register Package",
+    "my_package": "My Package",
+    "training_schedule": "Training Schedule",
+    "renew": "Renew Package",
+    "send_feedback": "Send Feedback"
+  }
+}

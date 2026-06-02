@@ -5,23 +5,26 @@ import { loginSchema } from '@/schemas/authSchemas';
 import { useLogin } from '@/hooks/mutations/useAuthMutations';
 import { Link } from 'react-router-dom';
 import { Dumbbell, User, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import gigachadVideo from '@/assets/mp_.mp4';
+import LanguageSwitcher from '@/components/Common/LanguageSwitcher';
 
 
-const getLoginError = (error) => {
+const getLoginError = (error, t) => {
   const status = error?.response?.status;
   const serverMsg = error?.response?.data?.message || error?.response?.data?.error;
   if (serverMsg) return serverMsg;
-  if (status === 401) return 'Tên đăng nhập hoặc mật khẩu không chính xác.';
-  if (status === 403) return 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.';
-  if (status === 404) return 'Tài khoản không tồn tại trong hệ thống.';
-  if (!navigator.onLine || error?.code === 'ERR_NETWORK') return 'Không kết nối được tới server. Vui lòng kiểm tra mạng.';
-  return 'Có lỗi xảy ra, vui lòng thử lại.';
+  if (status === 401) return t('auth:login.error.unauthorized');
+  if (status === 403) return t('auth:login.error.forbidden');
+  if (status === 404) return t('auth:login.error.not_found');
+  if (!navigator.onLine || error?.code === 'ERR_NETWORK') return t('auth:login.error.network');
+  return t('auth:login.error.default');
 };
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const loginMutation = useLogin();
+  const { t } = useTranslation(['auth', 'common']);
 
   const {
     register,
@@ -38,38 +41,42 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen w-full font-sans text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-950">
-      
+
       {/* Cột trái: Form Đăng nhập */}
       <div className="flex w-full flex-col justify-center px-4 sm:px-12 lg:w-1/2 lg:px-24 xl:px-32">
         <div className="mx-auto w-full max-w-md animate-in fade-in slide-in-from-bottom-8 duration-700">
-          
-          {/* Logo */}
-          <div className="mb-10 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
-              <Dumbbell className="h-7 w-7" />
+
+          {/* Logo + Language Switcher */}
+          <div className="mb-10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+                <Dumbbell className="h-7 w-7" />
+              </div>
+              <span className="text-2xl font-black tracking-tight uppercase">
+                Active<span className="text-blue-600 dark:text-blue-500">Gym</span>
+              </span>
             </div>
-            <span className="text-2xl font-black tracking-tight uppercase">
-              Active<span className="text-blue-600 dark:text-blue-500">Gym</span>
-            </span>
+            <LanguageSwitcher />
           </div>
 
-          <h1 className="text-3xl font-bold tracking-tight">Đăng nhập tài khoản</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('auth:login.title')}</h1>
           <p className="mt-3 text-gray-500 dark:text-gray-400">
-            Vui lòng nhập thông tin để truy cập hệ thống quản lý phòng tập.
+            {t('auth:login.subtitle')}
           </p>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            
-            {/* Component báo lỗi trả về từ API Backend */}
+
             {loginMutation.isError && (
               <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400 animate-in shake">
-                {getLoginError(loginMutation.error)}
+                {getLoginError(loginMutation.error, t)}
               </div>
             )}
 
             {/* Username Field */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tên đăng nhập</label>
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {t('auth:login.username_label')}
+              </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                   <User className="h-5 w-5" />
@@ -83,18 +90,22 @@ const Login = () => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
                       : 'border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-800 dark:focus:border-blue-500'
                   }`}
-                  placeholder="owner, manager01, ..."
+                  placeholder={t('auth:login.username_placeholder')}
                 />
               </div>
-              {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
+              {errors.username && (
+                <p className="text-sm text-red-500">{t(errors.username.message)}</p>
+              )}
             </div>
 
             {/* Password Field */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Mật khẩu</label>
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {t('auth:login.password_label')}
+                </label>
                 <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline">
-                  Quên mật khẩu?
+                  {t('auth:login.forgot_password')}
                 </Link>
               </div>
               <div className="relative">
@@ -109,7 +120,7 @@ const Login = () => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
                       : 'border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-gray-800 dark:focus:border-blue-500'
                   }`}
-                  placeholder="••••••••"
+                  placeholder={t('auth:login.password_placeholder')}
                 />
                 <button
                   type="button"
@@ -119,10 +130,10 @@ const Login = () => {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-sm text-red-500">{t(errors.password.message)}</p>
+              )}
             </div>
-            
-
 
             <button
               type="submit"
@@ -132,10 +143,10 @@ const Login = () => {
               {loginMutation.isPending ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Đang khởi tạo phiên...
+                  {t('auth:login.submitting')}
                 </>
               ) : (
-                'Đăng nhập ngay'
+                t('auth:login.submit')
               )}
             </button>
           </form>
@@ -159,13 +170,13 @@ const Login = () => {
         {/* Quote overlay */}
         <div className="absolute bottom-0 left-0 z-20 w-full p-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
           <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-sm font-medium tracking-wide text-white backdrop-blur-md mb-6 border border-white/20">
-            Hệ thống quản lý chuẩn 5 sao
+            {t('auth:login.hero_badge')}
           </div>
           <h2 className="text-4xl font-bold leading-tight text-white max-w-lg mb-4">
-            Quản trị phòng tập thông minh, chuyên nghiệp & hiệu quả.
+            {t('auth:login.hero_title')}
           </h2>
           <p className="text-lg text-gray-300 max-w-md">
-            Hệ thống cung cấp giải pháp toàn diện giúp kiểm soát nhân sự, gói tập và trải nghiệm khách hàng ở đẳng cấp cao nhất.
+            {t('auth:login.hero_desc')}
           </p>
         </div>
       </div>

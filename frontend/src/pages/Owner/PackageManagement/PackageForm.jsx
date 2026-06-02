@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PackageFormComponent from '@/components/Forms/PackageForm';
 import { ArrowLeft } from 'lucide-react';
 import Button from '@/components/Common/Button';
@@ -8,6 +9,7 @@ import { packageService } from '@/services/packageService';
 import { useCreatePackage, useUpdatePackage } from '@/hooks/mutations/usePackageMutation';
 
 const PackageFormPage = () => {
+  const { t } = useTranslation('owner');
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
@@ -34,7 +36,7 @@ const PackageFormPage = () => {
           });
         })
         .catch(err => {
-          toast.error("Lỗi tải thông tin gói tập");
+          toast.error(t('package.form.load_error'));
           console.error(err);
         })
         .finally(() => {
@@ -80,7 +82,7 @@ const PackageFormPage = () => {
   };
 
   if (isEditing && !initialData) {
-    return <div className="p-8 text-center text-gray-500">Đang tải dữ liệu...</div>;
+    return <div className="p-8 text-center text-gray-500">{t('package.form.loading')}</div>;
   }
 
   return (
@@ -93,12 +95,10 @@ const PackageFormPage = () => {
         </Link>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {isEditing ? 'Chỉnh sửa Gói tập' : 'Thiết lập Gói tập mới'}
+            {isEditing ? t('package.form.title_edit') : t('package.form.title_create')}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {isEditing 
-              ? 'Thay đổi thông tin, giá bán hoặc mô tả của gói tập này.' 
-              : 'Thêm dịch vụ thẻ tập mới vào hệ thống chi nhánh của bạn.'}
+            {isEditing ? t('package.form.subtitle_edit') : t('package.form.subtitle_create')}
           </p>
         </div>
       </div>

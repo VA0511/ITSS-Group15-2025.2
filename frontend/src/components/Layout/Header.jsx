@@ -1,13 +1,16 @@
 import React from 'react';
 import { Menu, Sun, Moon, LogOut, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '@/store/useAuthStore';
 import useThemeStore from '@/store/useThemeStore';
 import useUIStore from '@/store/useUIStore';
 import { toast } from '@/utils/toast';
 import axios from '@/lib/axios';
 import NotificationBell from '@/components/Common/NotificationBell';
+import LanguageSwitcher from '@/components/Common/LanguageSwitcher';
+
 const Header = () => {
-  // Lấy hàm xử lý đăng xuất và thông tin user từ Zustand Store
+  const { t } = useTranslation('common');
   const { user, logout, refreshToken } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
@@ -19,7 +22,7 @@ const Header = () => {
       }
     } finally {
       logout();
-      toast.success('Đăng xuất thành công', { description: 'Hẹn gặp lại bạn' });
+      toast.success(t('logout_success'), { description: t('logout_desc') });
     }
   };
 
@@ -40,6 +43,8 @@ const Header = () => {
       <div className="flex items-center gap-4">
         <NotificationBell />
 
+        <LanguageSwitcher />
+
         {/* Nút Đổi màu Sáng/Tối (Light/Dark Mode) */}
         <button
           onClick={toggleTheme}
@@ -57,7 +62,7 @@ const Header = () => {
           
           <div className="hidden flex-col md:flex">
             <span className="text-sm font-semibold leading-none text-gray-900 dark:text-white">
-              {user?.fullName || "Người dùng"}
+              {user?.fullName || t('guest')}
             </span>
             <span className="mt-1.5 text-xs font-medium leading-none text-gray-500 dark:text-gray-400">
               {user?.role ? user.role.toUpperCase() : "GUEST"}

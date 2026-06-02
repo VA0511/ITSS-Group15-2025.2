@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Dumbbell, ArrowLeft, Mail, Loader2, CheckCircle2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axios from '@/lib/axios';
 
 const ForgotPassword = () => {
@@ -8,12 +9,13 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation('auth');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) { setError('Vui lòng nhập email.'); return; }
+    if (!email.trim()) { setError(t('forgot_password.error.email_required')); return; }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!emailRegex.test(email.trim())) { setError('Email không đúng định dạng.'); return; }
+    if (!emailRegex.test(email.trim())) { setError(t('forgot_password.error.email_invalid')); return; }
     setError('');
     setIsLoading(true);
     try {
@@ -24,11 +26,11 @@ const ForgotPassword = () => {
       if (typeof msg === 'string' && msg) {
         setError(msg);
       } else if (err?.response?.status === 404) {
-        setError('Email này không tồn tại trong hệ thống. Vui lòng kiểm tra lại.');
+        setError(t('forgot_password.error.not_found'));
       } else if (err?.response?.status >= 500) {
-        setError('Không thể gửi email. Vui lòng kiểm tra lại địa chỉ email hoặc thử lại sau.');
+        setError(t('forgot_password.error.server_error'));
       } else {
-        setError('Có lỗi xảy ra. Vui lòng thử lại.');
+        setError(t('forgot_password.error.default'));
       }
     } finally {
       setIsLoading(false);
@@ -52,20 +54,24 @@ const ForgotPassword = () => {
           {sent ? (
             <div className="text-center">
               <CheckCircle2 className="mx-auto h-14 w-14 text-green-500 mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Kiểm tra hộp thư!</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                {t('forgot_password.success_title')}
+              </h2>
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Liên kết đặt lại mật khẩu đã được gửi đến <strong>{email}</strong>. Liên kết có hiệu lực trong <strong>15 phút</strong>.
+                {t('forgot_password.success_desc', { email })}
               </p>
               <Link to="/login" className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                <ArrowLeft className="h-4 w-4" /> Quay lại đăng nhập
+                <ArrowLeft className="h-4 w-4" /> {t('forgot_password.back_to_login')}
               </Link>
             </div>
           ) : (
             <>
               <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quên mật khẩu?</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {t('forgot_password.title')}
+                </h1>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                  Nhập email đăng ký của bạn — chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
+                  {t('forgot_password.subtitle')}
                 </p>
               </div>
 
@@ -77,7 +83,9 @@ const ForgotPassword = () => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email</label>
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {t('forgot_password.email_label')}
+                  </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                       <Mail className="h-5 w-5" />
@@ -97,13 +105,16 @@ const ForgotPassword = () => {
                   disabled={isLoading}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 shadow-lg shadow-blue-600/20"
                 >
-                  {isLoading ? <><Loader2 className="h-5 w-5 animate-spin" /> Đang gửi...</> : 'Gửi liên kết đặt lại'}
+                  {isLoading
+                    ? <><Loader2 className="h-5 w-5 animate-spin" /> {t('forgot_password.submitting')}</>
+                    : t('forgot_password.submit')
+                  }
                 </button>
               </form>
 
               <div className="mt-5 text-center">
                 <Link to="/login" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                  <ArrowLeft className="h-4 w-4" /> Quay lại đăng nhập
+                  <ArrowLeft className="h-4 w-4" /> {t('forgot_password.back_to_login')}
                 </Link>
               </div>
             </>

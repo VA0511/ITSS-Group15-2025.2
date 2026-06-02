@@ -1,0 +1,20 @@
+{
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "loading": "Loading...",
+  "success": "Success",
+  "error": "Error",
+  "confirm": "Confirm",
+  "search": "Search",
+  "back": "Back",
+  "view_detail": "View Detail",
+  "no_data": "No data",
+  "yes": "Yes",
+  "no": "No",
+  "actions": "Actions",
+  "logout_success": "Logged out successfully",
+  "logout_desc": "See you again",
+  "guest": "User"
+}

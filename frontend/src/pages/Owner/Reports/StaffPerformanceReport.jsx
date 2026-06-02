@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Download, Award, Users, Clock, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/Common/Button';
 import StaffPerformanceChart from '@/components/Charts/StaffPerformanceChart';
 import { useEmployees } from '@/hooks/queries/useEmployees';
@@ -15,6 +16,7 @@ const parseArr = (raw) => {
 };
 
 const StaffPerformanceReport = () => {
+  const { t } = useTranslation('owner');
   const { data: employeesRaw, isLoading: loadingEmp } = useEmployees(1, 200);
   const { data: bookingsRaw, isLoading: loadingBook } = useTrainingBookings();
   const isLoading = loadingEmp || loadingBook;
@@ -75,9 +77,9 @@ const StaffPerformanceReport = () => {
   const topBadge = ['🥇', '🥈', '🥉'];
 
   const stats = [
-    { title: 'Nhân sự tổng', value: isLoading ? '...' : String(employees.length), icon: Users },
-    { title: 'PT đạt KPI', value: isLoading ? '...' : `${ptKpi}%`, icon: Award },
-    { title: 'Buổi hoàn thành', value: isLoading ? '...' : String(completedSessions), icon: Clock },
+    { title: t('staff_report.stats.total'), value: isLoading ? '...' : String(employees.length), icon: Users },
+    { title: t('staff_report.stats.kpi_reached'), value: isLoading ? '...' : `${ptKpi}%`, icon: Award },
+    { title: t('staff_report.stats.sessions'), value: isLoading ? '...' : String(completedSessions), icon: Clock },
   ];
 
   return (
@@ -88,13 +90,13 @@ const StaffPerformanceReport = () => {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Báo cáo Nhân sự</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('staff_report.title')}</h1>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Đánh giá hiệu suất nhân viên, buổi tập đã hoàn thành và sự ổn định đội ngũ.
+              {t('staff_report.subtitle')}
             </p>
           </div>
         </div>
-        <Button leftIcon={<Download className="h-4 w-4" />} onClick={() => window.print()}>Xuất báo cáo</Button>
+        <Button leftIcon={<Download className="h-4 w-4" />} onClick={() => window.print()}>{t('staff_report.export_btn')}</Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -120,11 +122,11 @@ const StaffPerformanceReport = () => {
         <StaffPerformanceChart data={staffChartData} />
 
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-5">Nhân sự nổi bật</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-5">{t('staff_report.top_performers.title')}</h2>
           {isLoading ? (
-            <p className="text-sm text-gray-400 text-center py-8">Đang tải...</p>
+            <p className="text-sm text-gray-400 text-center py-8">{t('staff_report.loading')}</p>
           ) : topPerformers.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">Chưa có dữ liệu buổi tập.</p>
+            <p className="text-sm text-gray-400 text-center py-8">{t('staff_report.no_data')}</p>
           ) : (
             <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
               {topPerformers.map((emp, i) => (
@@ -133,15 +135,15 @@ const StaffPerformanceReport = () => {
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-white flex items-center gap-1.5">
                         <span>{topBadge[i]}</span>
-                        {emp.full_name || emp.name || `NV #${emp.id}`}
+                        {emp.full_name || emp.name || t('staff_report.fallback.staff', { id: emp.id })}
                       </p>
                       <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                        {emp.role || emp.position || 'Huấn luyện viên'}
+                        {emp.role || emp.position || t('staff_report.fallback.trainer')}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-gray-900 dark:text-white text-lg">{emp.sessions}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">buổi hoàn thành</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('staff_report.sessions_label')}</p>
                     </div>
                   </div>
                 </div>

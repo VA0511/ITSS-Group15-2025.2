@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Star, MessageSquare, ChevronLeft, ChevronRight, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useFeedbacks } from '@/hooks/queries/useFeedbacks';
 import { useUpdateFeedbackStatus } from '@/hooks/mutations/useFeedbackMutations';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Common/Table';
@@ -10,6 +11,7 @@ import Modal from '@/components/Common/Modal';
 import { slideUpVariants, sectionStaggerVariants } from '@/lib/animations';
 
 const FeedbackList = () => {
+  const { t } = useTranslation('owner');
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [ratingFilter, setRatingFilter] = useState('all');
@@ -124,34 +126,32 @@ const FeedbackList = () => {
       <motion.div variants={slideUpVariants} className="space-y-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Phản hồi Hội viên</h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Xem xét và cải thiện chất lượng dịch vụ dựa trên nhận xét của khách hàng.
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('feedback.title')}</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('feedback.subtitle')}</p>
           </div>
           <div className="w-full max-w-sm">
-            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Tìm theo tên hoặc nội dung..." />
+            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t('feedback.search_placeholder')} />
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Lọc theo đánh giá</label>
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('feedback.filter.rating')}</label>
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
               className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-slate-400 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             >
-              <option value="all">Tất cả</option>
-              <option value="5">5 sao</option>
-              <option value="4">4 sao</option>
-              <option value="3">3 sao</option>
-              <option value="2">2 sao</option>
-              <option value="1">1 sao</option>
+              <option value="all">{t('feedback.rating_options.all')}</option>
+              <option value="5">{t('feedback.rating_options.5star')}</option>
+              <option value="4">{t('feedback.rating_options.4star')}</option>
+              <option value="3">{t('feedback.rating_options.3star')}</option>
+              <option value="2">{t('feedback.rating_options.2star')}</option>
+              <option value="1">{t('feedback.rating_options.1star')}</option>
             </select>
           </div>
           <div className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Lọc theo trạng thái</label>
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('feedback.filter.status')}</label>
             <select
               value={statusFilter}
               onChange={(e) => {
@@ -160,28 +160,28 @@ const FeedbackList = () => {
               }}
               className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-slate-400 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             >
-              <option value="">Tất cả</option>
-              <option value="Pending">Chờ xử lý</option>
-              <option value="Processing">Đang xử lý</option>
-              <option value="Resolved">Đã xử lý</option>
+              <option value="">{t('feedback.status_options.all')}</option>
+              <option value="Pending">{t('feedback.status_options.pending')}</option>
+              <option value="Processing">{t('feedback.status_options.processing')}</option>
+              <option value="Resolved">{t('feedback.status_options.resolved')}</option>
             </select>
           </div>
           <div className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Lọc theo thời gian</label>
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('feedback.filter.date')}</label>
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
               className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-slate-400 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             >
-              <option value="all">Tất cả</option>
-              <option value="last7">7 ngày qua</option>
-              <option value="last30">30 ngày qua</option>
-              <option value="thisMonth">Tháng này</option>
-              <option value="thisYear">Năm nay</option>
+              <option value="all">{t('feedback.date_options.all')}</option>
+              <option value="last7">{t('feedback.date_options.7days')}</option>
+              <option value="last30">{t('feedback.date_options.30days')}</option>
+              <option value="thisMonth">{t('feedback.date_options.this_month')}</option>
+              <option value="thisYear">{t('feedback.date_options.this_year')}</option>
             </select>
           </div>
           <div className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Tổng phản hồi</label>
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('feedback.filter.total')}</label>
             <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{totalItems}</p>
           </div>
         </div>
@@ -189,25 +189,25 @@ const FeedbackList = () => {
 
       <motion.div variants={slideUpVariants} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Đang tải đánh giá...</div>
+          <div className="p-8 text-center text-gray-500">{t('feedback.loading')}</div>
         ) : isError ? (
-          <div className="p-8 text-center text-red-500">Lỗi không thể tải dữ liệu đánh giá.</div>
+          <div className="p-8 text-center text-red-500">{t('feedback.load_error')}</div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Hội viên</TableHead>
-                <TableHead>Loại phản hồi / Đánh giá</TableHead>
-                <TableHead className="w-[35%]">Nội dung</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="text-right">Ngày gửi / Hành động</TableHead>
+                <TableHead>{t('feedback.table.member')}</TableHead>
+                <TableHead>{t('feedback.table.type')}</TableHead>
+                <TableHead className="w-[35%]">{t('feedback.table.content')}</TableHead>
+                <TableHead>{t('feedback.table.status')}</TableHead>
+                <TableHead className="text-right">{t('feedback.table.date_action')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredFeedbacks.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-gray-500 h-24">
-                    Không tìm thấy phản hồi phù hợp.
+                    {t('feedback.no_data')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -218,7 +218,7 @@ const FeedbackList = () => {
                     </TableCell>
                     <TableCell>
                       <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded dark:bg-blue-900/30 dark:text-blue-400 mb-2 inline-block">
-                        {fb.feedback_type || fb.feedbackType || fb.type === 'trainer' ? 'Huấn luyện viên' : fb.type === 'equipment' ? 'Thiết bị' : fb.type === 'service' ? 'Dịch vụ' : fb.type || 'Khác'}
+                        {fb.feedback_type || fb.feedbackType || fb.type === 'trainer' ? t('feedback.type.trainer') : fb.type === 'equipment' ? t('feedback.type.equipment') : fb.type === 'service' ? t('feedback.type.service') : fb.type || t('feedback.type.other')}
                       </span>
                       {renderStars(fb.rating || fb.Rating || 0)}
                     </TableCell>
@@ -236,9 +236,9 @@ const FeedbackList = () => {
                           ? 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400'
                           : 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400'
                       }`}>
-                        {fb.status === 'Resolved' || fb.status === 'resolved' ? 'Đã xử lý' : 
-                         fb.status === 'Pending' || fb.status === 'pending' ? 'Chờ xử lý' : 
-                         fb.status === 'Processing' || fb.status === 'processing' ? 'Đang xử lý' : fb.status || 'N/A'}
+                        {fb.status === 'Resolved' || fb.status === 'resolved' ? t('feedback.status.resolved') :
+                         fb.status === 'Pending' || fb.status === 'pending' ? t('feedback.status.pending') :
+                         fb.status === 'Processing' || fb.status === 'processing' ? t('feedback.status.processing') : fb.status || 'N/A'}
                       </span>
                     </TableCell>
                     <TableCell className="text-right text-sm text-gray-500">
@@ -247,7 +247,7 @@ const FeedbackList = () => {
                           {fb.sent_at ? new Date(fb.sent_at).toLocaleDateString('vi-VN') : 
                            fb.created_at || fb.createdAt || fb.date || 'N/A'}
                         </span>
-                        <Button variant="ghost" size="icon" title="Cập nhật trạng thái" className="h-8 w-8 text-blue-500" onClick={(e) => { e.stopPropagation(); handleEditClick(fb); }}>
+                        <Button variant="ghost" size="icon" title={t('feedback.tooltip.update')} className="h-8 w-8 text-blue-500" onClick={(e) => { e.stopPropagation(); handleEditClick(fb); }}>
                           <Edit className="h-4 w-4" />
                         </Button>
                       </div>
@@ -263,7 +263,7 @@ const FeedbackList = () => {
         {totalPages > 1 && (
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Trang {page} / {totalPages} (Tổng: {totalItems} phản hồi)
+              {t('feedback.pagination', { page, total: totalPages, count: totalItems })}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -291,37 +291,37 @@ const FeedbackList = () => {
       <Modal
         isOpen={editModal.isOpen}
         onClose={() => setEditModal({ isOpen: false, feedback: null })}
-        title="Cập nhật trạng thái phản hồi"
+        title={t('feedback.modal.title')}
       >
         <div className="p-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Trạng thái</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('feedback.modal.status_label')}</label>
             <select
               value={editStatus}
               onChange={(e) => setEditStatus(e.target.value)}
               className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             >
-              <option value="Pending">Chờ xử lý</option>
-              <option value="Processing">Đang xử lý</option>
-              <option value="Resolved">Đã xử lý</option>
+              <option value="Pending">{t('feedback.status_options.pending')}</option>
+              <option value="Processing">{t('feedback.status_options.processing')}</option>
+              <option value="Resolved">{t('feedback.status_options.resolved')}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Ghi chú phản hồi (Tùy chọn)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('feedback.modal.note_label')}</label>
             <textarea
               value={editResponseText}
               onChange={(e) => setEditResponseText(e.target.value)}
               className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
               rows={3}
-              placeholder="Nhập ghi chú xử lý..."
+              placeholder={t('feedback.modal.note_placeholder')}
             />
           </div>
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="outline" onClick={() => setEditModal({ isOpen: false, feedback: null })}>
-              Hủy
+              {t('feedback.btn.cancel')}
             </Button>
             <Button onClick={handleSaveEdit} disabled={updateMutation.isPending}>
-              {updateMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+              {updateMutation.isPending ? t('feedback.btn.saving') : t('feedback.btn.save')}
             </Button>
           </div>
         </div>

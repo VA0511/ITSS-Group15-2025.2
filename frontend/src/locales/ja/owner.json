@@ -1,0 +1,651 @@
+{
+  "dashboard": {
+    "title": "オーナーダッシュボード",
+    "subtitle": "売上、会員、設備、スタッフの概要を確認して戦略的な意思決定を行います。",
+    "view_reports": "総合レポートを見る",
+    "stats": {
+      "revenue": "今月の売上",
+      "new_members": "新規会員",
+      "retention": "継続率",
+      "staff": "スタッフ",
+      "current_month": "今月",
+      "this_month": "今月",
+      "total": "合計"
+    },
+    "chart": {
+      "revenue_title": "直近7ヶ月の売上",
+      "revenue_desc": "実際の取引による月次売上合計"
+    }
+  },
+  "account": {
+    "title": "スタッフアカウント管理",
+    "subtitle": "合計: {{count}} アカウント",
+    "add_btn": "アカウント追加",
+    "loading": "読み込み中...",
+    "no_data": "データなし",
+    "pagination": "{{page}} / {{total}} ページ",
+    "table": {
+      "id": "ID",
+      "username": "ユーザー名",
+      "role": "役割",
+      "password": "パスワード",
+      "actions": "操作"
+    },
+    "modal": {
+      "add_title": "新規アカウント追加",
+      "delete_title": "アカウント削除の確認",
+      "reveal_title": "アカウントパスワードの確認"
+    },
+    "form": {
+      "username_label": "ユーザー名 *",
+      "username_placeholder": "例: staff@gym.com",
+      "password_label": "パスワード *",
+      "password_placeholder": "6文字以上",
+      "role_label": "役割 *"
+    },
+    "delete": {
+      "confirm_pre": "アカウント ",
+      "confirm_post": " を削除してもよろしいですか？",
+      "warning": "この操作は元に戻せません。"
+    },
+    "reveal": {
+      "info_pre": "アカウント ",
+      "info_post": " のパスワードを確認するには、あなたのパスワードを入力してください。",
+      "your_password_label": "あなたのパスワード（オーナー）",
+      "your_password_placeholder": "認証のためパスワードを入力",
+      "account_password_label": "アカウントパスワード"
+    },
+    "btn": {
+      "cancel": "キャンセル",
+      "create": "アカウント作成",
+      "confirm": "確認",
+      "close": "閉じる",
+      "delete": "削除"
+    },
+    "validation": {
+      "username_required": "ユーザー名を入力してください",
+      "password_min": "パスワードは6文字以上必要です",
+      "role_required": "役割を選択してください"
+    },
+    "error": {
+      "enter_password": "パスワードを入力してください",
+      "wrong_password": "パスワードが正しくないか、アクセス権限がありません"
+    },
+    "tooltip": {
+      "view_password": "パスワードを見る",
+      "delete": "削除"
+    }
+  },
+  "equipment": {
+    "title": "設備管理",
+    "subtitle": "機器・設備の状態とメンテナンス予定を追跡します。",
+    "add_btn": "設備を追加",
+    "search": {
+      "title": "設備を検索",
+      "subtitle": "名前、種類、状態、メンテナンス日で検索。",
+      "placeholder": "設備を検索..."
+    },
+    "loading": "設備一覧を読み込み中...",
+    "load_error": "データの読み込みエラー: {{message}}",
+    "table": {
+      "name": "設備名 / 機器",
+      "room": "施設名",
+      "status": "修理状態",
+      "next_maintenance": "次回メンテナンス",
+      "actions": "操作"
+    },
+    "no_data": "該当する設備が見つかりません。",
+    "status": {
+      "operating": "正常稼働",
+      "maintaining": "メンテナンス中",
+      "new": "新品",
+      "broken": "故障"
+    },
+    "facility_unknown": "未確認",
+    "origin_label": "原産地:",
+    "pagination": "{{page}} / {{total}} ページ (合計: {{count}} 件)",
+    "modal": {
+      "delete_title": "設備削除の確認",
+      "delete_confirm_pre": "設備 ",
+      "delete_confirm_post": " を削除してもよろしいですか？",
+      "delete_warning": "この操作は元に戻せません。"
+    },
+    "btn": {
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "deleting": "削除中...",
+      "edit": "編集"
+    },
+    "tooltip": {
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "form": {
+      "title_edit": "設備を更新",
+      "title_create": "新規設備を追加",
+      "subtitle_edit": "設備の状態とメンテナンス予定を更新します。",
+      "subtitle_create": "新たに購入した設備をジムの資産台帳に登録します。",
+      "loading": "データを読み込み中...",
+      "load_error": "設備情報の読み込みエラー"
+    }
+  },
+  "feedback": {
+    "title": "会員フィードバック",
+    "subtitle": "お客様の意見に基づいてサービス品質を見直し、改善します。",
+    "search_placeholder": "名前または内容で検索...",
+    "filter": {
+      "rating": "評価でフィルター",
+      "status": "ステータスでフィルター",
+      "date": "期間でフィルター",
+      "total": "合計フィードバック"
+    },
+    "rating_options": {
+      "all": "すべて",
+      "5star": "5つ星",
+      "4star": "4つ星",
+      "3star": "3つ星",
+      "2star": "2つ星",
+      "1star": "1つ星"
+    },
+    "status_options": {
+      "all": "すべて",
+      "pending": "未処理",
+      "processing": "処理中",
+      "resolved": "処理済み"
+    },
+    "date_options": {
+      "all": "すべて",
+      "7days": "直近7日間",
+      "30days": "直近30日間",
+      "this_month": "今月",
+      "this_year": "今年"
+    },
+    "loading": "フィードバックを読み込み中...",
+    "load_error": "フィードバックデータの読み込みエラー。",
+    "table": {
+      "member": "会員",
+      "type": "フィードバック種類 / 評価",
+      "content": "内容",
+      "status": "ステータス",
+      "date_action": "送信日 / 操作"
+    },
+    "no_data": "該当するフィードバックが見つかりません。",
+    "type": {
+      "trainer": "トレーナー",
+      "equipment": "設備",
+      "service": "サービス",
+      "other": "その他"
+    },
+    "status": {
+      "resolved": "処理済み",
+      "pending": "未処理",
+      "processing": "処理中"
+    },
+    "pagination": "{{page}} / {{total}} ページ (合計: {{count}} 件)",
+    "modal": {
+      "title": "フィードバックステータスを更新",
+      "status_label": "ステータス",
+      "note_label": "対応メモ（任意）",
+      "note_placeholder": "対応メモを入力..."
+    },
+    "btn": {
+      "cancel": "キャンセル",
+      "save": "変更を保存",
+      "saving": "保存中..."
+    },
+    "tooltip": {
+      "update": "ステータスを更新"
+    }
+  },
+  "member": {
+    "title": "会員一覧",
+    "subtitle": "システムに登録されているすべての会員を管理します。",
+    "add_btn": "会員を追加",
+    "search": {
+      "title": "会員を検索",
+      "subtitle": "名前、ID、電話番号、メールで検索。",
+      "placeholder": "会員を検索..."
+    },
+    "loading": "データを読み込み中...",
+    "load_error": "会員データの読み込みエラー。もう一度お試しください。",
+    "table": {
+      "name": "氏名",
+      "package": "パッケージ",
+      "phone": "電話番号",
+      "date": "登録日",
+      "status": "ステータス",
+      "actions": "操作"
+    },
+    "no_data": "該当する会員が見つかりません。",
+    "status": {
+      "active": "トレーニング中",
+      "expired": "期限切れ"
+    },
+    "pagination": "{{page}} / {{total}} ページ (合計: {{count}} 名)",
+    "tooltip": {
+      "view": "詳細を見る",
+      "edit": "編集"
+    },
+    "detail": {
+      "title": "会員詳細",
+      "loading": "データを読み込み中...",
+      "load_error": "会員情報を読み込めません",
+      "subtitle": "{{name}} の全情報を表示",
+      "default_name": "会員",
+      "status": {
+        "active": "アクティブ",
+        "inactive": "非アクティブ"
+      },
+      "info": {
+        "phone": "電話番号",
+        "email": "メール",
+        "join_date": "入会日",
+        "goal": "トレーニング目標",
+        "free_schedule": "フリースケジュール"
+      },
+      "package": {
+        "title": "現在のパッケージ",
+        "status_active": "利用中",
+        "status_expired": "期限切れ",
+        "expiry": "有効期限: {{date}}",
+        "no_package": "パッケージなし",
+        "not_registered": "会員はパッケージに登録していません",
+        "not_registered_short": "未登録"
+      },
+      "history": {
+        "title": "パッケージ登録履歴",
+        "loading": "履歴を読み込み中...",
+        "no_data": "パッケージ履歴がありません。",
+        "item": "{{date}}: {{package}} に登録",
+        "period": "期間: {{start}} - {{end}}"
+      }
+    },
+    "form": {
+      "title_edit": "会員を編集",
+      "title_create": "新規会員を追加",
+      "subtitle_edit": "会員の個人情報を更新します。",
+      "subtitle_create": "会員の個人情報と初期パッケージを入力します。",
+      "loading": "データを読み込み中...",
+      "load_error": "会員情報の読み込みエラー"
+    }
+  },
+  "package": {
+    "title": "パッケージ一覧",
+    "subtitle": "ジムのメンバーシップパッケージを管理・設定します。",
+    "add_btn": "新規パッケージ追加",
+    "loading": "料金表を読み込み中...",
+    "load_error": "パッケージデータの読み込みエラー。",
+    "table": {
+      "name": "パッケージ名",
+      "duration": "期間",
+      "price": "料金（VND）",
+      "description": "概要",
+      "status": "ステータス",
+      "actions": "操作"
+    },
+    "no_data": "パッケージが設定されていません。",
+    "status": {
+      "active": "販売中",
+      "inactive": "非表示"
+    },
+    "no_description": "説明なし",
+    "tooltip": {
+      "hide": "パッケージを非表示",
+      "show": "パッケージを表示",
+      "edit": "編集"
+    },
+    "modal": {
+      "hide_title": "パッケージを非表示",
+      "show_title": "パッケージを表示",
+      "confirm_pre": "パッケージ ",
+      "confirm_mid": " を",
+      "confirm_post": "してもよろしいですか？",
+      "warning_hide": "パッケージが非表示になり、会員が購入できなくなります。",
+      "action_hide": "非表示に",
+      "action_show": "表示に"
+    },
+    "btn": {
+      "cancel": "キャンセル",
+      "hide": "非表示",
+      "show": "表示",
+      "processing": "処理中...",
+      "edit": "編集"
+    },
+    "form": {
+      "title_edit": "パッケージを編集",
+      "title_create": "新規パッケージを作成",
+      "subtitle_edit": "パッケージの情報、価格、説明を変更します。",
+      "subtitle_create": "新しいメンバーシップサービスをシステムに追加します。",
+      "loading": "データを読み込み中...",
+      "load_error": "パッケージ情報の読み込みエラー"
+    }
+  },
+  "profile": {
+    "title": "プロフィール",
+    "role": "オーナー",
+    "not_updated": "未設定",
+    "position": "オーナー",
+    "info": {
+      "title": "個人情報",
+      "phone": "電話番号",
+      "email": "メール",
+      "gender": "性別",
+      "dob": "生年月日",
+      "address": "住所"
+    },
+    "saving": "保存中...",
+    "toast": {
+      "avatar_success": "アバターを更新しました",
+      "avatar_error": "アバターの保存に失敗しました"
+    },
+    "not_found": "スタッフ情報が見つかりません。"
+  },
+  "reports": {
+    "title": "オーナーレポート",
+    "subtitle": "迅速かつ正確な意思決定のための全戦略レポート。",
+    "revenue": {
+      "title": "売上レポート",
+      "description": "総売上、パッケージ販売、キャッシュフロートレンドを追跡します。"
+    },
+    "member": {
+      "title": "会員レポート",
+      "description": "新規会員、更新率、CRM活動を追跡します。"
+    },
+    "staff": {
+      "title": "スタッフレポート",
+      "description": "PTのパフォーマンス、人事管理、月次KPIを監視します。"
+    },
+    "view_detail": "詳細を見る →",
+    "advice": {
+      "heading": "アドバイス:",
+      "text": "ジムオーナーは売上レポートを使ってKPIを測定し、戦略を立てましょう。会員レポートは継続率の把握に、スタッフレポートはパフォーマンス評価と人件費管理に役立ちます。"
+    }
+  },
+  "revenue_report": {
+    "title": "売上レポート",
+    "subtitle": "詳細な財務データ分析。",
+    "export_btn": "PDFレポートを出力",
+    "stats": {
+      "total_revenue": "総売上",
+      "transactions": "取引件数"
+    },
+    "filter": {
+      "label": "期間でフィルター",
+      "monthly": "月次",
+      "quarterly": "四半期",
+      "yearly": "年次"
+    },
+    "period": {
+      "monthly": "月次（直近12ヶ月）",
+      "quarterly": "四半期",
+      "yearly": "年次"
+    },
+    "chart": { "title": "売上グラフ" },
+    "history": { "title": "最近の取引" },
+    "loading": "読み込み中...",
+    "no_data": "取引データがありません。",
+    "table": {
+      "customer": "お客様",
+      "package": "パッケージ",
+      "type": "種類",
+      "amount": "金額",
+      "date": "日付"
+    },
+    "type": {
+      "renew": "更新",
+      "new_registration": "新規登録"
+    },
+    "member_fallback": "会員 #{{id}}"
+  },
+  "member_report": {
+    "title": "会員レポート",
+    "subtitle": "新規会員、継続率、パッケージ登録トレンドを追跡します。",
+    "export_btn": "レポートを出力",
+    "stats": {
+      "new_members": "今月の新規会員",
+      "renewals": "更新成功",
+      "retention": "継続率"
+    },
+    "loading": "読み込み中...",
+    "no_data": "取引がありません。",
+    "history": { "title": "最近の取引" },
+    "type": {
+      "renew": "更新",
+      "new_registration": "新規登録"
+    },
+    "member_fallback": "会員 #{{id}}"
+  },
+  "staff_report": {
+    "title": "スタッフレポート",
+    "subtitle": "従業員のパフォーマンス、完了セッション数、チームの安定性を評価します。",
+    "export_btn": "レポートを出力",
+    "stats": {
+      "total": "スタッフ総数",
+      "kpi_reached": "KPI達成PT",
+      "sessions": "完了セッション"
+    },
+    "top_performers": { "title": "優秀スタッフ" },
+    "loading": "読み込み中...",
+    "no_data": "セッションデータがありません。",
+    "sessions_label": "セッション完了",
+    "fallback": {
+      "trainer": "トレーナー",
+      "staff": "スタッフ #{{id}}"
+    }
+  },
+  "room": {
+    "title": "ルーム / エリア管理",
+    "subtitle": "トレーニングスペースの定員と現在の使用状況を追跡します。",
+    "add_btn": "新規エリア追加",
+    "loading": "読み込み中...",
+    "capacity": "定員: {{count}} 名",
+    "current_label": "現在:",
+    "person_unit": "{{count}} 名",
+    "status": {
+      "operating": "営業中",
+      "maintenance": "メンテナンス中"
+    },
+    "tooltip": {
+      "maintenance": "メンテナンス設定",
+      "activate": "有効化",
+      "view": "詳細を見る",
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "pagination": "{{page}} / {{total}} ページ (合計: {{count}} 室)",
+    "modal": {
+      "delete_title": "ルーム削除の確認",
+      "delete_confirm_pre": "ルーム ",
+      "delete_confirm_post": " を削除してもよろしいですか？",
+      "delete_warning": "この操作は元に戻せません。"
+    },
+    "btn": {
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "deleting": "削除中..."
+    },
+    "detail": {
+      "loading": "詳細情報を読み込み中...",
+      "error": "ルーム情報が見つかりません。",
+      "back": "戻る",
+      "edit_btn": "ルームを編集",
+      "status_operating": "● 稼働中",
+      "status_maintenance": "● メンテナンス中",
+      "metrics": {
+        "title": "現在の指標",
+        "max_capacity": "最大定員",
+        "current_guests": "現在の利用者",
+        "efficiency": "稼働率: {{pct}}%",
+        "person_unit": "名"
+      },
+      "description": {
+        "title": "概要",
+        "no_data": "説明がありません。"
+      },
+      "amenities_title": "設備・アメニティ",
+      "highlights_title": "特長",
+      "rules_title": "利用規則",
+      "images_title": "おすすめ画像",
+      "video_title": "紹介動画",
+      "video_not_supported": "お使いのブラウザはビデオタグをサポートしていません。",
+      "quick_stats": {
+        "capacity": "定員",
+        "using": "利用中",
+        "available": "空き",
+        "person_unit": "名",
+        "slot_unit": "席"
+      }
+    },
+    "type_meta": {
+      "Gym": {
+        "floor": "1階",
+        "hours": "05:30 – 22:00",
+        "highlights": ["ピーク時間帯にトレーナー常駐","グローブ・レジスタンスバンドのレンタルあり","無料トレーニングプラン相談","HEPAフィルター空気清浄システム"],
+        "rules": ["スポーツウェアとジムシューズを着用","使用後は機器を拭いてください","大声を出さず、静かな環境を保ってください","ウェイトは使用後に元の場所へ戻してください"]
+      },
+      "Studio": {
+        "floor": "2階",
+        "hours": "06:00 – 21:00",
+        "highlights": ["国際認定インストラクター","少人数制クラス（最大15〜20名）","器具は無料で貸し出し","室温は22〜24°Cに保たれています"],
+        "rules": ["入室前に靴を脱いでください","電話はオフまたはマナーモードに","クラス開始5分前には到着してください","トレーニングエリアでの飲食禁止"]
+      },
+      "Spa": {
+        "floor": "3階",
+        "hours": "08:00 – 21:00",
+        "highlights": ["完全プライベートルーム、静寂な環境","ハーブドリンクを無料提供","輸入天然エッセンシャルオイル使用","セッションごとに清潔なタオルを用意"],
+        "rules": ["怪我や発熱時は入室禁止","入室前に少なくともコップ1杯の水を飲んでください","最大利用時間: 20分","他の利用者への配慮のため静かにしてください"]
+      },
+      "Pool": {
+        "floor": "地下1階",
+        "hours": "06:00 – 20:00",
+        "highlights": ["年間を通じて温水（28〜30°C）","専門救助員が100%常駐","浮き輪・水中眼鏡のレンタルあり","入水前にシャワーを浴びてください"],
+        "rules": ["規定の水着を着用してください","プールに入る前にシャワーを浴びてください","高所からの飛び込み禁止","12歳未満のお子様は保護者同伴が必要です"]
+      },
+      "Default": {
+        "floor": "1階",
+        "hours": "06:00 – 22:00",
+        "highlights": ["広々とした清潔な環境","親切でサポート力のあるスタッフ"],
+        "rules": ["清潔を保ってください","施設のルールに従ってください"]
+      }
+    },
+    "form": {
+      "title_edit": "ルーム / エリアを編集",
+      "title_create": "新規ルームを追加",
+      "subtitle_edit": "定員、ルームタイプ、設備を更新します。",
+      "subtitle_create": "新しいトレーニングエリアを管理システムに追加します。",
+      "loading": "データを読み込み中...",
+      "load_error": "ルーム情報の読み込みエラー"
+    }
+  },
+  "staff": {
+    "title": "スタッフ管理",
+    "subtitle": "スタッフの詳細を確認し、情報を更新・管理します。",
+    "add_btn": "スタッフ追加",
+    "list": {
+      "title": "スタッフ一覧",
+      "subtitle": "スタッフを検索して詳細を開き、情報を編集します。",
+      "search_placeholder": "名前、メール、電話番号、役職で検索"
+    },
+    "table": {
+      "name": "スタッフ名",
+      "position": "役職",
+      "contact": "連絡先",
+      "address": "住所",
+      "actions": "操作"
+    },
+    "loading": "読み込み中...",
+    "no_data": "該当するスタッフが見つかりません。",
+    "pagination": "{{page}} / {{total}} ページ (合計: {{count}} 名)",
+    "tooltip": {
+      "view": "詳細を見る",
+      "salary": "給与管理",
+      "delete": "削除"
+    },
+    "detail_modal": {
+      "title": "スタッフ詳細",
+      "subtitle": "個人情報を確認し、必要に応じて編集します。"
+    },
+    "form_fields": {
+      "role": "役割",
+      "name": "氏名",
+      "gender": "性別",
+      "dob": "生年月日",
+      "position": "役職",
+      "phone": "電話番号",
+      "email": "メール",
+      "address": "住所"
+    },
+    "btn": {
+      "cancel": "キャンセル",
+      "save": "変更を保存",
+      "saving": "保存中...",
+      "close": "閉じる",
+      "edit": "編集",
+      "delete": "削除",
+      "deleting": "削除中..."
+    },
+    "delete_modal": {
+      "title": "スタッフ削除の確認",
+      "confirm_pre": "スタッフ ",
+      "confirm_post": " を削除してもよろしいですか？",
+      "warning": "この操作は元に戻せません。"
+    },
+    "form_page": {
+      "title_edit": "スタッフプロフィール",
+      "title_create": "スタッフアカウント作成",
+      "subtitle": "情報を入力し、内部アカウントのログイン権限（役割）を設定します。",
+      "name_label": "スタッフ氏名",
+      "name_placeholder": "例: 山田太郎",
+      "role_label": "アクセス役割",
+      "role_trainer": "パーソナルトレーナー（Trainer）",
+      "role_manager": "受付 / レジ係（Manager）",
+      "phone_label": "電話番号",
+      "phone_placeholder": "内線番号",
+      "email_label": "ログインメール",
+      "email_placeholder": "システムアクセスに使用するメール",
+      "password_label": "初期パスワード",
+      "password_placeholder": "スタッフのパスワードを入力",
+      "btn_cancel": "キャンセル",
+      "btn_save": "スタッフを保存"
+    }
+  },
+  "salary": {
+    "title": "給与管理 — {{name}}",
+    "subtitle": "{{position}} · 業務実績に基づいて給与を調整",
+    "current_salary": "現在の給与",
+    "estimated_salary": "今月の見込み（計算値）",
+    "calculation_note": "基本給 × 係数 — DBには保存されません",
+    "adjust": {
+      "title": "給与調整",
+      "base_salary_label": "基本給（VND/月）",
+      "base_salary_placeholder": "例: 10000000",
+      "performance_label": "パフォーマンス評価",
+      "performance_formula": "実支給額 = 基本給 × パフォーマンス係数",
+      "performance_excellent": "優秀（120%）",
+      "performance_good": "良好（110%）",
+      "performance_satisfactory": "標準（100%）",
+      "performance_needs_improvement": "要改善（90%）",
+      "btn_save": "保存",
+      "btn_saving": "保存中..."
+    },
+    "bonus": {
+      "title": "ボーナス / チップを追加",
+      "note": "金額は現在の給与に直接加算されます。",
+      "amount_label": "金額（VND）",
+      "amount_placeholder": "例: 500000",
+      "reason_label": "理由（任意）",
+      "reason_placeholder": "例: 生徒からのチップ、目標達成ボーナス...",
+      "btn_add": "給与に追加",
+      "btn_adding": "追加中..."
+    },
+    "toast": {
+      "salary_updated": "基本給を更新しました",
+      "bonus_added": "{{amount}} を追加しました",
+      "salary_error": "更新に失敗しました",
+      "bonus_error": "ボーナスの追加に失敗しました",
+      "load_error": "スタッフ情報を読み込めませんでした"
+    },
+    "loading": "読み込み中...",
+    "back": "戻る"
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import EquipmentFormComponent from '@/components/Forms/EquipmentForm';
 import { ArrowLeft } from 'lucide-react';
 import Button from '@/components/Common/Button';
@@ -8,6 +9,7 @@ import { equipmentService } from '@/services/equipmentService';
 import { useCreateEquipment, useUpdateEquipment } from '@/hooks/mutations/useEquipmentMutation';
 
 const EquipmentFormPage = () => {
+  const { t } = useTranslation('owner');
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
@@ -36,7 +38,7 @@ const EquipmentFormPage = () => {
           });
         })
         .catch(err => {
-          toast.error("Lỗi khi tải thông tin thiết bị");
+          toast.error(t('equipment.form.load_error'));
           console.error(err);
         })
         .finally(() => {
@@ -86,7 +88,7 @@ const EquipmentFormPage = () => {
   };
 
   if (isEditing && !initialData) {
-    return <div className="p-8 text-center text-gray-500">Đang tải dữ liệu...</div>;
+    return <div className="p-8 text-center text-gray-500">{t('equipment.form.loading')}</div>;
   }
 
   return (
@@ -99,12 +101,10 @@ const EquipmentFormPage = () => {
         </Link>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {isEditing ? 'Cập nhật Thiết bị' : 'Nhập Thiết bị mới'}
+            {isEditing ? t('equipment.form.title_edit') : t('equipment.form.title_create')}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {isEditing 
-              ? 'Cập nhật thông tin tình trạng, lịch bảo trì của thiết bị.' 
-              : 'Ghi nhận thiết bị, máy tạ mới mua vào kho tài sản của Gym.'}
+            {isEditing ? t('equipment.form.subtitle_edit') : t('equipment.form.subtitle_create')}
           </p>
         </div>
       </div>

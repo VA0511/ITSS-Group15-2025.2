@@ -1,0 +1,31 @@
+{
+  "sidebar": {
+    "nav_label": "ナビゲーション",
+    "support_title": "サポートが必要ですか？",
+    "support_desc": "ITSS v2026 技術サポート。",
+    "support_link": "チケットを送信 →"
+  },
+  "menu": {
+    "overview": "概要",
+    "rooms": "ジムルーム",
+    "staffs": "スタッフ",
+    "members": "会員",
+    "packages": "パッケージ",
+    "equipment": "器具",
+    "feedback": "フィードバック",
+    "accounts": "アカウント",
+    "reports": "レポート",
+    "profile": "マイプロフィール",
+    "transactions": "取引",
+    "pt_schedule": "PTスケジュール",
+    "students": "生徒",
+    "teaching_schedule": "授業スケジュール",
+    "availability": "スケジュール設定",
+    "evaluation": "トレーニング評価",
+    "register_package": "パッケージ登録",
+    "my_package": "マイパッケージ",
+    "training_schedule": "トレーニングスケジュール",
+    "renew": "パッケージ更新",
+    "send_feedback": "フィードバックを送信"
+  }
+}

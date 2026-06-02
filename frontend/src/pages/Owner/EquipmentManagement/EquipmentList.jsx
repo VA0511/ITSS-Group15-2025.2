@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit, Trash2, PenTool, ChevronLeft, ChevronRight, Power, PowerOff } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useEquipment } from '@/hooks/queries/useEquipment';
 import { useDeleteEquipment, useUpdateEquipmentStatus } from '@/hooks/mutations/useEquipmentMutation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Common/Table';
@@ -11,6 +12,7 @@ import Modal from '@/components/Common/Modal';
 import { slideUpVariants, sectionStaggerVariants } from '@/lib/animations';
 
 const EquipmentList = () => {
+  const { t } = useTranslation('owner');
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, equipment: null });
@@ -81,14 +83,12 @@ const EquipmentList = () => {
     >
       <motion.div variants={slideUpVariants} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Quản lý Thiết bị</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Theo dõi tình trạng máy móc, thiết bị và lịch bảo trì.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('equipment.title')}</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('equipment.subtitle')}</p>
         </div>
         <Link to="/owner/equipment/create">
           <Button leftIcon={<Plus className="h-4 w-4" />}>
-            Thêm thiết bị
+            {t('equipment.add_btn')}
           </Button>
         </Link>
       </motion.div>
@@ -96,41 +96,41 @@ const EquipmentList = () => {
       <motion.div variants={slideUpVariants} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tìm kiếm thiết bị</h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Tìm theo tên, loại, tình trạng hoặc ngày bảo trì.</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('equipment.search.title')}</h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('equipment.search.subtitle')}</p>
           </div>
           <div className="w-full max-w-sm">
             <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tìm kiếm thiết bị..."
+              placeholder={t('equipment.search.placeholder')}
             />
           </div>
         </div>
 
         <div className="mt-6 overflow-x-auto">
           {isLoading ? (
-            <div className="p-8 text-center text-gray-500">Đang tải danh sách thiết bị...</div>
+            <div className="p-8 text-center text-gray-500">{t('equipment.loading')}</div>
           ) : isError ? (
             <div className="p-8 text-center text-red-500">
-              Lỗi khi tải dữ liệu: {error?.message || 'Vui lòng đăng nhập lại'}
+              {t('equipment.load_error', { message: error?.message || '' })}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tên thiết bị / Thuộc máy</TableHead>
-                  <TableHead>Tên phòng tập</TableHead>
-                  <TableHead>Trạng thái sửa chữa</TableHead>
-                  <TableHead>Bảo trì tiếp theo</TableHead>
-                  <TableHead className="text-right">Hành động</TableHead>
+                  <TableHead>{t('equipment.table.name')}</TableHead>
+                  <TableHead>{t('equipment.table.room')}</TableHead>
+                  <TableHead>{t('equipment.table.status')}</TableHead>
+                  <TableHead>{t('equipment.table.next_maintenance')}</TableHead>
+                  <TableHead className="text-right">{t('equipment.table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredEquipment.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-gray-500 h-24">
-                      Không tìm thấy thiết bị phù hợp.
+                      {t('equipment.no_data')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -141,10 +141,10 @@ const EquipmentList = () => {
                           <PenTool className="h-4 w-4 text-gray-400" />
                           {item.equipment_name || item.equipmentName || item.EquipmentName || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">Xuất xứ: {item.origin || 'N/A'}</div>
+                        <div className="text-xs text-gray-500 mt-1">{t('equipment.origin_label')} {item.origin || 'N/A'}</div>
                       </TableCell>
                       <TableCell className="text-gray-600 dark:text-gray-300">
-                        {item.facility_name || item.FacilityName || 'Chưa xác định'}
+                        {item.facility_name || item.FacilityName || t('equipment.facility_unknown')}
                       </TableCell>
                       <TableCell>
                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${
@@ -158,10 +158,10 @@ const EquipmentList = () => {
                             ? 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400'
                             : 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400'
                         }`}>
-                          {item.status === 'active' || item.status === 'Operating' ? 'Hoạt động tốt'
-                            : item.status === 'maintenance' || item.status === 'Maintenance' ? 'Đang bảo trì'
-                            : item.status === 'New' ? 'Mới'
-                            : item.status === 'Broken' ? 'Hỏng'
+                          {item.status === 'active' || item.status === 'Operating' ? t('equipment.status.operating')
+                            : item.status === 'maintenance' || item.status === 'Maintenance' ? t('equipment.status.maintaining')
+                            : item.status === 'New' ? t('equipment.status.new')
+                            : item.status === 'Broken' ? t('equipment.status.broken')
                             : item.status || 'N/A'}
                         </span>
                       </TableCell>
@@ -174,20 +174,20 @@ const EquipmentList = () => {
                         <div className="flex items-center justify-end gap-1">
                           {/* Kích hoạt button removed as requested */}
                           <Link to={`/owner/equipment/${item.id}/edit`}>
-                            <Button variant="ghost" size="icon" title="Chỉnh sửa" className="h-8 w-8 text-blue-500 hidden sm:inline-flex">
+                            <Button variant="ghost" size="icon" title={t('equipment.tooltip.edit')} className="h-8 w-8 text-blue-500 hidden sm:inline-flex">
                               <Edit className="h-4 w-4" />
                             </Button>
                           </Link>
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            title="Xóa" 
+                            title={t('equipment.tooltip.delete')}
                             className="h-8 w-8 text-red-500 hidden sm:inline-flex"
                             onClick={() => setDeleteModal({ isOpen: true, equipment: item })}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                          <div className="sm:hidden text-blue-500 font-medium text-sm underline px-2 py-1">Sửa</div>
+                          <div className="sm:hidden text-blue-500 font-medium text-sm underline px-2 py-1">{t('equipment.btn.edit')}</div>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -202,7 +202,7 @@ const EquipmentList = () => {
         {totalPages > 1 && (
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Trang {page} / {totalPages} (Tổng: {totalItems} thiết bị)
+              {t('equipment.pagination', { page, total: totalPages, count: totalItems })}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -230,19 +230,19 @@ const EquipmentList = () => {
       <Modal
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, equipment: null })}
-        title="Xác nhận xóa thiết bị"
+        title={t('equipment.modal.delete_title')}
       >
         <div className="p-4">
           <p className="text-gray-700 dark:text-gray-300 mb-4">
-            Bạn có chắc chắn muốn xóa thiết bị <strong>{deleteModal.equipment?.equipment_name}</strong> không?
+            {t('equipment.modal.delete_confirm_pre')}<strong>{deleteModal.equipment?.equipment_name}</strong>{t('equipment.modal.delete_confirm_post')}
           </p>
-          <p className="text-sm text-red-500 mb-4">Hành động này không thể hoàn tác.</p>
+          <p className="text-sm text-red-500 mb-4">{t('equipment.modal.delete_warning')}</p>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setDeleteModal({ isOpen: false, equipment: null })}>
-              Hủy
+              {t('equipment.btn.cancel')}
             </Button>
             <Button variant="danger" onClick={handleDelete} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? 'Đang xóa...' : 'Xóa'}
+              {deleteMutation.isPending ? t('equipment.btn.deleting') : t('equipment.btn.delete')}
             </Button>
           </div>
         </div>

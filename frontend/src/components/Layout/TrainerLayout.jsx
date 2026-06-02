@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { pageVariants } from '@/lib/animations';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '@/store/useAuthStore';
 import useUIStore from '@/store/useUIStore';
 import useThemeStore from '@/store/useThemeStore';
@@ -11,6 +12,7 @@ import {
   Moon, Sun, LogOut, Menu, X, Settings
 } from 'lucide-react';
 import NotificationBell from '@/components/Common/NotificationBell';
+import LanguageSwitcher from '@/components/Common/LanguageSwitcher';
 
 const TrainerLayout = () => {
   const { pathname } = useLocation();
@@ -20,12 +22,14 @@ const TrainerLayout = () => {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const { theme, toggleTheme } = useThemeStore();
 
+  const { t } = useTranslation('layout');
+
   const trainerMenuItems = [
-    { title: 'Thông tin cá nhân', path: '/trainer/profile', icon: User },
-    { title: 'Học viên', path: '/trainer/students', icon: Users },
-    { title: 'Lịch dạy', path: '/trainer/schedule', icon: CalendarCheck },
-    { title: 'Thiết lập lịch', path: '/trainer/availability', icon: Settings },
-    { title: 'Đánh giá buổi tập', path: '/trainer/evaluation', icon: ClipboardList },
+    { title: 'layout:menu.profile',           path: '/trainer/profile',      icon: User },
+    { title: 'layout:menu.students',          path: '/trainer/students',     icon: Users },
+    { title: 'layout:menu.teaching_schedule', path: '/trainer/schedule',     icon: CalendarCheck },
+    { title: 'layout:menu.availability',      path: '/trainer/availability', icon: Settings },
+    { title: 'layout:menu.evaluation',        path: '/trainer/evaluation',   icon: ClipboardList },
   ];
 
   return (
@@ -50,7 +54,7 @@ const TrainerLayout = () => {
         {/* Menu Section */}
         <nav className="flex-1 space-y-1.5 overflow-y-auto px-4 py-6 custom-scrollbar">
           <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            Danh mục quản lý
+            {t('sidebar.nav_label')}
           </div>
           {trainerMenuItems.map((item) => {
             const Icon = item.icon;
@@ -68,7 +72,7 @@ const TrainerLayout = () => {
                 }
               >
                 <Icon className="h-5 w-5" />
-                {item.title}
+                {t(item.title)}
               </NavLink>
             );
           })}
@@ -77,10 +81,10 @@ const TrainerLayout = () => {
         {/* Help Box */}
         <div className="border-t border-gray-200 p-4 dark:border-gray-800">
           <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800">
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Cần hỗ trợ?</p>
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Hỗ trợ kỹ thuật hệ thống ITSS v2026.</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('sidebar.support_title')}</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{t('sidebar.support_desc')}</p>
             <a href="mailto:support@activegym.vn" className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
-              Gửi Ticket hỗ trợ &rarr;
+              {t('sidebar.support_link')}
             </a>
           </div>
         </div>
@@ -101,6 +105,8 @@ const TrainerLayout = () => {
 
           <div className="flex items-center gap-3">
             <NotificationBell />
+
+            <LanguageSwitcher />
 
             <button
               onClick={toggleTheme}

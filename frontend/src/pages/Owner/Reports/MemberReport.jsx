@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Download, Users, Repeat, TrendingUp, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/Common/Button';
 import MemberStatsChart from '@/components/Charts/MemberStatsChart';
 import { useMembers } from '@/hooks/queries/useMembers';
@@ -17,6 +18,7 @@ const parseArr = (raw) => {
 const monthLabel = (d) => `T${d.getMonth() + 1}`;
 
 const MemberReport = () => {
+  const { t } = useTranslation('owner');
   const { data: membersRaw, isLoading: loadingMembers } = useMembers(1, 1000);
   const { data: txRaw, isLoading: loadingTx } = useTransactions();
   const isLoading = loadingMembers || loadingTx;
@@ -51,9 +53,9 @@ const MemberReport = () => {
   const retentionRate = members.length > 0 ? Math.round(activeCount / members.length * 100) : 0;
 
   const summary = [
-    { title: 'Hội viên mới tháng này', value: isLoading ? '...' : String(newThisMonth), icon: Users },
-    { title: 'Gia hạn thành công', value: isLoading ? '...' : String(renewalsThisMonth), icon: Repeat },
-    { title: 'Tỷ lệ giữ chân', value: isLoading ? '...' : `${retentionRate}%`, icon: TrendingUp },
+    { title: t('member_report.stats.new_members'), value: isLoading ? '...' : String(newThisMonth), icon: Users },
+    { title: t('member_report.stats.renewals'), value: isLoading ? '...' : String(renewalsThisMonth), icon: Repeat },
+    { title: t('member_report.stats.retention'), value: isLoading ? '...' : `${retentionRate}%`, icon: TrendingUp },
   ];
 
   // Giao dịch gần nhất
@@ -100,13 +102,13 @@ const MemberReport = () => {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Báo cáo Hội viên</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('member_report.title')}</h1>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Theo dõi lượng hội viên mới, tỷ lệ giữ chân và xu hướng đăng ký gói tập.
+              {t('member_report.subtitle')}
             </p>
           </div>
         </div>
-        <Button leftIcon={<Download className="h-4 w-4" />} onClick={() => window.print()}>Xuất báo cáo</Button>
+        <Button leftIcon={<Download className="h-4 w-4" />} onClick={() => window.print()}>{t('member_report.export_btn')}</Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -132,21 +134,21 @@ const MemberReport = () => {
         <MemberStatsChart data={memberChartData} />
 
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Giao dịch gần nhất</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('member_report.history.title')}</h2>
           {isLoading ? (
-            <p className="text-sm text-gray-400 text-center py-8">Đang tải...</p>
+            <p className="text-sm text-gray-400 text-center py-8">{t('member_report.loading')}</p>
           ) : recentTransactions.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">Chưa có giao dịch nào.</p>
+            <p className="text-sm text-gray-400 text-center py-8">{t('member_report.no_data')}</p>
           ) : (
             <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
               {recentTransactions.map((tx, i) => (
                 <div key={tx.id ?? i} className={`rounded-2xl p-4 ${txColors[i % txColors.length]}`}>
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">{tx.customerName || `Hội viên #${tx.memberId}`}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{tx.customerName || t('member_report.member_fallback', { id: tx.memberId })}</p>
                       <p className="mt-0.5">{tx.package || '—'}</p>
                       <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        {tx.type === 'renewal' ? 'Gia hạn' : 'Đăng ký mới'} · {new Date(tx.date).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        {tx.type === 'renewal' ? t('member_report.type.renew') : t('member_report.type.new_registration')} · {new Date(tx.date).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                     <span className="shrink-0 font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">

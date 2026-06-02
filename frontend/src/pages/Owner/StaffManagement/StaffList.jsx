@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Trash2, Eye, ChevronLeft, ChevronRight, Wallet } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useEmployees } from '@/hooks/queries/useEmployees';
 import { useDeleteEmployee, useUpdateEmployee } from '@/hooks/mutations/useEmployeeMutation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Common/Table';
@@ -11,6 +12,7 @@ import Modal from '@/components/Common/Modal';
 import { slideUpVariants, sectionStaggerVariants } from '@/lib/animations';
 
 const StaffList = () => {
+  const { t } = useTranslation('owner');
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, staff: null });
@@ -99,14 +101,14 @@ const StaffList = () => {
     >
       <motion.div variants={slideUpVariants} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Quản lý Nhân sự</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('staff.title')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Xem chi tiết nhân viên, cập nhật thông tin và quản lý nhân sự.
+            {t('staff.subtitle')}
           </p>
         </div>
         <Link to="/owner/staffs/create">
           <Button leftIcon={<Plus className="h-4 w-4" />}>
-            Thêm nhân sự
+            {t('staff.add_btn')}
           </Button>
         </Link>
       </motion.div>
@@ -114,14 +116,14 @@ const StaffList = () => {
       <motion.div variants={slideUpVariants} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Danh sách nhân sự</h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Tìm kiếm và mở chi tiết nhân viên để sửa thông tin.</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('staff.list.title')}</h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('staff.list.subtitle')}</p>
           </div>
           <div className="w-full max-w-sm">
             <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tìm kiếm theo tên, email, SĐT, vị trí"
+              placeholder={t('staff.list.search_placeholder')}
             />
           </div>
         </div>
@@ -130,24 +132,24 @@ const StaffList = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tên nhân viên</TableHead>
-                <TableHead>Vị trí</TableHead>
-                <TableHead>Liên hệ</TableHead>
-                <TableHead>Địa chỉ</TableHead>
-                <TableHead className="text-right">Hành động</TableHead>
+                <TableHead>{t('staff.table.name')}</TableHead>
+                <TableHead>{t('staff.table.position')}</TableHead>
+                <TableHead>{t('staff.table.contact')}</TableHead>
+                <TableHead>{t('staff.table.address')}</TableHead>
+                <TableHead className="text-right">{t('staff.table.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-gray-500 h-24">
-                    Đang tải...
+                    {t('staff.loading')}
                   </TableCell>
                 </TableRow>
               ) : filteredStaffs.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-gray-500 h-24">
-                    Không tìm thấy nhân sự phù hợp.
+                    {t('staff.no_data')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -181,7 +183,7 @@ const StaffList = () => {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          title="Xem chi tiết"
+                          title={t('staff.tooltip.view')}
                           className="h-8 w-8 text-blue-500"
                           onClick={(e) => { e.stopPropagation(); handleOpenStaffDetail(staff); }}
                         >
@@ -192,7 +194,7 @@ const StaffList = () => {
                             type="button"
                             variant="ghost"
                             size="icon"
-                            title="Quản lý lương"
+                            title={t('staff.tooltip.salary')}
                             className="h-8 w-8 text-green-600 dark:text-green-400"
                           >
                             <Wallet className="h-4 w-4" />
@@ -202,7 +204,7 @@ const StaffList = () => {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          title="Xóa"
+                          title={t('staff.tooltip.delete')}
                           className="h-8 w-8 text-red-500"
                           onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, staff }); }}
                         >
@@ -220,7 +222,7 @@ const StaffList = () => {
         {totalEmployeePages > 1 && (
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Trang {page} / {totalEmployeePages} (Tổng: {totalEmployeeItems} nhân viên)
+              {t('staff.pagination', { page, total: totalEmployeePages, count: totalEmployeeItems })}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
@@ -238,23 +240,23 @@ const StaffList = () => {
       <Modal
         isOpen={isStaffModalOpen}
         onClose={handleCloseStaffDetail}
-        title={selectedStaff?.full_name || selectedStaff?.fullName || 'Chi tiết nhân sự'}
-        description="Xem thông tin cá nhân và chỉnh sửa khi cần thiết."
+        title={selectedStaff?.full_name || selectedStaff?.fullName || t('staff.detail_modal.title')}
+        description={t('staff.detail_modal.subtitle')}
         footer={
           <>
             {isEditing ? (
               <>
                 <Button variant="outline" onClick={() => { setIsEditing(false); setStaffForm(selectedStaff); }}>
-                  Hủy
+                  {t('staff.btn.cancel')}
                 </Button>
                 <Button onClick={handleSaveStaff} disabled={updateMutation.isPending}>
-                  {updateMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+                  {updateMutation.isPending ? t('staff.btn.saving') : t('staff.btn.save')}
                 </Button>
               </>
             ) : (
               <>
-                <Button variant="outline" onClick={handleCloseStaffDetail}>Đóng</Button>
-                <Button onClick={() => setIsEditing(true)}>Chỉnh sửa</Button>
+                <Button variant="outline" onClick={handleCloseStaffDetail}>{t('staff.btn.close')}</Button>
+                <Button onClick={() => setIsEditing(true)}>{t('staff.btn.edit')}</Button>
               </>
             )}
           </>
@@ -271,13 +273,13 @@ const StaffList = () => {
                 className="h-20 w-20 rounded-2xl object-cover flex-shrink-0 border border-gray-200 dark:border-gray-800"
               />
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Vai trò</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('staff.form_fields.role')}</p>
                 <p className="text-base font-semibold text-gray-900 dark:text-white">{staffForm.position || staffForm.Position}</p>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Họ tên</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('staff.form_fields.name')}</label>
                 <input
                   value={staffForm.full_name || staffForm.fullName || staffForm.FullName || ''}
                   disabled={!isEditing}
@@ -286,7 +288,7 @@ const StaffList = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Giới tính</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('staff.form_fields.gender')}</label>
                 <input
                   value={staffForm.gender || staffForm.Gender || ''}
                   disabled={!isEditing}
@@ -295,7 +297,7 @@ const StaffList = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Ngày sinh</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('staff.form_fields.dob')}</label>
                 <input
                   type="date"
                   value={staffForm.dob ? staffForm.dob.split('T')[0] : ''}
@@ -305,7 +307,7 @@ const StaffList = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Chức vụ</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('staff.form_fields.position')}</label>
                 <input
                   value={staffForm.position || staffForm.Position || ''}
                   disabled={!isEditing}
@@ -314,7 +316,7 @@ const StaffList = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">SĐT</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('staff.form_fields.phone')}</label>
                 <input
                   value={staffForm.phone || staffForm.Phone || ''}
                   disabled={!isEditing}
@@ -323,7 +325,7 @@ const StaffList = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('staff.form_fields.email')}</label>
                 <input
                   value={staffForm.email || staffForm.Email || ''}
                   disabled={!isEditing}
@@ -333,7 +335,7 @@ const StaffList = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Địa chỉ</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">{t('staff.form_fields.address')}</label>
               <textarea
                 value={staffForm.address || staffForm.Address || ''}
                 disabled={!isEditing}
@@ -350,17 +352,17 @@ const StaffList = () => {
       <Modal
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, staff: null })}
-        title="Xác nhận xóa nhân viên"
+        title={t('staff.delete_modal.title')}
       >
         <div className="p-4">
           <p className="text-gray-700 dark:text-gray-300 mb-4">
-            Bạn có chắc chắn muốn xóa nhân viên <strong>{deleteModal.staff?.full_name}</strong> không?
+            {t('staff.delete_modal.confirm_pre')}<strong>{deleteModal.staff?.full_name}</strong>{t('staff.delete_modal.confirm_post')}
           </p>
-          <p className="text-sm text-red-500 mb-4">Hành động này không thể hoàn tác.</p>
+          <p className="text-sm text-red-500 mb-4">{t('staff.delete_modal.warning')}</p>
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setDeleteModal({ isOpen: false, staff: null })}>Hủy</Button>
+            <Button variant="outline" onClick={() => setDeleteModal({ isOpen: false, staff: null })}>{t('staff.btn.cancel')}</Button>
             <Button variant="danger" onClick={handleDelete} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? 'Đang xóa...' : 'Xóa'}
+              {deleteMutation.isPending ? t('staff.btn.deleting') : t('staff.btn.delete')}
             </Button>
           </div>
         </div>

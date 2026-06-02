@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import RoomFormComponent from "@/components/Forms/RoomForm";
 import { ArrowLeft } from "lucide-react";
 import Button from "@/components/Common/Button";
@@ -8,6 +9,7 @@ import { facilityService } from "@/services/facilityService";
 import { useCreateFacility, useUpdateFacility } from "@/hooks/mutations/useFacilityMutation";
 
 const RoomFormPage = () => {
+  const { t } = useTranslation('owner');
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
@@ -36,7 +38,7 @@ const RoomFormPage = () => {
           });
         })
         .catch(err => {
-          toast.error("Lỗi khi tải thông tin phòng tập");
+          toast.error(t('room.form.load_error'));
           console.error(err);
         })
         .finally(() => {
@@ -84,7 +86,7 @@ const RoomFormPage = () => {
 
   if (isEditing && isLoading && !initialData)
     return (
-      <div className="p-8 text-center text-gray-500">Đang tải dữ liệu...</div>
+      <div className="p-8 text-center text-gray-500">{t('room.form.loading')}</div>
     );
 
   return (
@@ -97,12 +99,10 @@ const RoomFormPage = () => {
         </Link>
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {isEditing ? "Chỉnh sửa khu vực / phòng tập" : "Thêm phòng tập mới"}
+            {isEditing ? t('room.form.title_edit') : t('room.form.title_create')}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {isEditing
-              ? "Thay đổi thông tin sức chứa, loại khu vực và tiện ích."
-              : "Thêm khu vực tập luyện mới vào hệ thống quản lý."}
+            {isEditing ? t('room.form.subtitle_edit') : t('room.form.subtitle_create')}
           </p>
         </div>
       </div>

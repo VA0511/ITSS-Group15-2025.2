@@ -1,24 +1,24 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '@/store/useAuthStore';
 import useUIStore from '@/store/useUIStore';
 import { menus } from '@/utils/menuConfig';
 import { cn } from '@/lib/utils';
-import { Dumbbell } from 'lucide-react'; 
+import { Dumbbell } from 'lucide-react';
 
-// Hàm render tự động thẻ SVG Icon dựa trên tên String ở file utils/menuConfig.js
 const IconRender = ({ iconName }) => {
   const IconComponent = LucideIcons[iconName] || LucideIcons.Circle;
   return <IconComponent className="h-5 w-5" />;
 };
 
 const Sidebar = () => {
-  // Rút Role từ AuthStore để biết cần hiện Menu nào
+  const { t } = useTranslation('layout');
   const user = useAuthStore((state) => state.user);
   const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
 
-  const userRole = user?.role || 'member'; // Fallback an toàn là member nếu crash
+  const userRole = user?.role || 'member';
   const roleMenus = menus[userRole] || [];
 
   return (
@@ -28,7 +28,7 @@ const Sidebar = () => {
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
-      {/* Logo Thương hiệu Phòng Gym */}
+      {/* Logo */}
       <div className="flex h-16 shrink-0 items-center justify-center border-b border-gray-200 px-6 dark:border-gray-800">
         <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-500">
           <Dumbbell className="h-7 w-7" />
@@ -38,10 +38,10 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Vòng lặp Render động danh sách danh mục Màn hình */}
+      {/* Navigation */}
       <nav className="flex-1 space-y-1.5 overflow-y-auto px-4 py-6 custom-scrollbar">
         <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-          DANH MỤC QUẢN LÝ
+          {t('sidebar.nav_label')}
         </div>
         {roleMenus.map((item, index) => (
           <NavLink
@@ -57,20 +57,22 @@ const Sidebar = () => {
             }
           >
             <IconRender iconName={item.icon} />
-            {item.title}
+            {t(item.title)}
           </NavLink>
         ))}
       </nav>
 
-      {/* Box quảng cáo / support ở đáy */}
+      {/* Support box */}
       <div className="border-t border-gray-200 p-4 dark:border-gray-800">
         <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800">
-          <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Cần hỗ trợ?</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            {t('sidebar.support_title')}
+          </p>
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-            Hỗ trợ kỹ thuật hệ thống ITSS v2026.
+            {t('sidebar.support_desc')}
           </p>
           <a href="mailto:support@activegym.vn" className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline dark:text-blue-400">
-            Gửi Ticket hỗ trợ &rarr;
+            {t('sidebar.support_link')}
           </a>
         </div>
       </div>

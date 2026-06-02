@@ -1,0 +1,31 @@
+{
+  "sidebar": {
+    "nav_label": "DANH MỤC QUẢN LÝ",
+    "support_title": "Cần hỗ trợ?",
+    "support_desc": "Hỗ trợ kỹ thuật hệ thống ITSS v2026.",
+    "support_link": "Gửi Ticket hỗ trợ →"
+  },
+  "menu": {
+    "overview": "Tổng quan",
+    "rooms": "Phòng tập",
+    "staffs": "Nhân sự",
+    "members": "Hội viên",
+    "packages": "Gói tập",
+    "equipment": "Thiết bị",
+    "feedback": "Phản hồi",
+    "accounts": "Tài khoản",
+    "reports": "Báo cáo",
+    "profile": "Hồ sơ cá nhân",
+    "transactions": "Giao dịch",
+    "pt_schedule": "Lịch PT",
+    "students": "Học viên",
+    "teaching_schedule": "Lịch dạy",
+    "availability": "Thiết lập lịch",
+    "evaluation": "Đánh giá buổi tập",
+    "register_package": "Đăng ký gói tập mới",
+    "my_package": "Gói tập của tôi",
+    "training_schedule": "Lịch tập",
+    "renew": "Gia hạn",
+    "send_feedback": "Gửi phản hồi"
+  }
+}

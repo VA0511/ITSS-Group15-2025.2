@@ -1,0 +1,20 @@
+{
+  "save": "保存",
+  "cancel": "キャンセル",
+  "delete": "削除",
+  "edit": "編集",
+  "loading": "読み込み中...",
+  "success": "成功",
+  "error": "エラー",
+  "confirm": "確認",
+  "search": "検索",
+  "back": "戻る",
+  "view_detail": "詳細を見る",
+  "no_data": "データなし",
+  "yes": "はい",
+  "no": "いいえ",
+  "actions": "操作",
+  "logout_success": "ログアウトしました",
+  "logout_desc": "またお会いしましょう",
+  "guest": "ゲスト"
+}

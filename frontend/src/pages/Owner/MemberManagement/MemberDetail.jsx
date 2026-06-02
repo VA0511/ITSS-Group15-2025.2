@@ -1,11 +1,13 @@
 ﻿import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Activity, DollarSign, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 import Button from '@/components/Common/Button';
 import { useMemberDetails, useMemberSubscriptionHistory } from '@/hooks/queries/useMembers';
 
 const MemberDetail = () => {
+  const { t } = useTranslation('owner');
   const { id } = useParams();
   const { data: member, isLoading: memberLoading, isError: memberError } = useMemberDetails(id);
   const { data: historyResponse, isLoading: historyLoading } = useMemberSubscriptionHistory(id, 1, 5);
@@ -20,8 +22,8 @@ const MemberDetail = () => {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Chi tiết Hội viên</h1>
-            <p className="mt-1 text-sm text-gray-500">Đang tải dữ liệu...</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('member.detail.title')}</h1>
+            <p className="mt-1 text-sm text-gray-500">{t('member.detail.loading')}</p>
           </div>
         </div>
       </div>
@@ -38,8 +40,8 @@ const MemberDetail = () => {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Chi tiết Hội viên</h1>
-            <p className="mt-1 text-sm text-red-500">Không thể tải thông tin hội viên</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('member.detail.title')}</h1>
+            <p className="mt-1 text-sm text-red-500">{t('member.detail.load_error')}</p>
           </div>
         </div>
       </div>
@@ -56,8 +58,8 @@ const MemberDetail = () => {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Chi tiết Hội viên</h1>
-            <p className="mt-1 text-sm text-gray-500">Xem toàn bộ thông tin về {member.full_name || 'Hội viên'}</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('member.detail.title')}</h1>
+            <p className="mt-1 text-sm text-gray-500">{t('member.detail.subtitle', { name: member.full_name || t('member.detail.default_name') })}</p>
           </div>
         </div>
       </div>
@@ -76,33 +78,33 @@ const MemberDetail = () => {
             <span className={`mt-3 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${
               member.status === 'active' ? 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400'
             }`}>
-              {member.status === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
+              {member.status === 'active' ? t('member.detail.status.active') : t('member.detail.status.inactive')}
             </span>
           </div>
           <div className="mt-6 space-y-4">
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Số điện thoại</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('member.detail.info.phone')}</p>
               <p className="text-base font-semibold text-gray-900 dark:text-gray-100">{member.phone || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('member.detail.info.email')}</p>
               <p className="text-base font-semibold text-gray-900 dark:text-gray-100">{member.email || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Ngày tham gia</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('member.detail.info.join_date')}</p>
               <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
                 {(member.joinDate || member.registered_at) ? new Date(member.joinDate || member.registered_at).toLocaleDateString('vi-VN') : 'N/A'}
               </p>
             </div>
             {member.roadmap_goal && (
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Mục tiêu tập luyện</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('member.detail.info.goal')}</p>
                 <p className="text-base font-semibold text-gray-900 dark:text-gray-100 whitespace-pre-line">{member.roadmap_goal}</p>
               </div>
             )}
             {member.member_free_schedule && (
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Lịch tập tự do</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('member.detail.info.free_schedule')}</p>
                 <p className="text-base font-semibold text-gray-900 dark:text-gray-100 whitespace-pre-line">{member.member_free_schedule}</p>
               </div>
             )}
@@ -113,13 +115,13 @@ const MemberDetail = () => {
         <div className="col-span-1 lg:col-span-2 flex flex-col gap-6">
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
             <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white mb-4">
-              <CalendarDays className="h-5 w-5 text-blue-500" /> Gói tập hiện tại
+              <CalendarDays className="h-5 w-5 text-blue-500" /> {t('member.detail.package.title')}
             </h3>
             <div className="rounded-lg bg-gray-50 p-4 border border-gray-100 dark:bg-gray-900/50 dark:border-gray-800 flex justify-between items-center">
                <div>
                  <div className="flex items-center gap-3">
                    <p className="font-bold text-lg text-gray-900 dark:text-white">
-                     {member.package || 'Chưa có gói tập'}
+                     {member.package || t('member.detail.package.no_package')}
                    </p>
                    {/* Hiển thị badge trạng thái cho gói hiện tại */}
                    {member.package && member.package !== 'Chưa đăng ký' && (
@@ -128,14 +130,14 @@ const MemberDetail = () => {
                         ? "bg-green-100 text-green-700" 
                         : "bg-red-100 text-red-700"
                      }`}>
-                       {new Date(member.expiryDate) >= new Date() ? "Đang dùng" : "Hết hạn"}
+                       {new Date(member.expiryDate) >= new Date() ? t('member.detail.package.status_active') : t('member.detail.package.status_expired')}
                      </span>
                    )}
                  </div>
                  <p className="text-sm text-gray-500 mt-1">
                    {member.package && member.package !== 'Chưa đăng ký'
-                    ? `Hạn sử dụng: ${new Date(member.expiryDate).toLocaleDateString('vi-VN')}`
-                    : 'Hội viên chưa đăng ký gói tập nào'}
+                    ? t('member.detail.package.expiry', { date: new Date(member.expiryDate).toLocaleDateString('vi-VN') })
+                    : t('member.detail.package.not_registered')}
                  </p>
                </div>
           
@@ -145,12 +147,12 @@ const MemberDetail = () => {
           <div className="flex-1 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
             <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white mb-4">
               <Activity className="h-5 w-5 text-green-500" />
-              Lịch sử đăng ký gói tập
+              {t('member.detail.history.title')}
             </h3>
 
             {historyLoading ? (
               <div className="text-sm text-gray-500 text-center py-8">
-                Đang tải lịch sử...
+                {t('member.detail.history.loading')}
               </div>
             ) : historyResponse?.data?.length > 0 ? (
               <div className="space-y-4">
@@ -165,14 +167,13 @@ const MemberDetail = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            Ngày {new Date(item.registration_date).toLocaleDateString("vi-VN")}: 
-                            <span className="ml-1 text-blue-600">Đăng ký gói {item.package_name}</span>
+                            {t('member.detail.history.item', { date: new Date(item.registration_date).toLocaleDateString("vi-VN"), package: item.package_name })}
                           </p>
-                          
+
                           <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
                             <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" /> 
-                              Thời hạn: {new Date(item.start_date).toLocaleDateString("vi-VN")} - {new Date(item.end_date).toLocaleDateString("vi-VN")}
+                              <Clock className="h-3 w-3" />
+                              {t('member.detail.history.period', { start: new Date(item.start_date).toLocaleDateString("vi-VN"), end: new Date(item.end_date).toLocaleDateString("vi-VN") })}
                             </span>
                             <span className="flex items-center gap-1">
                               <DollarSign className="h-3 w-3" /> 
@@ -190,7 +191,7 @@ const MemberDetail = () => {
             ) : (
               <div className="text-sm text-gray-500 mt-8 flex flex-col items-center justify-center">
                 <Activity className="h-10 w-10 text-gray-200 dark:text-gray-700 mb-2" />
-                Chưa có lịch sử gói tập.
+                {t('member.detail.history.no_data')}
               </div>
             )}
           </div>

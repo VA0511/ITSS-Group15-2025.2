@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { ArrowUpRight, Users, ShieldCheck, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/Common/Button';
 import StatsCard from '@/components/Dashboard/StatsCard';
 import RevenueChart from '@/components/Charts/RevenueChart';
@@ -32,6 +33,7 @@ const fmt = (n) =>
 const monthLabel = (d) => `T${d.getMonth() + 1}`;
 
 const OwnerDashboard = () => {
+  const { t } = useTranslation('owner');
   const { data: membersRaw } = useMembers(1, 1000);
   const { data: txRaw } = useTransactions();
   const { data: employeesRaw } = useEmployees(1, 200);
@@ -66,10 +68,10 @@ const OwnerDashboard = () => {
   const retentionRate = members.length > 0 ? Math.round(activeCount / members.length * 100) : 0;
 
   const statsCards = [
-    { title: 'Doanh thu tháng này', value: fmt(monthRevenue), icon: ArrowUpRight, trend: 'up', trendValue: 'Tháng hiện tại' },
-    { title: 'Hội viên mới', value: String(newMembersCount), icon: Users, trend: 'up', trendValue: 'Tháng này' },
-    { title: 'Tỷ lệ giữ chân', value: `${retentionRate}%`, icon: ShieldCheck, trend: retentionRate >= 70 ? 'up' : 'down', trendValue: `${activeCount}/${members.length}` },
-    { title: 'Nhân sự', value: String(employees.length), icon: Briefcase, trend: 'neutral', trendValue: 'Tổng cộng' },
+    { title: t('dashboard.stats.revenue'), value: fmt(monthRevenue), icon: ArrowUpRight, trend: 'up', trendValue: t('dashboard.stats.current_month') },
+    { title: t('dashboard.stats.new_members'), value: String(newMembersCount), icon: Users, trend: 'up', trendValue: t('dashboard.stats.this_month') },
+    { title: t('dashboard.stats.retention'), value: `${retentionRate}%`, icon: ShieldCheck, trend: retentionRate >= 70 ? 'up' : 'down', trendValue: `${activeCount}/${members.length}` },
+    { title: t('dashboard.stats.staff'), value: String(employees.length), icon: Briefcase, trend: 'neutral', trendValue: t('dashboard.stats.total') },
   ];
 
   const revenueChartData = useMemo(() => {
@@ -157,13 +159,13 @@ const OwnerDashboard = () => {
       {/* Header */}
       <motion.div variants={slideUpVariants} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Tổng quan Chủ phòng tập</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Xem nhanh doanh thu, hội viên, thiết bị và nhân sự để ra quyết định chiến lược.
+            {t('dashboard.subtitle')}
           </p>
         </div>
         <Link to="/owner/reports" className="flex items-center justify-center">
-          <Button variant="outline" size="lg">Xem báo cáo tổng hợp</Button>
+          <Button variant="outline" size="lg">{t('dashboard.view_reports')}</Button>
         </Link>
       </motion.div>
 
@@ -192,7 +194,7 @@ const OwnerDashboard = () => {
 
       {/* Charts row 1 */}
       <motion.div variants={slideUpVariants} className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <RevenueChart data={revenueChartData} title="Doanh thu 7 tháng gần nhất" description="Tổng doanh thu theo tháng từ giao dịch thực tế" />
+        <RevenueChart data={revenueChartData} title={t('dashboard.chart.revenue_title')} description={t('dashboard.chart.revenue_desc')} />
         <RetentionChart />
       </motion.div>
 

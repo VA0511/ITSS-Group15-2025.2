@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Plus, Trash2, Eye, EyeOff, ChevronLeft, ChevronRight, KeyRound, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useAccounts } from '@/hooks/queries/useAccounts';
 import { useCreateAccount, useDeleteAccount, useRevealPassword } from '@/hooks/mutations/useAccountMutation';
 import Button from '@/components/Common/Button';
@@ -18,6 +19,7 @@ const ROLE_BADGE = {
 };
 
 const AccountList = () => {
+  const { t } = useTranslation('owner');
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -67,9 +69,9 @@ const AccountList = () => {
   // Create
   const validateCreate = () => {
     const errs = {};
-    if (!createForm.username.trim()) errs.username = 'Vui lòng nhập tên đăng nhập';
-    if (createForm.password.length < 6) errs.password = 'Mật khẩu tối thiểu 6 ký tự';
-    if (!createForm.role_id) errs.role_id = 'Vui lòng chọn vai trò';
+    if (!createForm.username.trim()) errs.username = t('account.validation.username_required');
+    if (createForm.password.length < 6) errs.password = t('account.validation.password_min');
+    if (!createForm.role_id) errs.role_id = t('account.validation.role_required');
     setCreateErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -91,7 +93,7 @@ const AccountList = () => {
   // Reveal password
   const handleReveal = () => {
     if (!ownerPassword) {
-      toast.error('Vui lòng nhập mật khẩu của bạn');
+      toast.error(t('account.error.enter_password'));
       return;
     }
     revealMutation.mutate(
@@ -102,7 +104,7 @@ const AccountList = () => {
           setRevealedPassword(pwd);
         },
         onError: () => {
-          toast.error('Mật khẩu không đúng hoặc không có quyền truy cập');
+          toast.error(t('account.error.wrong_password'));
         },
       }
     );
@@ -132,36 +134,36 @@ const AccountList = () => {
       {/* Header */}
       <motion.div variants={slideUpVariants} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Quản lý Tài khoản Nhân viên</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('account.title')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Tổng: {totalItems} tài khoản
+            {t('account.subtitle', { count: totalItems })}
           </p>
         </div>
         <Button leftIcon={<Plus className="h-4 w-4" />} onClick={() => setCreateModal(true)}>
-          Thêm tài khoản
+          {t('account.add_btn')}
         </Button>
       </motion.div>
 
       {/* Table */}
       <motion.div variants={slideUpVariants}>
       {isLoading ? (
-        <div className="text-center py-10 text-gray-500">Đang tải...</div>
+        <div className="text-center py-10 text-gray-500">{t('account.loading')}</div>
       ) : (
         <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-800 dark:bg-gray-950">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400 w-12">ID</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400">Tên đăng nhập</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400">Vai trò</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400">Mật khẩu</th>
-                <th className="px-4 py-3 text-right font-semibold text-gray-600 dark:text-gray-400">Thao tác</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400 w-12">{t('account.table.id')}</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400">{t('account.table.username')}</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400">{t('account.table.role')}</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-600 dark:text-gray-400">{t('account.table.password')}</th>
+                <th className="px-4 py-3 text-right font-semibold text-gray-600 dark:text-gray-400">{t('account.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {accounts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-400">Không có dữ liệu</td>
+                  <td colSpan={5} className="px-4 py-8 text-center text-gray-400">{t('account.no_data')}</td>
                 </tr>
               ) : (
                 accounts.map((account) => {
@@ -183,7 +185,7 @@ const AccountList = () => {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50"
-                            title="Xem mật khẩu"
+                            title={t('account.tooltip.view_password')}
                             onClick={() => openRevealModal(account)}
                           >
                             <KeyRound className="h-4 w-4" />
@@ -192,7 +194,7 @@ const AccountList = () => {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50"
-                            title="Xóa"
+                            title={t('account.tooltip.delete')}
                             onClick={() => setDeleteModal({ isOpen: true, account })}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -211,7 +213,7 @@ const AccountList = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500 dark:text-gray-400">Trang {page} / {totalPages}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{t('account.pagination', { page, total: totalPages })}</span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
               <ChevronLeft className="h-4 w-4" />
@@ -225,25 +227,25 @@ const AccountList = () => {
       </motion.div>
 
       {/* Modal: Thêm tài khoản */}
-      <Modal isOpen={createModal} onClose={() => { setCreateModal(false); setCreateErrors({}); }} title="Thêm tài khoản mới">
+      <Modal isOpen={createModal} onClose={() => { setCreateModal(false); setCreateErrors({}); }} title={t('account.modal.add_title')}>
         <div className="p-4 space-y-4">
           <Input
-            label="Tên đăng nhập *"
-            placeholder="VD: staff@gym.com"
+            label={t('account.form.username_label')}
+            placeholder={t('account.form.username_placeholder')}
             value={createForm.username}
             onChange={(e) => setCreateForm(f => ({ ...f, username: e.target.value }))}
             error={createErrors.username}
           />
           <Input
-            label="Mật khẩu *"
+            label={t('account.form.password_label')}
             type="password"
-            placeholder="Tối thiểu 6 ký tự"
+            placeholder={t('account.form.password_placeholder')}
             value={createForm.password}
             onChange={(e) => setCreateForm(f => ({ ...f, password: e.target.value }))}
             error={createErrors.password}
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Vai trò *</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('account.form.role_label')}</label>
             <select
               className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:bg-gray-950 dark:border-gray-800 dark:text-white"
               value={createForm.role_id}
@@ -257,54 +259,54 @@ const AccountList = () => {
             {createErrors.role_id && <span className="text-xs text-red-500">{createErrors.role_id}</span>}
           </div>
           <div className="flex justify-end gap-2 pt-2 border-t dark:border-gray-800">
-            <Button variant="outline" onClick={() => { setCreateModal(false); setCreateErrors({}); }}>Hủy</Button>
-            <Button onClick={handleCreate} isLoading={createMutation.isPending}>Tạo tài khoản</Button>
+            <Button variant="outline" onClick={() => { setCreateModal(false); setCreateErrors({}); }}>{t('account.btn.cancel')}</Button>
+            <Button onClick={handleCreate} isLoading={createMutation.isPending}>{t('account.btn.create')}</Button>
           </div>
         </div>
       </Modal>
 
       {/* Modal: Xác nhận xóa */}
-      <Modal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, account: null })} title="Xác nhận xóa tài khoản">
+      <Modal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, account: null })} title={t('account.modal.delete_title')}>
         <div className="p-4">
           <p className="text-gray-700 dark:text-gray-300 mb-2">
-            Bạn có chắc muốn xóa tài khoản <strong>{deleteModal.account?.username}</strong>?
+            {t('account.delete.confirm_pre')}<strong>{deleteModal.account?.username}</strong>{t('account.delete.confirm_post')}
           </p>
-          <p className="text-sm text-red-500 mb-4">Hành động này không thể hoàn tác.</p>
+          <p className="text-sm text-red-500 mb-4">{t('account.delete.warning')}</p>
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setDeleteModal({ isOpen: false, account: null })}>Hủy</Button>
-            <Button variant="danger" onClick={handleDelete} isLoading={deleteMutation.isPending}>Xóa</Button>
+            <Button variant="outline" onClick={() => setDeleteModal({ isOpen: false, account: null })}>{t('account.btn.cancel')}</Button>
+            <Button variant="danger" onClick={handleDelete} isLoading={deleteMutation.isPending}>{t('account.btn.delete')}</Button>
           </div>
         </div>
       </Modal>
 
       {/* Modal: Xem mật khẩu */}
-      <Modal isOpen={revealModal.isOpen} onClose={closeRevealModal} title="Xem mật khẩu tài khoản">
+      <Modal isOpen={revealModal.isOpen} onClose={closeRevealModal} title={t('account.modal.reveal_title')}>
         <div className="p-4 space-y-4">
           <div className="flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3">
             <ShieldCheck className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
             <p className="text-sm text-blue-700 dark:text-blue-300">
-              Nhập mật khẩu của bạn để xem mật khẩu tài khoản <strong>{revealModal.account?.username}</strong>.
+              {t('account.reveal.info_pre')}<strong>{revealModal.account?.username}</strong>{t('account.reveal.info_post')}
             </p>
           </div>
 
           {revealedPassword === null ? (
             <>
               <Input
-                label="Mật khẩu của bạn (Owner)"
+                label={t('account.reveal.your_password_label')}
                 type="password"
-                placeholder="Nhập mật khẩu để xác thực"
+                placeholder={t('account.reveal.your_password_placeholder')}
                 value={ownerPassword}
                 onChange={(e) => setOwnerPassword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleReveal()}
               />
               <div className="flex justify-end gap-2 pt-2 border-t dark:border-gray-800">
-                <Button variant="outline" onClick={closeRevealModal}>Hủy</Button>
-                <Button onClick={handleReveal} isLoading={revealMutation.isPending}>Xác nhận</Button>
+                <Button variant="outline" onClick={closeRevealModal}>{t('account.btn.cancel')}</Button>
+                <Button onClick={handleReveal} isLoading={revealMutation.isPending}>{t('account.btn.confirm')}</Button>
               </div>
             </>
           ) : (
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Mật khẩu tài khoản</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('account.reveal.account_password_label')}</label>
               <div className="flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 py-2">
                 <span className="flex-1 font-mono text-gray-900 dark:text-white">
                   {showRevealedPwd ? revealedPassword : '•'.repeat(revealedPassword.length || 8)}
@@ -318,7 +320,7 @@ const AccountList = () => {
                 </button>
               </div>
               <div className="flex justify-end pt-2 border-t dark:border-gray-800">
-                <Button variant="outline" onClick={closeRevealModal}>Đóng</Button>
+                <Button variant="outline" onClick={closeRevealModal}>{t('account.btn.close')}</Button>
               </div>
             </div>
           )}

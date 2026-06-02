@@ -1,0 +1,651 @@
+{
+  "dashboard": {
+    "title": "Owner Dashboard",
+    "subtitle": "Quick overview of revenue, members, equipment, and staff for strategic decisions.",
+    "view_reports": "View Full Report",
+    "stats": {
+      "revenue": "Revenue This Month",
+      "new_members": "New Members",
+      "retention": "Retention Rate",
+      "staff": "Staff",
+      "current_month": "Current month",
+      "this_month": "This month",
+      "total": "Total"
+    },
+    "chart": {
+      "revenue_title": "Revenue – Last 7 Months",
+      "revenue_desc": "Total monthly revenue from actual transactions"
+    }
+  },
+  "account": {
+    "title": "Staff Account Management",
+    "subtitle": "Total: {{count}} accounts",
+    "add_btn": "Add Account",
+    "loading": "Loading...",
+    "no_data": "No data",
+    "pagination": "Page {{page}} / {{total}}",
+    "table": {
+      "id": "ID",
+      "username": "Username",
+      "role": "Role",
+      "password": "Password",
+      "actions": "Actions"
+    },
+    "modal": {
+      "add_title": "Add New Account",
+      "delete_title": "Confirm Delete Account",
+      "reveal_title": "View Account Password"
+    },
+    "form": {
+      "username_label": "Username *",
+      "username_placeholder": "e.g. staff@gym.com",
+      "password_label": "Password *",
+      "password_placeholder": "Minimum 6 characters",
+      "role_label": "Role *"
+    },
+    "delete": {
+      "confirm_pre": "Are you sure you want to delete account ",
+      "confirm_post": "?",
+      "warning": "This action cannot be undone."
+    },
+    "reveal": {
+      "info_pre": "Enter your password to view the password for account ",
+      "info_post": ".",
+      "your_password_label": "Your Password (Owner)",
+      "your_password_placeholder": "Enter password to authenticate",
+      "account_password_label": "Account Password"
+    },
+    "btn": {
+      "cancel": "Cancel",
+      "create": "Create Account",
+      "confirm": "Confirm",
+      "close": "Close",
+      "delete": "Delete"
+    },
+    "validation": {
+      "username_required": "Please enter a username",
+      "password_min": "Password must be at least 6 characters",
+      "role_required": "Please select a role"
+    },
+    "error": {
+      "enter_password": "Please enter your password",
+      "wrong_password": "Incorrect password or insufficient permissions"
+    },
+    "tooltip": {
+      "view_password": "View Password",
+      "delete": "Delete"
+    }
+  },
+  "equipment": {
+    "title": "Equipment Management",
+    "subtitle": "Track the status of machines, equipment, and maintenance schedules.",
+    "add_btn": "Add Equipment",
+    "search": {
+      "title": "Search Equipment",
+      "subtitle": "Search by name, type, status, or maintenance date.",
+      "placeholder": "Search equipment..."
+    },
+    "loading": "Loading equipment list...",
+    "load_error": "Error loading data: {{message}}",
+    "table": {
+      "name": "Equipment Name / Machine",
+      "room": "Room Name",
+      "status": "Repair Status",
+      "next_maintenance": "Next Maintenance",
+      "actions": "Actions"
+    },
+    "no_data": "No matching equipment found.",
+    "status": {
+      "operating": "Operating",
+      "maintaining": "Under Maintenance",
+      "new": "New",
+      "broken": "Broken"
+    },
+    "facility_unknown": "Unknown",
+    "origin_label": "Origin:",
+    "pagination": "Page {{page}} / {{total}} (Total: {{count}} items)",
+    "modal": {
+      "delete_title": "Confirm Delete Equipment",
+      "delete_confirm_pre": "Are you sure you want to delete equipment ",
+      "delete_confirm_post": "?",
+      "delete_warning": "This action cannot be undone."
+    },
+    "btn": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "edit": "Edit"
+    },
+    "tooltip": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "title_edit": "Update Equipment",
+      "title_create": "Add New Equipment",
+      "subtitle_edit": "Update equipment status and maintenance schedule.",
+      "subtitle_create": "Record newly purchased equipment in the gym's asset inventory.",
+      "loading": "Loading data...",
+      "load_error": "Error loading equipment information"
+    }
+  },
+  "feedback": {
+    "title": "Member Feedback",
+    "subtitle": "Review and improve service quality based on customer feedback.",
+    "search_placeholder": "Search by name or content...",
+    "filter": {
+      "rating": "Filter by rating",
+      "status": "Filter by status",
+      "date": "Filter by time",
+      "total": "Total feedback"
+    },
+    "rating_options": {
+      "all": "All",
+      "5star": "5 stars",
+      "4star": "4 stars",
+      "3star": "3 stars",
+      "2star": "2 stars",
+      "1star": "1 star"
+    },
+    "status_options": {
+      "all": "All",
+      "pending": "Pending",
+      "processing": "Processing",
+      "resolved": "Resolved"
+    },
+    "date_options": {
+      "all": "All",
+      "7days": "Last 7 days",
+      "30days": "Last 30 days",
+      "this_month": "This month",
+      "this_year": "This year"
+    },
+    "loading": "Loading feedback...",
+    "load_error": "Error loading feedback data.",
+    "table": {
+      "member": "Member",
+      "type": "Feedback Type / Rating",
+      "content": "Content",
+      "status": "Status",
+      "date_action": "Date / Action"
+    },
+    "no_data": "No matching feedback found.",
+    "type": {
+      "trainer": "Trainer",
+      "equipment": "Equipment",
+      "service": "Service",
+      "other": "Other"
+    },
+    "status": {
+      "resolved": "Resolved",
+      "pending": "Pending",
+      "processing": "Processing"
+    },
+    "pagination": "Page {{page}} / {{total}} (Total: {{count}} feedback)",
+    "modal": {
+      "title": "Update Feedback Status",
+      "status_label": "Status",
+      "note_label": "Response Note (Optional)",
+      "note_placeholder": "Enter handling note..."
+    },
+    "btn": {
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "tooltip": {
+      "update": "Update status"
+    }
+  },
+  "member": {
+    "title": "Member List",
+    "subtitle": "Manage all members registered in your system.",
+    "add_btn": "Add Member",
+    "search": {
+      "title": "Search Members",
+      "subtitle": "Search by name, ID, phone number, or email.",
+      "placeholder": "Search members..."
+    },
+    "loading": "Loading data...",
+    "load_error": "Error loading member data. Please try again.",
+    "table": {
+      "name": "Full Name",
+      "package": "Package",
+      "phone": "Phone",
+      "date": "Registration Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "no_data": "No matching members found.",
+    "status": {
+      "active": "Active",
+      "expired": "Expired"
+    },
+    "pagination": "Page {{page}} / {{total}} (Total: {{count}} members)",
+    "tooltip": {
+      "view": "View Detail",
+      "edit": "Edit"
+    },
+    "detail": {
+      "title": "Member Detail",
+      "loading": "Loading data...",
+      "load_error": "Could not load member information",
+      "subtitle": "View all information about {{name}}",
+      "default_name": "Member",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "info": {
+        "phone": "Phone Number",
+        "email": "Email",
+        "join_date": "Join Date",
+        "goal": "Training Goal",
+        "free_schedule": "Free Schedule"
+      },
+      "package": {
+        "title": "Current Package",
+        "status_active": "Active",
+        "status_expired": "Expired",
+        "expiry": "Expires: {{date}}",
+        "no_package": "No package",
+        "not_registered": "Member has not registered a package",
+        "not_registered_short": "Not registered"
+      },
+      "history": {
+        "title": "Package Registration History",
+        "loading": "Loading history...",
+        "no_data": "No package history.",
+        "item": "{{date}}: Registered {{package}}",
+        "period": "Period: {{start}} - {{end}}"
+      }
+    },
+    "form": {
+      "title_edit": "Edit Member",
+      "title_create": "Add New Member",
+      "subtitle_edit": "Update personal information of the member.",
+      "subtitle_create": "Fill in personal information and initial package setup for the member.",
+      "loading": "Loading data...",
+      "load_error": "Error loading member information"
+    }
+  },
+  "package": {
+    "title": "Package List",
+    "subtitle": "Manage and configure gym membership packages.",
+    "add_btn": "Add New Package",
+    "loading": "Loading packages...",
+    "load_error": "Error loading package data.",
+    "table": {
+      "name": "Package Name",
+      "duration": "Duration",
+      "price": "Price (VND)",
+      "description": "Short Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "no_data": "No packages configured.",
+    "status": {
+      "active": "Active",
+      "inactive": "Hidden"
+    },
+    "no_description": "No description",
+    "tooltip": {
+      "hide": "Hide package",
+      "show": "Show package",
+      "edit": "Edit"
+    },
+    "modal": {
+      "hide_title": "Hide Package",
+      "show_title": "Show Package",
+      "confirm_pre": "Are you sure you want to ",
+      "confirm_mid": " package ",
+      "confirm_post": "?",
+      "warning_hide": "The package will be hidden and members cannot purchase it.",
+      "action_hide": "hide",
+      "action_show": "show"
+    },
+    "btn": {
+      "cancel": "Cancel",
+      "hide": "Hide",
+      "show": "Show",
+      "processing": "Processing...",
+      "edit": "Edit"
+    },
+    "form": {
+      "title_edit": "Edit Package",
+      "title_create": "Create New Package",
+      "subtitle_edit": "Change information, price, or description of this package.",
+      "subtitle_create": "Add a new membership service to your branch system.",
+      "loading": "Loading data...",
+      "load_error": "Error loading package information"
+    }
+  },
+  "profile": {
+    "title": "Personal Profile",
+    "role": "Owner",
+    "not_updated": "Not updated",
+    "position": "Owner",
+    "info": {
+      "title": "Personal Information",
+      "phone": "Phone Number",
+      "email": "Email",
+      "gender": "Gender",
+      "dob": "Date of Birth",
+      "address": "Address"
+    },
+    "saving": "Saving...",
+    "toast": {
+      "avatar_success": "Avatar updated successfully",
+      "avatar_error": "Failed to save avatar"
+    },
+    "not_found": "Staff information not found."
+  },
+  "reports": {
+    "title": "Owner Reports",
+    "subtitle": "All strategic reports consolidated for quick, accurate decision-making.",
+    "revenue": {
+      "title": "Revenue Report",
+      "description": "Track total revenue, package sales, and cash flow trends."
+    },
+    "member": {
+      "title": "Member Report",
+      "description": "Track new members, renewal rates, and CRM activity."
+    },
+    "staff": {
+      "title": "Staff Report",
+      "description": "Monitor PT performance, staff management, and monthly KPIs."
+    },
+    "view_detail": "View Detail →",
+    "advice": {
+      "heading": "Advice:",
+      "text": "Gym owners should use the revenue report to measure KPIs and inform strategy. The member report helps identify retention trends, while the staff report supports performance evaluation and labor cost management."
+    }
+  },
+  "revenue_report": {
+    "title": "Revenue Report",
+    "subtitle": "In-depth financial data analysis.",
+    "export_btn": "Export PDF Report",
+    "stats": {
+      "total_revenue": "Total Revenue",
+      "transactions": "Transactions"
+    },
+    "filter": {
+      "label": "Filter by period",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "period": {
+      "monthly": "Monthly (last 12 months)",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "chart": { "title": "Revenue Chart" },
+    "history": { "title": "Recent Transactions" },
+    "loading": "Loading...",
+    "no_data": "No transaction data.",
+    "table": {
+      "customer": "Customer",
+      "package": "Package",
+      "type": "Type",
+      "amount": "Amount",
+      "date": "Date"
+    },
+    "type": {
+      "renew": "Renewal",
+      "new_registration": "Registration"
+    },
+    "member_fallback": "Member #{{id}}"
+  },
+  "member_report": {
+    "title": "Member Report",
+    "subtitle": "Track new members, retention rates, and package registration trends.",
+    "export_btn": "Export Report",
+    "stats": {
+      "new_members": "New Members This Month",
+      "renewals": "Successful Renewals",
+      "retention": "Retention Rate"
+    },
+    "loading": "Loading...",
+    "no_data": "No transactions yet.",
+    "history": { "title": "Recent Transactions" },
+    "type": {
+      "renew": "Renewal",
+      "new_registration": "New Registration"
+    },
+    "member_fallback": "Member #{{id}}"
+  },
+  "staff_report": {
+    "title": "Staff Report",
+    "subtitle": "Evaluate employee performance, completed sessions, and team stability.",
+    "export_btn": "Export Report",
+    "stats": {
+      "total": "Total Staff",
+      "kpi_reached": "PTs Meeting KPI",
+      "sessions": "Sessions Completed"
+    },
+    "top_performers": { "title": "Top Performers" },
+    "loading": "Loading...",
+    "no_data": "No session data.",
+    "sessions_label": "sessions completed",
+    "fallback": {
+      "trainer": "Trainer",
+      "staff": "Staff #{{id}}"
+    }
+  },
+  "room": {
+    "title": "Room / Area Management",
+    "subtitle": "Track capacity and current occupancy of training spaces.",
+    "add_btn": "Add New Area",
+    "loading": "Loading...",
+    "capacity": "Capacity: {{count}} people",
+    "current_label": "Current:",
+    "person_unit": "{{count}} people",
+    "status": {
+      "operating": "Open",
+      "maintenance": "Maintenance"
+    },
+    "tooltip": {
+      "maintenance": "Set Maintenance",
+      "activate": "Activate",
+      "view": "View Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "pagination": "Page {{page}} / {{total}} (Total: {{count}} rooms)",
+    "modal": {
+      "delete_title": "Confirm Delete Room",
+      "delete_confirm_pre": "Are you sure you want to delete room ",
+      "delete_confirm_post": "?",
+      "delete_warning": "This action cannot be undone."
+    },
+    "btn": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "detail": {
+      "loading": "Loading room details...",
+      "error": "Room information not found.",
+      "back": "Back",
+      "edit_btn": "Edit Room",
+      "status_operating": "● Operating",
+      "status_maintenance": "● Under Maintenance",
+      "metrics": {
+        "title": "Current Metrics",
+        "max_capacity": "Max Capacity",
+        "current_guests": "Current Guests",
+        "efficiency": "Occupancy: {{pct}}%",
+        "person_unit": "people"
+      },
+      "description": {
+        "title": "Description",
+        "no_data": "No description available."
+      },
+      "amenities_title": "Facilities & Amenities",
+      "highlights_title": "Highlights",
+      "rules_title": "Room Rules",
+      "images_title": "Featured Images",
+      "video_title": "Introduction Video",
+      "video_not_supported": "Your browser does not support the video tag.",
+      "quick_stats": {
+        "capacity": "Capacity",
+        "using": "In Use",
+        "available": "Available",
+        "person_unit": "people",
+        "slot_unit": "slots"
+      }
+    },
+    "type_meta": {
+      "Gym": {
+        "floor": "Floor 1",
+        "hours": "05:30 – 22:00",
+        "highlights": ["Trainers on duty during peak hours","Gloves & resistance bands for rent","Free workout plan consultation","HEPA-standard air filtration system"],
+        "rules": ["Wear sportswear and gym shoes","Wipe down equipment after use","No shouting, keep the space quiet","Return weights to their proper position"]
+      },
+      "Studio": {
+        "floor": "Floor 2",
+        "hours": "06:00 – 21:00",
+        "highlights": ["Internationally certified instructors","Small group classes, max 15–20 people","Free equipment provided","Room temperature maintained at 22–24°C"],
+        "rules": ["Remove shoes before entering","Turn off or silence your phone","Arrive at least 5 minutes early","No eating or drinking in the training area"]
+      },
+      "Spa": {
+        "floor": "Floor 3",
+        "hours": "08:00 – 21:00",
+        "highlights": ["Private rooms, absolute silence","Complimentary herbal drinks","Imported natural essential oils","Fresh towels replaced after each session"],
+        "rules": ["Do not enter if injured or feverish","Drink at least 1 glass of water before entering","Maximum session time: 20 minutes","Stay quiet to respect other users"]
+      },
+      "Pool": {
+        "floor": "Floor B1",
+        "hours": "06:00 – 20:00",
+        "highlights": ["Warm water year-round – maintained at 28–30°C","Professional lifeguard on duty 100%","Floats and goggles for rent","Shower before entering the pool"],
+        "rules": ["Wear proper swimwear","Shower before entering the pool","No jumping from heights","Children under 12 must be accompanied by an adult"]
+      },
+      "Default": {
+        "floor": "Floor 1",
+        "hours": "06:00 – 22:00",
+        "highlights": ["Spacious, clean environment","Helpful and supportive staff"],
+        "rules": ["Maintain general cleanliness","Follow gym rules"]
+      }
+    },
+    "form": {
+      "title_edit": "Edit Room / Area",
+      "title_create": "Add New Room",
+      "subtitle_edit": "Update capacity, room type, and amenities.",
+      "subtitle_create": "Add a new training area to the management system.",
+      "loading": "Loading data...",
+      "load_error": "Error loading room information"
+    }
+  },
+  "staff": {
+    "title": "Staff Management",
+    "subtitle": "View staff details, update information, and manage personnel.",
+    "add_btn": "Add Staff",
+    "list": {
+      "title": "Staff List",
+      "subtitle": "Search and open staff details to edit information.",
+      "search_placeholder": "Search by name, email, phone, position"
+    },
+    "table": {
+      "name": "Staff Name",
+      "position": "Position",
+      "contact": "Contact",
+      "address": "Address",
+      "actions": "Actions"
+    },
+    "loading": "Loading...",
+    "no_data": "No matching staff found.",
+    "pagination": "Page {{page}} / {{total}} (Total: {{count}} staff)",
+    "tooltip": {
+      "view": "View Detail",
+      "salary": "Manage Salary",
+      "delete": "Delete"
+    },
+    "detail_modal": {
+      "title": "Staff Detail",
+      "subtitle": "View personal information and edit as needed."
+    },
+    "form_fields": {
+      "role": "Role",
+      "name": "Full Name",
+      "gender": "Gender",
+      "dob": "Date of Birth",
+      "position": "Position",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address"
+    },
+    "btn": {
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "close": "Close",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "delete_modal": {
+      "title": "Confirm Delete Staff",
+      "confirm_pre": "Are you sure you want to delete staff ",
+      "confirm_post": "?",
+      "warning": "This action cannot be undone."
+    },
+    "form_page": {
+      "title_edit": "Staff Profile",
+      "title_create": "Create Staff Account",
+      "subtitle": "Fill in information and assign login access (Role) for the internal account.",
+      "name_label": "Staff Full Name",
+      "name_placeholder": "e.g. John Smith",
+      "role_label": "Access Role",
+      "role_trainer": "Personal Trainer (Trainer)",
+      "role_manager": "Receptionist / Cashier (Manager)",
+      "phone_label": "Phone Number",
+      "phone_placeholder": "Internal contact number",
+      "email_label": "Login Email",
+      "email_placeholder": "Email used for system access",
+      "password_label": "Initial Password",
+      "password_placeholder": "Enter password for staff member",
+      "btn_cancel": "Cancel",
+      "btn_save": "Save Staff"
+    }
+  },
+  "salary": {
+    "title": "Salary Management — {{name}}",
+    "subtitle": "{{position}} · Adjust salary based on work performance",
+    "current_salary": "Current Salary",
+    "estimated_salary": "Estimated This Month (calculated)",
+    "calculation_note": "Base × multiplier — not saved to DB",
+    "adjust": {
+      "title": "Adjust Salary",
+      "base_salary_label": "Base Salary (VND/month)",
+      "base_salary_placeholder": "e.g. 10000000",
+      "performance_label": "Performance Rating",
+      "performance_formula": "Net salary = Base salary × performance multiplier",
+      "performance_excellent": "Excellent (120%)",
+      "performance_good": "Good (110%)",
+      "performance_satisfactory": "Satisfactory (100%)",
+      "performance_needs_improvement": "Needs Improvement (90%)",
+      "btn_save": "Save",
+      "btn_saving": "Saving..."
+    },
+    "bonus": {
+      "title": "Add Bonus / Tips",
+      "note": "Amount will be added directly to current salary.",
+      "amount_label": "Amount (VND)",
+      "amount_placeholder": "e.g. 500000",
+      "reason_label": "Reason (optional)",
+      "reason_placeholder": "e.g. Tips from students, goal completion bonus...",
+      "btn_add": "Add to Salary",
+      "btn_adding": "Adding..."
+    },
+    "toast": {
+      "salary_updated": "Base salary updated",
+      "bonus_added": "Added {{amount}}",
+      "salary_error": "Update failed",
+      "bonus_error": "Failed to add bonus",
+      "load_error": "Could not load staff information"
+    },
+    "loading": "Loading...",
+    "back": "Back"
+  }
+}

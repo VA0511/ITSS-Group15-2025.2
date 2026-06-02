@@ -1,0 +1,651 @@
+{
+  "dashboard": {
+    "title": "Tổng quan Chủ phòng tập",
+    "subtitle": "Xem nhanh doanh thu, hội viên, thiết bị và nhân sự để ra quyết định chiến lược.",
+    "view_reports": "Xem báo cáo tổng hợp",
+    "stats": {
+      "revenue": "Doanh thu tháng này",
+      "new_members": "Hội viên mới",
+      "retention": "Tỷ lệ giữ chân",
+      "staff": "Nhân sự",
+      "current_month": "Tháng hiện tại",
+      "this_month": "Tháng này",
+      "total": "Tổng cộng"
+    },
+    "chart": {
+      "revenue_title": "Doanh thu 7 tháng gần nhất",
+      "revenue_desc": "Tổng doanh thu theo tháng từ giao dịch thực tế"
+    }
+  },
+  "account": {
+    "title": "Quản lý Tài khoản Nhân viên",
+    "subtitle": "Tổng: {{count}} tài khoản",
+    "add_btn": "Thêm tài khoản",
+    "loading": "Đang tải...",
+    "no_data": "Không có dữ liệu",
+    "pagination": "Trang {{page}} / {{total}}",
+    "table": {
+      "id": "ID",
+      "username": "Tên đăng nhập",
+      "role": "Vai trò",
+      "password": "Mật khẩu",
+      "actions": "Thao tác"
+    },
+    "modal": {
+      "add_title": "Thêm tài khoản mới",
+      "delete_title": "Xác nhận xóa tài khoản",
+      "reveal_title": "Xem mật khẩu tài khoản"
+    },
+    "form": {
+      "username_label": "Tên đăng nhập *",
+      "username_placeholder": "VD: staff@gym.com",
+      "password_label": "Mật khẩu *",
+      "password_placeholder": "Tối thiểu 6 ký tự",
+      "role_label": "Vai trò *"
+    },
+    "delete": {
+      "confirm_pre": "Bạn có chắc muốn xóa tài khoản ",
+      "confirm_post": "?",
+      "warning": "Hành động này không thể hoàn tác."
+    },
+    "reveal": {
+      "info_pre": "Nhập mật khẩu của bạn để xem mật khẩu tài khoản ",
+      "info_post": ".",
+      "your_password_label": "Mật khẩu của bạn (Owner)",
+      "your_password_placeholder": "Nhập mật khẩu để xác thực",
+      "account_password_label": "Mật khẩu tài khoản"
+    },
+    "btn": {
+      "cancel": "Hủy",
+      "create": "Tạo tài khoản",
+      "confirm": "Xác nhận",
+      "close": "Đóng",
+      "delete": "Xóa"
+    },
+    "validation": {
+      "username_required": "Vui lòng nhập tên đăng nhập",
+      "password_min": "Mật khẩu tối thiểu 6 ký tự",
+      "role_required": "Vui lòng chọn vai trò"
+    },
+    "error": {
+      "enter_password": "Vui lòng nhập mật khẩu của bạn",
+      "wrong_password": "Mật khẩu không đúng hoặc không có quyền truy cập"
+    },
+    "tooltip": {
+      "view_password": "Xem mật khẩu",
+      "delete": "Xóa"
+    }
+  },
+  "equipment": {
+    "title": "Quản lý Thiết bị",
+    "subtitle": "Theo dõi tình trạng máy móc, thiết bị và lịch bảo trì.",
+    "add_btn": "Thêm thiết bị",
+    "search": {
+      "title": "Tìm kiếm thiết bị",
+      "subtitle": "Tìm theo tên, loại, tình trạng hoặc ngày bảo trì.",
+      "placeholder": "Tìm kiếm thiết bị..."
+    },
+    "loading": "Đang tải danh sách thiết bị...",
+    "load_error": "Lỗi khi tải dữ liệu: {{message}}",
+    "table": {
+      "name": "Tên thiết bị / Thuộc máy",
+      "room": "Tên phòng tập",
+      "status": "Trạng thái sửa chữa",
+      "next_maintenance": "Bảo trì tiếp theo",
+      "actions": "Hành động"
+    },
+    "no_data": "Không tìm thấy thiết bị phù hợp.",
+    "status": {
+      "operating": "Hoạt động tốt",
+      "maintaining": "Đang bảo trì",
+      "new": "Mới",
+      "broken": "Hỏng"
+    },
+    "facility_unknown": "Chưa xác định",
+    "origin_label": "Xuất xứ:",
+    "pagination": "Trang {{page}} / {{total}} (Tổng: {{count}} thiết bị)",
+    "modal": {
+      "delete_title": "Xác nhận xóa thiết bị",
+      "delete_confirm_pre": "Bạn có chắc chắn muốn xóa thiết bị ",
+      "delete_confirm_post": " không?",
+      "delete_warning": "Hành động này không thể hoàn tác."
+    },
+    "btn": {
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "deleting": "Đang xóa...",
+      "edit": "Sửa"
+    },
+    "tooltip": {
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa"
+    },
+    "form": {
+      "title_edit": "Cập nhật Thiết bị",
+      "title_create": "Nhập Thiết bị mới",
+      "subtitle_edit": "Cập nhật thông tin tình trạng, lịch bảo trì của thiết bị.",
+      "subtitle_create": "Ghi nhận thiết bị, máy tạ mới mua vào kho tài sản của Gym.",
+      "loading": "Đang tải dữ liệu...",
+      "load_error": "Lỗi khi tải thông tin thiết bị"
+    }
+  },
+  "feedback": {
+    "title": "Phản hồi Hội viên",
+    "subtitle": "Xem xét và cải thiện chất lượng dịch vụ dựa trên nhận xét của khách hàng.",
+    "search_placeholder": "Tìm theo tên hoặc nội dung...",
+    "filter": {
+      "rating": "Lọc theo đánh giá",
+      "status": "Lọc theo trạng thái",
+      "date": "Lọc theo thời gian",
+      "total": "Tổng phản hồi"
+    },
+    "rating_options": {
+      "all": "Tất cả",
+      "5star": "5 sao",
+      "4star": "4 sao",
+      "3star": "3 sao",
+      "2star": "2 sao",
+      "1star": "1 sao"
+    },
+    "status_options": {
+      "all": "Tất cả",
+      "pending": "Chờ xử lý",
+      "processing": "Đang xử lý",
+      "resolved": "Đã xử lý"
+    },
+    "date_options": {
+      "all": "Tất cả",
+      "7days": "7 ngày qua",
+      "30days": "30 ngày qua",
+      "this_month": "Tháng này",
+      "this_year": "Năm nay"
+    },
+    "loading": "Đang tải đánh giá...",
+    "load_error": "Lỗi không thể tải dữ liệu đánh giá.",
+    "table": {
+      "member": "Hội viên",
+      "type": "Loại phản hồi / Đánh giá",
+      "content": "Nội dung",
+      "status": "Trạng thái",
+      "date_action": "Ngày gửi / Hành động"
+    },
+    "no_data": "Không tìm thấy phản hồi phù hợp.",
+    "type": {
+      "trainer": "Huấn luyện viên",
+      "equipment": "Thiết bị",
+      "service": "Dịch vụ",
+      "other": "Khác"
+    },
+    "status": {
+      "resolved": "Đã xử lý",
+      "pending": "Chờ xử lý",
+      "processing": "Đang xử lý"
+    },
+    "pagination": "Trang {{page}} / {{total}} (Tổng: {{count}} phản hồi)",
+    "modal": {
+      "title": "Cập nhật trạng thái phản hồi",
+      "status_label": "Trạng thái",
+      "note_label": "Ghi chú phản hồi (Tùy chọn)",
+      "note_placeholder": "Nhập ghi chú xử lý..."
+    },
+    "btn": {
+      "cancel": "Hủy",
+      "save": "Lưu thay đổi",
+      "saving": "Đang lưu..."
+    },
+    "tooltip": {
+      "update": "Cập nhật trạng thái"
+    }
+  },
+  "member": {
+    "title": "Danh sách Hội viên",
+    "subtitle": "Quản lý tất cả danh sách người tập tại hệ thống của bạn.",
+    "add_btn": "Thêm hội viên",
+    "search": {
+      "title": "Tìm kiếm hội viên",
+      "subtitle": "Tìm theo tên, mã, số điện thoại hoặc email.",
+      "placeholder": "Tìm kiếm hội viên..."
+    },
+    "loading": "Đang tải dữ liệu...",
+    "load_error": "Lỗi khi tải dữ liệu hội viên. Vui lòng thử lại.",
+    "table": {
+      "name": "Họ Tên",
+      "package": "Gói tập",
+      "phone": "SĐT",
+      "date": "Ngày đăng ký",
+      "status": "Trạng Thái",
+      "actions": "Hành động"
+    },
+    "no_data": "Không tìm thấy hội viên phù hợp.",
+    "status": {
+      "active": "Đang tập",
+      "expired": "Hết hạn"
+    },
+    "pagination": "Trang {{page}} / {{total}} (Tổng: {{count}} hội viên)",
+    "tooltip": {
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa"
+    },
+    "detail": {
+      "title": "Chi tiết Hội viên",
+      "loading": "Đang tải dữ liệu...",
+      "load_error": "Không thể tải thông tin hội viên",
+      "subtitle": "Xem toàn bộ thông tin về {{name}}",
+      "default_name": "Hội viên",
+      "status": {
+        "active": "Đang hoạt động",
+        "inactive": "Không hoạt động"
+      },
+      "info": {
+        "phone": "Số điện thoại",
+        "email": "Email",
+        "join_date": "Ngày tham gia",
+        "goal": "Mục tiêu tập luyện",
+        "free_schedule": "Lịch tập tự do"
+      },
+      "package": {
+        "title": "Gói tập hiện tại",
+        "status_active": "Đang dùng",
+        "status_expired": "Hết hạn",
+        "expiry": "Hạn sử dụng: {{date}}",
+        "no_package": "Chưa có gói tập",
+        "not_registered": "Hội viên chưa đăng ký gói tập nào",
+        "not_registered_short": "Chưa đăng ký"
+      },
+      "history": {
+        "title": "Lịch sử đăng ký gói tập",
+        "loading": "Đang tải lịch sử...",
+        "no_data": "Chưa có lịch sử gói tập.",
+        "item": "Ngày {{date}}: Đăng ký gói {{package}}",
+        "period": "Thời hạn: {{start}} - {{end}}"
+      }
+    },
+    "form": {
+      "title_edit": "Chỉnh sửa Hội viên",
+      "title_create": "Thêm mới Hội viên",
+      "subtitle_edit": "Cập nhật các thông tin cá nhân của hội viên.",
+      "subtitle_create": "Điền đầy đủ các thông tin cá nhân và gói tập ban đầu thiết lập cho hội viên.",
+      "loading": "Đang tải dữ liệu...",
+      "load_error": "Lỗi khi tải thông tin hội viên"
+    }
+  },
+  "package": {
+    "title": "Danh sách Gói tập",
+    "subtitle": "Quản lý và cấu hình các dịch vụ gói tập do Gym cung cấp.",
+    "add_btn": "Thêm gói mới",
+    "loading": "Đang tải biểu giá...",
+    "load_error": "Lỗi lấy dữ liệu Gói tập.",
+    "table": {
+      "name": "Tên Gói",
+      "duration": "Thời lượng",
+      "price": "Giá (VND)",
+      "description": "Mô tả ngắn",
+      "status": "Trạng Thái",
+      "actions": "Hành động"
+    },
+    "no_data": "Chưa có cấu hình gói tập nào.",
+    "status": {
+      "active": "Đang bán",
+      "inactive": "Bị ẩn"
+    },
+    "no_description": "Chưa có mô tả",
+    "tooltip": {
+      "hide": "Ẩn gói",
+      "show": "Hiển thị gói",
+      "edit": "Chỉnh sửa"
+    },
+    "modal": {
+      "hide_title": "Ẩn gói tập",
+      "show_title": "Hiển thị gói tập",
+      "confirm_pre": "Bạn có chắc chắn muốn ",
+      "confirm_mid": " gói tập ",
+      "confirm_post": " không?",
+      "warning_hide": "Gói tập sẽ bị ẩn, member không thể mua.",
+      "action_hide": "ẩn",
+      "action_show": "hiển thị"
+    },
+    "btn": {
+      "cancel": "Hủy",
+      "hide": "Ẩn",
+      "show": "Hiển thị",
+      "processing": "Đang xử lý...",
+      "edit": "Sửa"
+    },
+    "form": {
+      "title_edit": "Chỉnh sửa Gói tập",
+      "title_create": "Thiết lập Gói tập mới",
+      "subtitle_edit": "Thay đổi thông tin, giá bán hoặc mô tả của gói tập này.",
+      "subtitle_create": "Thêm dịch vụ thẻ tập mới vào hệ thống chi nhánh của bạn.",
+      "loading": "Đang tải dữ liệu...",
+      "load_error": "Lỗi tải thông tin gói tập"
+    }
+  },
+  "profile": {
+    "title": "Hồ sơ cá nhân",
+    "role": "Owner",
+    "not_updated": "Chưa cập nhật",
+    "position": "Owner",
+    "info": {
+      "title": "Thông tin cá nhân",
+      "phone": "Số điện thoại",
+      "email": "Email",
+      "gender": "Giới tính",
+      "dob": "Ngày sinh",
+      "address": "Địa chỉ"
+    },
+    "saving": "Đang lưu...",
+    "toast": {
+      "avatar_success": "Đã cập nhật ảnh đại diện",
+      "avatar_error": "Lưu ảnh đại diện thất bại"
+    },
+    "not_found": "Không tìm thấy thông tin nhân viên."
+  },
+  "reports": {
+    "title": "Báo cáo chủ phòng tập",
+    "subtitle": "Tập trung tất cả các báo cáo chiến lược để ra quyết định nhanh và chính xác.",
+    "revenue": {
+      "title": "Báo cáo doanh thu",
+      "description": "Theo dõi tổng doanh thu, bán hàng gói tập và xu hướng dòng tiền."
+    },
+    "member": {
+      "title": "Báo cáo hội viên",
+      "description": "Theo dõi hội viên mới, tỷ lệ gia hạn và hoạt động CRM."
+    },
+    "staff": {
+      "title": "Báo cáo nhân sự",
+      "description": "Giám sát hiệu suất PT, quản lý nhân sự và KPI hàng tháng."
+    },
+    "view_detail": "Xem chi tiết →",
+    "advice": {
+      "heading": "Lời khuyên:",
+      "text": "Chủ phòng tập nên sử dụng báo cáo doanh thu để đo lường KPI và phản hồi chiến lược. Báo cáo hội viên giúp phát hiện xu hướng giữ chân, còn báo cáo nhân sự hỗ trợ đánh giá hiệu suất và chi phí nhân lực."
+    }
+  },
+  "revenue_report": {
+    "title": "Báo cáo Doanh thu",
+    "subtitle": "Phân tích số liệu tài chính chuyên sâu.",
+    "export_btn": "Xuất báo cáo PDF",
+    "stats": {
+      "total_revenue": "Tổng doanh thu",
+      "transactions": "Số giao dịch"
+    },
+    "filter": {
+      "label": "Lọc theo kỳ",
+      "monthly": "Theo tháng",
+      "quarterly": "Theo quý",
+      "yearly": "Theo năm"
+    },
+    "period": {
+      "monthly": "Theo tháng (12 tháng gần nhất)",
+      "quarterly": "Theo quý",
+      "yearly": "Theo năm"
+    },
+    "chart": { "title": "Biểu đồ doanh thu" },
+    "history": { "title": "Lịch sử giao dịch gần nhất" },
+    "loading": "Đang tải...",
+    "no_data": "Chưa có dữ liệu giao dịch.",
+    "table": {
+      "customer": "Khách hàng",
+      "package": "Gói tập",
+      "type": "Loại",
+      "amount": "Số tiền",
+      "date": "Ngày"
+    },
+    "type": {
+      "renew": "Gia hạn",
+      "new_registration": "Đăng ký"
+    },
+    "member_fallback": "Hội viên #{{id}}"
+  },
+  "member_report": {
+    "title": "Báo cáo Hội viên",
+    "subtitle": "Theo dõi lượng hội viên mới, tỷ lệ giữ chân và xu hướng đăng ký gói tập.",
+    "export_btn": "Xuất báo cáo",
+    "stats": {
+      "new_members": "Hội viên mới tháng này",
+      "renewals": "Gia hạn thành công",
+      "retention": "Tỷ lệ giữ chân"
+    },
+    "loading": "Đang tải...",
+    "no_data": "Chưa có giao dịch nào.",
+    "history": { "title": "Giao dịch gần nhất" },
+    "type": {
+      "renew": "Gia hạn",
+      "new_registration": "Đăng ký mới"
+    },
+    "member_fallback": "Hội viên #{{id}}"
+  },
+  "staff_report": {
+    "title": "Báo cáo Nhân sự",
+    "subtitle": "Đánh giá hiệu suất nhân viên, buổi tập đã hoàn thành và sự ổn định đội ngũ.",
+    "export_btn": "Xuất báo cáo",
+    "stats": {
+      "total": "Nhân sự tổng",
+      "kpi_reached": "PT đạt KPI",
+      "sessions": "Buổi hoàn thành"
+    },
+    "top_performers": { "title": "Nhân sự nổi bật" },
+    "loading": "Đang tải...",
+    "no_data": "Chưa có dữ liệu buổi tập.",
+    "sessions_label": "buổi hoàn thành",
+    "fallback": {
+      "trainer": "Huấn luyện viên",
+      "staff": "NV #{{id}}"
+    }
+  },
+  "room": {
+    "title": "Quản lý Khu vực / Phòng Tập",
+    "subtitle": "Theo dõi sức chứa và mật độ hiện tại của các không gian tập.",
+    "add_btn": "Thêm phân khu mới",
+    "loading": "Đang tải...",
+    "capacity": "Sức chứa: {{count}} người",
+    "current_label": "Hiện tại:",
+    "person_unit": "{{count}} người",
+    "status": {
+      "operating": "Đang mở cửa",
+      "maintenance": "Bảo trì"
+    },
+    "tooltip": {
+      "maintenance": "Bảo trì",
+      "activate": "Kích hoạt",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa"
+    },
+    "pagination": "Trang {{page}} / {{total}} (Tổng: {{count}} phòng)",
+    "modal": {
+      "delete_title": "Xác nhận xóa phòng tập",
+      "delete_confirm_pre": "Bạn có chắc chắn muốn xóa phòng ",
+      "delete_confirm_post": " không?",
+      "delete_warning": "Hành động này không thể hoàn tác."
+    },
+    "btn": {
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "deleting": "Đang xóa..."
+    },
+    "detail": {
+      "loading": "Đang tải thông tin chi tiết...",
+      "error": "Không tìm thấy thông tin phòng tập.",
+      "back": "Quay lại",
+      "edit_btn": "Chỉnh sửa phòng",
+      "status_operating": "● Đang hoạt động",
+      "status_maintenance": "● Đang bảo trì",
+      "metrics": {
+        "title": "Chỉ số hiện tại",
+        "max_capacity": "Sức chứa tối đa",
+        "current_guests": "Khách hiện tại",
+        "efficiency": "Hiệu suất: {{pct}}%",
+        "person_unit": "người"
+      },
+      "description": {
+        "title": "Mô tả chung",
+        "no_data": "Chưa có mô tả."
+      },
+      "amenities_title": "Cơ sở vật chất & Tiện ích",
+      "highlights_title": "Điểm nổi bật",
+      "rules_title": "Nội quy phòng tập",
+      "images_title": "Hình ảnh nổi bật",
+      "video_title": "Video giới thiệu",
+      "video_not_supported": "Trình duyệt của bạn không hỗ trợ thẻ video.",
+      "quick_stats": {
+        "capacity": "Sức chứa",
+        "using": "Đang sử dụng",
+        "available": "Còn trống",
+        "person_unit": "người",
+        "slot_unit": "chỗ"
+      }
+    },
+    "type_meta": {
+      "Gym": {
+        "floor": "Tầng 1",
+        "hours": "05:30 – 22:00",
+        "highlights": ["Huấn luyện viên thường trực trong giờ cao điểm","Cho thuê găng tay & dây kháng lực","Tư vấn lộ trình tập luyện miễn phí","Hệ thống lọc không khí HEPA tiêu chuẩn"],
+        "rules": ["Mặc trang phục thể thao, mang giày vào phòng","Lau máy sau mỗi lần sử dụng","Không la hét, giữ không gian yên tĩnh","Xếp tạ về đúng vị trí sau khi dùng"]
+      },
+      "Studio": {
+        "floor": "Tầng 2",
+        "hours": "06:00 – 21:00",
+        "highlights": ["Giảng viên được chứng nhận quốc tế","Lớp học theo nhóm nhỏ, tối đa 15–20 người","Dụng cụ tập được cấp phát miễn phí","Nhiệt độ phòng duy trì 22–24°C"],
+        "rules": ["Tháo giày dép trước khi vào phòng","Tắt điện thoại hoặc để chế độ im lặng","Đến sớm ít nhất 5 phút trước giờ lớp","Không ăn uống trong khu vực tập"]
+      },
+      "Spa": {
+        "floor": "Tầng 3",
+        "hours": "08:00 – 21:00",
+        "highlights": ["Phòng riêng tư, yên tĩnh tuyệt đối","Nước uống thảo dược phục vụ miễn phí","Tinh dầu thiên nhiên nhập khẩu","Khăn tắm sạch thay mới sau mỗi lượt"],
+        "rules": ["Không vào khi đang bị thương hoặc sốt","Uống ít nhất 1 ly nước trước khi vào","Thời gian tối đa mỗi lượt: 20 phút","Giữ im lặng để tôn trọng người dùng khác"]
+      },
+      "Pool": {
+        "floor": "Tầng B1",
+        "hours": "06:00 – 20:00",
+        "highlights": ["Nước ấm quanh năm – duy trì 28–30°C","Cứu hộ viên chuyên nghiệp trực 100%","Cho thuê phao và kính bơi","Tắm rửa sạch sẽ trước khi xuống bể"],
+        "rules": ["Mặc đồ bơi đúng quy định","Tắm sạch trước khi xuống hồ","Không nhảy từ trên cao xuống","Trẻ em dưới 12 tuổi cần có người lớn đi kèm"]
+      },
+      "Default": {
+        "floor": "Tầng 1",
+        "hours": "06:00 – 22:00",
+        "highlights": ["Không gian rộng rãi, sạch sẽ","Nhân viên hỗ trợ nhiệt tình"],
+        "rules": ["Giữ vệ sinh chung","Tuân thủ nội quy phòng tập"]
+      }
+    },
+    "form": {
+      "title_edit": "Chỉnh sửa khu vực / phòng tập",
+      "title_create": "Thêm phòng tập mới",
+      "subtitle_edit": "Thay đổi thông tin sức chứa, loại khu vực và tiện ích.",
+      "subtitle_create": "Thêm khu vực tập luyện mới vào hệ thống quản lý.",
+      "loading": "Đang tải dữ liệu...",
+      "load_error": "Lỗi khi tải thông tin phòng tập"
+    }
+  },
+  "staff": {
+    "title": "Quản lý Nhân sự",
+    "subtitle": "Xem chi tiết nhân viên, cập nhật thông tin và quản lý nhân sự.",
+    "add_btn": "Thêm nhân sự",
+    "list": {
+      "title": "Danh sách nhân sự",
+      "subtitle": "Tìm kiếm và mở chi tiết nhân viên để sửa thông tin.",
+      "search_placeholder": "Tìm kiếm theo tên, email, SĐT, vị trí"
+    },
+    "table": {
+      "name": "Tên nhân viên",
+      "position": "Vị trí",
+      "contact": "Liên hệ",
+      "address": "Địa chỉ",
+      "actions": "Hành động"
+    },
+    "loading": "Đang tải...",
+    "no_data": "Không tìm thấy nhân sự phù hợp.",
+    "pagination": "Trang {{page}} / {{total}} (Tổng: {{count}} nhân viên)",
+    "tooltip": {
+      "view": "Xem chi tiết",
+      "salary": "Quản lý lương",
+      "delete": "Xóa"
+    },
+    "detail_modal": {
+      "title": "Chi tiết nhân sự",
+      "subtitle": "Xem thông tin cá nhân và chỉnh sửa khi cần thiết."
+    },
+    "form_fields": {
+      "role": "Vai trò",
+      "name": "Họ tên",
+      "gender": "Giới tính",
+      "dob": "Ngày sinh",
+      "position": "Chức vụ",
+      "phone": "SĐT",
+      "email": "Email",
+      "address": "Địa chỉ"
+    },
+    "btn": {
+      "cancel": "Hủy",
+      "save": "Lưu thay đổi",
+      "saving": "Đang lưu...",
+      "close": "Đóng",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "deleting": "Đang xóa..."
+    },
+    "delete_modal": {
+      "title": "Xác nhận xóa nhân viên",
+      "confirm_pre": "Bạn có chắc chắn muốn xóa nhân viên ",
+      "confirm_post": " không?",
+      "warning": "Hành động này không thể hoàn tác."
+    },
+    "form_page": {
+      "title_edit": "Hồ sơ Nhân sự",
+      "title_create": "Cấp tài khoản Nhân sự",
+      "subtitle": "Điền thông tin và cấp quyền đăng nhập (Role) cho tài khoản nội bộ.",
+      "name_label": "Họ và Tên Nhân sự",
+      "name_placeholder": "VD: Nguyễn Văn A",
+      "role_label": "Quyền hạn (Role)",
+      "role_trainer": "Huấn Luyện Viên (Trainer)",
+      "role_manager": "Lễ Tân / Thu Ngân (Manager)",
+      "phone_label": "Số điện thoại",
+      "phone_placeholder": "Số liên lạc nội bộ",
+      "email_label": "Email đăng nhập",
+      "email_placeholder": "Email dùng để vào hệ thống",
+      "password_label": "Mật khẩu khởi tạo",
+      "password_placeholder": "Nhập mật khẩu cho nhân viên",
+      "btn_cancel": "Hủy bỏ",
+      "btn_save": "Lưu nhân sự"
+    }
+  },
+  "salary": {
+    "title": "Quản lý lương — {{name}}",
+    "subtitle": "{{position}} · Điều chỉnh lương theo năng suất làm việc",
+    "current_salary": "Lương hiện tại",
+    "estimated_salary": "Thực nhận tháng này (tính toán)",
+    "calculation_note": "Cơ bản × hệ số — không lưu vào DB",
+    "adjust": {
+      "title": "Điều chỉnh lương",
+      "base_salary_label": "Lương cơ bản (VNĐ/tháng)",
+      "base_salary_placeholder": "VD: 10000000",
+      "performance_label": "Đánh giá năng suất",
+      "performance_formula": "Lương thực nhận = Lương cơ bản × hệ số năng suất",
+      "performance_excellent": "Xuất sắc (120%)",
+      "performance_good": "Tốt (110%)",
+      "performance_satisfactory": "Đạt yêu cầu (100%)",
+      "performance_needs_improvement": "Cần cải thiện (90%)",
+      "btn_save": "Lưu",
+      "btn_saving": "Đang lưu..."
+    },
+    "bonus": {
+      "title": "Cộng thêm thưởng / tips",
+      "note": "Số tiền sẽ được cộng trực tiếp vào lương hiện tại.",
+      "amount_label": "Số tiền (VNĐ)",
+      "amount_placeholder": "VD: 500000",
+      "reason_label": "Lý do (tuỳ chọn)",
+      "reason_placeholder": "VD: Tips từ học viên, thưởng hoàn thành chỉ tiêu...",
+      "btn_add": "Cộng thêm vào lương",
+      "btn_adding": "Đang cộng..."
+    },
+    "toast": {
+      "salary_updated": "Đã cập nhật lương cơ bản",
+      "bonus_added": "Đã cộng thêm {{amount}}",
+      "salary_error": "Cập nhật thất bại",
+      "bonus_error": "Thêm thưởng thất bại",
+      "load_error": "Không tải được thông tin nhân viên"
+    },
+    "loading": "Đang tải...",
+    "back": "Quay lại"
+  }
+}

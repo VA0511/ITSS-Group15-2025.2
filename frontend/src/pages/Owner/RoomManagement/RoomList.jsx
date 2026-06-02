@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Plus, Users, MapPin, Edit, Eye, Trash2, ChevronLeft, ChevronRight, Power, PowerOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useFacilities } from '@/hooks/queries/useFacilities';
 import { useDeleteFacility, useUpdateFacilityStatus } from '@/hooks/mutations/useFacilityMutation';
 import Button from '@/components/Common/Button';
@@ -10,6 +11,7 @@ import { toast } from '@/utils/toast';
 import { slideUpVariants, sectionStaggerVariants } from '@/lib/animations';
 
 const RoomList = () => {
+  const { t } = useTranslation('owner');
   const [page, setPage] = useState(1);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, room: null });
   const limit = 10;
@@ -91,20 +93,20 @@ const RoomList = () => {
     >
       <motion.div variants={slideUpVariants} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Quản lý Khu vực / Phòng Tập</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('room.title')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Theo dõi sức chứa và mật độ hiện tại của các không gian tập.
+            {t('room.subtitle')}
           </p>
         </div>
         <Link to="/owner/rooms/create">
           <Button leftIcon={<Plus className="h-4 w-4" />}>
-            Thêm phân khu mới
+            {t('room.add_btn')}
           </Button>
         </Link>
       </motion.div>
 
       {isLoading ? (
-        <div className="text-center py-8 text-gray-500">Đang tải...</div>
+        <div className="text-center py-8 text-gray-500">{t('room.loading')}</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {displayRooms.map((room) => (
@@ -120,12 +122,12 @@ const RoomList = () => {
             <div className="mt-4 space-y-2">
               <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <Users className="h-4 w-4 mr-2" />
-                Sức chứa: {room.capacity} người
+                {t('room.capacity', { count: room.capacity })}
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="flex items-center text-gray-500 dark:text-gray-400"><MapPin className="h-4 w-4 mr-2" /> Hiện tại:</span>
+                <span className="flex items-center text-gray-500 dark:text-gray-400"><MapPin className="h-4 w-4 mr-2" /> {t('room.current_label')}</span>
                 <span className={`font-semibold ${room.capacity > 0 && room.current / room.capacity > 0.8 ? 'text-red-500' : 'text-green-500'}`}>
-                  {room.current} người
+                  {t('room.person_unit', { count: room.current })}
                 </span>
               </div>
             </div>
@@ -138,14 +140,14 @@ const RoomList = () => {
                   ? 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400'
                   : 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400'
               }`}>
-                {room.status === 'active' ? 'Đang mở cửa' : room.status === 'maintenance' ? 'Bảo trì' : room.status}
+                {room.status === 'active' ? t('room.status.operating') : room.status === 'maintenance' ? t('room.status.maintenance') : room.status}
               </span>
               <div className="flex gap-1">
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   className={`h-8 w-8 ${room.status === 'active' ? 'text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/50' : 'text-green-500 hover:bg-green-50 dark:hover:bg-green-900/50'}`}
-                  title={room.status === 'active' ? 'Bảo trì' : 'Kích hoạt'}
+                  title={room.status === 'active' ? t('room.tooltip.maintenance') : t('room.tooltip.activate')}
                   onClick={() => handleToggleStatus(room)}
                 >
                   {room.status === 'active' ? <PowerOff className="h-4 w-4"/> : <Power className="h-4 w-4"/>}
@@ -155,7 +157,7 @@ const RoomList = () => {
                     variant="ghost" 
                     size="icon" 
                     className="h-8 w-8 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/50"
-                    title="Xem chi tiết"
+                    title={t('room.tooltip.view')}
                   >
                     <Eye className="h-4 w-4"/>
                   </Button>
@@ -165,7 +167,7 @@ const RoomList = () => {
                     variant="ghost" 
                     size="icon" 
                     className="h-8 w-8 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50"
-                    title="Chỉnh sửa"
+                    title={t('room.tooltip.edit')}
                   >
                     <Edit className="h-4 w-4"/>
                   </Button>
@@ -174,7 +176,7 @@ const RoomList = () => {
                   variant="ghost" 
                   size="icon" 
                   className="h-8 w-8 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50"
-                  title="Xóa"
+                  title={t('room.tooltip.delete')}
                   onClick={() => setDeleteModal({ isOpen: true, room })}
                 >
                   <Trash2 className="h-4 w-4"/>
@@ -190,7 +192,7 @@ const RoomList = () => {
       {totalPages > 1 && (
         <div className="mt-6 flex items-center justify-between">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Trang {page} / {totalPages} (Tổng: {totalItems} phòng)
+            {t('room.pagination', { page, total: totalPages, count: totalItems })}
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -217,19 +219,19 @@ const RoomList = () => {
       <Modal
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, room: null })}
-        title="Xác nhận xóa phòng tập"
+        title={t('room.modal.delete_title')}
       >
         <div className="p-4">
           <p className="text-gray-700 dark:text-gray-300 mb-4">
-            Bạn có chắc chắn muốn xóa phòng <strong>{deleteModal.room?.name}</strong> không?
+            {t('room.modal.delete_confirm_pre')}<strong>{deleteModal.room?.name}</strong>{t('room.modal.delete_confirm_post')}
           </p>
-          <p className="text-sm text-red-500 mb-4">Hành động này không thể hoàn tác.</p>
+          <p className="text-sm text-red-500 mb-4">{t('room.modal.delete_warning')}</p>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setDeleteModal({ isOpen: false, room: null })}>
-              Hủy
+              {t('room.btn.cancel')}
             </Button>
             <Button variant="danger" onClick={handleDelete} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? 'Đang xóa...' : 'Xóa'}
+              {deleteMutation.isPending ? t('room.btn.deleting') : t('room.btn.delete')}
             </Button>
           </div>
         </div>

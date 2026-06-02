@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { usePackages } from '@/hooks/queries/usePackages';
 import { useUpdatePackageStatus } from '@/hooks/mutations/usePackageMutation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Common/Table';
@@ -11,6 +12,7 @@ import { formatPriceVND } from '@/utils/formatters';
 import { slideUpVariants, sectionStaggerVariants } from '@/lib/animations';
 
 const PackageList = () => {
+  const { t } = useTranslation('owner');
   const { data: packages, isLoading, isError } = usePackages();
   const [toggleModal, setToggleModal] = useState({ isOpen: false, pkg: null });
   const statusMutation = useUpdatePackageStatus();
@@ -47,40 +49,38 @@ const PackageList = () => {
     >
       <motion.div variants={slideUpVariants} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Danh sách Gói tập</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Quản lý và cấu hình các dịch vụ gói tập do Gym cung cấp.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('package.title')}</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('package.subtitle')}</p>
         </div>
         <Link to="/owner/packages/create">
           <Button leftIcon={<Plus className="h-4 w-4" />}>
-            Thêm gói mới
+            {t('package.add_btn')}
           </Button>
         </Link>
       </motion.div>
 
       <motion.div variants={slideUpVariants} className="rounded-xl overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-950 dark:ring-gray-800">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Đang tải biểu giá...</div>
+          <div className="p-8 text-center text-gray-500">{t('package.loading')}</div>
         ) : isError && !packages ? (
-          <div className="p-8 text-center text-red-500">Lỗi lấy dữ liệu Gói tập.</div>
+          <div className="p-8 text-center text-red-500">{t('package.load_error')}</div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tên Gói</TableHead>
-                <TableHead>Thời lượng</TableHead>
-                <TableHead>Giá (VND)</TableHead>
-                <TableHead>Mô tả ngắn</TableHead>
-                <TableHead>Trạng Thái</TableHead>
-                <TableHead className="text-right">Hành động</TableHead>
+                <TableHead>{t('package.table.name')}</TableHead>
+                <TableHead>{t('package.table.duration')}</TableHead>
+                <TableHead>{t('package.table.price')}</TableHead>
+                <TableHead>{t('package.table.description')}</TableHead>
+                <TableHead>{t('package.table.status')}</TableHead>
+                <TableHead className="text-right">{t('package.table.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {mockPackages.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center text-gray-500 h-24">
-                    Chưa có cấu hình gói tập nào. Bấm "Thêm gói mới" để thiết lập.
+                    {t('package.no_data')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -94,7 +94,7 @@ const PackageList = () => {
                       {formatPriceVND ? formatPriceVND(pkg.price) : `${pkg.price.toLocaleString('vi-VN')} đ`}
                     </TableCell>
                     <TableCell className="text-sm text-gray-500 max-w-[200px] truncate">
-                      {pkg.description || pkg.features?.join(", ") || 'Chưa có mô tả'}
+                      {pkg.description || pkg.features?.join(", ") || t('package.no_description')}
                     </TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${
@@ -102,7 +102,7 @@ const PackageList = () => {
                           ? 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400' 
                           : 'bg-gray-50 text-gray-600 ring-gray-600/20 dark:bg-gray-800/50 dark:text-gray-400'
                       }`}>
-                        {(pkg.is_active === true || pkg.status === 'active') ? 'Đang bán' : 'Bị ẩn'}
+                        {(pkg.is_active === true || pkg.status === 'active') ? t('package.status.active') : t('package.status.inactive')}
                       </span>
                     </TableCell>
                     <TableCell className="text-right pr-4">
@@ -110,18 +110,18 @@ const PackageList = () => {
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          title={pkg.is_active ? 'Ẩn gói' : 'Hiển thị gói'}
+                          title={pkg.is_active ? t('package.tooltip.hide') : t('package.tooltip.show')}
                           className={`h-8 w-8 ${pkg.is_active ? 'text-green-500' : 'text-amber-500'} hidden sm:inline-flex`}
                           onClick={() => handleToggleStatus(pkg)}
                         >
                           {pkg.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                         </Button>
                         <Link to={`/owner/packages/${pkg.id}/edit`}>
-                          <Button variant="ghost" size="icon" title="Chỉnh sửa" className="h-8 w-8 text-blue-500 hidden sm:inline-flex">
+                          <Button variant="ghost" size="icon" title={t('package.tooltip.edit')} className="h-8 w-8 text-blue-500 hidden sm:inline-flex">
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <div className="sm:hidden text-blue-500 font-medium text-sm underline px-2 py-1">Sửa</div>
+                        <div className="sm:hidden text-blue-500 font-medium text-sm underline px-2 py-1">{t('package.btn.edit')}</div>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -135,23 +135,29 @@ const PackageList = () => {
       <Modal
         isOpen={toggleModal.isOpen}
         onClose={() => setToggleModal({ isOpen: false, pkg: null })}
-        title={toggleModal.pkg?.is_active ? 'Ẩn gói tập' : 'Hiển thị gói tập'}
+        title={toggleModal.pkg?.is_active ? t('package.modal.hide_title') : t('package.modal.show_title')}
       >
         <div className="p-4">
           <p className="text-gray-700 dark:text-gray-300 mb-4">
-            Bạn có chắc chắn muốn {toggleModal.pkg?.is_active ? 'ẩn' : 'hiển thị'} gói tập <strong>{toggleModal.pkg?.package_name || toggleModal.pkg?.name}</strong> không?
+            {t('package.modal.confirm_pre')}
+            {toggleModal.pkg?.is_active ? t('package.modal.action_hide') : t('package.modal.action_show')}
+            {t('package.modal.confirm_mid')}
+            <strong>{toggleModal.pkg?.package_name || toggleModal.pkg?.name}</strong>
+            {t('package.modal.confirm_post')}
           </p>
           {toggleModal.pkg?.is_active && (
             <p className="text-sm text-amber-600 dark:text-amber-400 mb-4">
-              💡 Gói tập sẽ bị ẩn, member không thể mua.
+              {t('package.modal.warning_hide')}
             </p>
           )}
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setToggleModal({ isOpen: false, pkg: null })}>
-              Hủy
+              {t('package.btn.cancel')}
             </Button>
             <Button variant="primary" onClick={handleConfirmToggle} disabled={statusMutation.isPending}>
-              {statusMutation.isPending ? 'Đang xử lý...' : toggleModal.pkg?.is_active ? 'Ẩn' : 'Hiển thị'}
+              {statusMutation.isPending
+                ? t('package.btn.processing')
+                : toggleModal.pkg?.is_active ? t('package.btn.hide') : t('package.btn.show')}
             </Button>
           </div>
         </div>

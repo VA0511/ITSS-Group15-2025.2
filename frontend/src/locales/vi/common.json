@@ -1,0 +1,20 @@
+{
+  "save": "Lưu",
+  "cancel": "Hủy",
+  "delete": "Xóa",
+  "edit": "Chỉnh sửa",
+  "loading": "Đang tải...",
+  "success": "Thành công",
+  "error": "Lỗi",
+  "confirm": "Xác nhận",
+  "search": "Tìm kiếm",
+  "back": "Quay lại",
+  "view_detail": "Xem chi tiết",
+  "no_data": "Không có dữ liệu",
+  "yes": "Có",
+  "no": "Không",
+  "actions": "Thao tác",
+  "logout_success": "Đăng xuất thành công",
+  "logout_desc": "Hẹn gặp lại bạn",
+  "guest": "Người dùng"
+}
