@@ -1,0 +1,169 @@
+{
+  "profile": {
+    "loading": "Loading...",
+    "error": "Unable to load profile information.",
+    "avatar_error": "Failed to save avatar",
+    "role_badge": "Trainer",
+    "stats": {
+      "experience": "Experience",
+      "experience_unit": "yrs",
+      "awards": "Awards",
+      "birth_year": "Birth Year"
+    },
+    "professional_section": "Professional Profile",
+    "no_professional_info": "No information yet.",
+    "contact_section": "Contact Information",
+    "contact_phone": "Phone Number",
+    "contact_email": "Email",
+    "awards_section": "Awards & Certifications",
+    "no_awards": "No information yet.",
+    "measurements_section": "Body Measurements",
+    "measurements": {
+      "height": "Height",
+      "weight": "Weight",
+      "chest": "Chest",
+      "waist": "Waist",
+      "bicep": "Bicep",
+      "forearm": "Forearm",
+      "thigh": "Thigh",
+      "calf": "Calf"
+    },
+    "default_bio": "Personal Trainer"
+  },
+  "students": {
+    "title": "Student List",
+    "subtitle": "Members who have trained with you.",
+    "loading": "Loading...",
+    "no_data": "No students yet.",
+    "member_fallback": "Member #{{id}}",
+    "table": {
+      "name": "Student Name",
+      "goal": "Goal",
+      "package": "Package",
+      "expiry": "Expires",
+      "start_date": "PT Start Date",
+      "membership": "Membership"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Expired"
+    },
+    "modal": {
+      "all_bookings": "All booking requests",
+      "no_data": "No data.",
+      "close": "Close",
+      "table": {
+        "name": "Student Name",
+        "curriculum": "Training Plan",
+        "date": "Session Date",
+        "status": "Status"
+      }
+    },
+    "booking_status": {
+      "Accepted": "Confirmed",
+      "Pending": "Pending",
+      "Rejected": "Rejected"
+    }
+  },
+  "schedule": {
+    "tab_my_schedule": "My Schedule",
+    "tab_requests": "Member Requests",
+    "select_day_hint": "Select a day to view schedule",
+    "booking_requests_label": "Booking requests",
+    "my_teaching_label": "Your teaching schedule",
+    "request_count": "{{count}} requests",
+    "session_count": "{{count}} sessions",
+    "no_requests": "No requests yet",
+    "no_sessions": "No sessions scheduled",
+    "note_prefix": "Note: ",
+    "accept_btn": "Accept",
+    "reject_btn": "Reject",
+    "status": {
+      "Accepted": "Confirmed",
+      "Pending": "Pending",
+      "Rejected": "Rejected"
+    },
+    "request_detail": {
+      "title": "Booking Request Details",
+      "member_section": "Member Information",
+      "member_id_prefix": "ID: MEM-",
+      "package_expiry_prefix": "· Exp: ",
+      "roadmap_goal_label": "Roadmap Goal",
+      "free_schedule_label": "Free Schedule",
+      "session_section": "Session Request",
+      "intensity_label": "Intensity: ",
+      "curriculum_label": "Desired Training Plan",
+      "curriculum_empty": "Not filled",
+      "reject_btn": "Reject",
+      "accept_btn": "Accept"
+    },
+    "reject_modal": {
+      "title": "Rejection Reason",
+      "placeholder": "Enter rejection reason (optional)...",
+      "cancel": "Cancel",
+      "confirm": "Confirm Rejection"
+    }
+  },
+  "availability": {
+    "title": "Set My Teaching Schedule",
+    "subtitle": "Select time slots when you can accept students during the week",
+    "selected_count": "· {{count}} slots selected",
+    "save_btn": "Save Changes",
+    "loading": "Loading...",
+    "error": "Unable to load schedule information.",
+    "days": {
+      "Mon": "Mon",
+      "Tue": "Tue",
+      "Wed": "Wed",
+      "Thu": "Thu",
+      "Fri": "Fri",
+      "Sat": "Sat",
+      "Sun": "Sun"
+    },
+    "legend_selected": "Selected — members can book",
+    "legend_unselected": "Not selected",
+    "legend_note": "Confirmed sessions will not be affected when updating"
+  },
+  "evaluation": {
+    "title": "Session Evaluations",
+    "past_sessions_count": "{{count}} past sessions",
+    "no_sessions": "No past sessions yet.",
+    "select_hint": "Select a session to fill in evaluation",
+    "loading": "Loading...",
+    "badge_evaluated": "Evaluated",
+    "badge_pending": "Not evaluated",
+    "member_unknown": "Unknown",
+    "attendance_label": "Attendance Status",
+    "attendance_present": "Present",
+    "attendance_absent": "Absent",
+    "facility_label": "Training Facility",
+    "facility_placeholder": "Select training facility...",
+    "facility_fallback": "Facility #{{id}}",
+    "no_facilities": "No facilities available",
+    "fields": {
+      "pt_feedback_label": "Session Feedback",
+      "pt_feedback_placeholder": "How did the session go...",
+      "physical_condition_label": "Physical Condition",
+      "physical_condition_placeholder": "Assess the student's physical state...",
+      "session_result_label": "Session Result",
+      "session_result_placeholder": "What the student achieved...",
+      "nutrition_advice_label": "Nutrition Advice",
+      "nutrition_advice_placeholder": "Dietary suggestions..."
+    },
+    "save_btn": "Save Evaluation"
+  },
+  "track_progress": {
+    "title": "Track Inbody Metrics",
+    "subtitle": "Update weight, fat, muscle for student (ID: {{id}}).",
+    "form_title": "Enter New Metrics",
+    "weight_label": "Weight (kg)",
+    "weight_placeholder": "e.g. 65",
+    "bodyfat_label": "Body Fat (%)",
+    "bodyfat_placeholder": "e.g. 18",
+    "muscle_label": "Muscle Mass (kg)",
+    "muscle_placeholder": "e.g. 30",
+    "save_btn": "Update Milestone",
+    "chart_title": "Progress Tracking Chart",
+    "chart_note": "(Built with Recharts - Data will update in real time)"
+  }
+}

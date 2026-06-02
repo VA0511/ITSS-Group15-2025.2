@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Clock, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useMyPTDetail } from '@/hooks/queries/useTraining';
 import { useUpdateMyPTDetail } from '@/hooks/mutations/useTrainingMutations';
 import { cn } from '@/lib/utils';
 
-const DAYS = [
-  { key: 'Mon', label: 'Thứ 2' },
-  { key: 'Tue', label: 'Thứ 3' },
-  { key: 'Wed', label: 'Thứ 4' },
-  { key: 'Thu', label: 'Thứ 5' },
-  { key: 'Fri', label: 'Thứ 6' },
-  { key: 'Sat', label: 'Thứ 7' },
-  { key: 'Sun', label: 'CN' },
-];
+const DAY_KEYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const TIME_SLOTS = [
   '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -20,6 +13,7 @@ const TIME_SLOTS = [
 ];
 
 const TrainerAvailability = () => {
+  const { t } = useTranslation('trainer');
   const { data: pt, isLoading, isError } = useMyPTDetail();
   const { mutate: updateMyPTDetail, isPending } = useUpdateMyPTDetail();
 
@@ -59,7 +53,7 @@ const TrainerAvailability = () => {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-64">
-        <div className="text-gray-500 dark:text-gray-400 text-sm">Đang tải...</div>
+        <div className="text-gray-500 dark:text-gray-400 text-sm">{t('availability.loading')}</div>
       </div>
     );
   }
@@ -67,7 +61,7 @@ const TrainerAvailability = () => {
   if (isError || !pt) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-64">
-        <div className="text-red-500 text-sm">Không thể tải thông tin lịch dạy.</div>
+        <div className="text-red-500 text-sm">{t('availability.error')}</div>
       </div>
     );
   }
@@ -79,12 +73,12 @@ const TrainerAvailability = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Calendar className="h-6 w-6 text-blue-600" />
-            Thiết lập lịch dạy của tôi
+            {t('availability.title')}
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
-            Chọn các khung giờ bạn có thể nhận học viên trong tuần
+            {t('availability.subtitle')}
             {totalSelected > 0 && (
-              <span className="ml-2 text-blue-600 dark:text-blue-400 font-medium">· {totalSelected} khung đã chọn</span>
+              <span className="ml-2 text-blue-600 dark:text-blue-400 font-medium">{t('availability.selected_count', { count: totalSelected })}</span>
             )}
           </p>
         </div>
@@ -98,7 +92,7 @@ const TrainerAvailability = () => {
           ) : (
             <Save className="h-4 w-4" />
           )}
-          Lưu thay đổi
+          {t('availability.save_btn')}
         </button>
       </div>
 
@@ -106,12 +100,12 @@ const TrainerAvailability = () => {
       <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
         {/* Day headers with counts */}
         <div className="grid grid-cols-7 gap-2 mb-3">
-          {DAYS.map((day) => {
-            const count = (availability[day.key] || []).length;
+          {DAY_KEYS.map((key) => {
+            const count = (availability[key] || []).length;
             return (
-              <div key={day.key} className="text-center">
+              <div key={key} className="text-center">
                 <div className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                  {day.label}
+                  {t(`availability.days.${key}`)}
                 </div>
                 {count > 0 ? (
                   <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-0.5">{count}</div>
@@ -127,16 +121,16 @@ const TrainerAvailability = () => {
 
         {/* Time slot chips — 7 columns */}
         <div className="grid grid-cols-7 gap-2">
-          {DAYS.map((day) => {
-            const daySlots = availability[day.key] || [];
+          {DAY_KEYS.map((key) => {
+            const daySlots = availability[key] || [];
             return (
-              <div key={day.key} className="flex flex-col gap-1.5">
+              <div key={key} className="flex flex-col gap-1.5">
                 {TIME_SLOTS.map((slot) => {
                   const isSelected = daySlots.includes(slot);
                   return (
                     <button
                       key={slot}
-                      onClick={() => toggleSlot(day.key, slot)}
+                      onClick={() => toggleSlot(key, slot)}
                       className={cn(
                         'py-3.5 px-1 text-xs rounded-lg font-medium text-center transition-all select-none',
                         isSelected
@@ -158,15 +152,15 @@ const TrainerAvailability = () => {
       <div className="mt-5 flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
           <div className="w-4 h-4 rounded bg-blue-600" />
-          Đã chọn — học viên có thể đặt lịch
+          {t('availability.legend_selected')}
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
           <div className="w-4 h-4 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700" />
-          Chưa chọn
+          {t('availability.legend_unselected')}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 ml-auto">
           <Clock className="h-3.5 w-3.5" />
-          Các buổi tập đã xác nhận sẽ không bị ảnh hưởng khi cập nhật
+          {t('availability.legend_note')}
         </div>
       </div>
     </div>

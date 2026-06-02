@@ -1,6 +1,7 @@
 import React from "react";
 import { User, Phone, Mail, Award, Dumbbell, Activity, Briefcase, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useMyPTDetail } from "@/hooks/queries/useTraining";
 import { useMyEmployee, useUpdateMyEmployee } from "@/hooks/queries/useEmployees";
 import AvatarUpload from "@/components/Common/AvatarUpload";
@@ -9,18 +10,19 @@ import {
   slideUpVariants, cardVariants, staggerContainerVariants, sectionStaggerVariants,
 } from "@/lib/animations";
 
-const measurementFields = [
-  { key: "height", label: "Chiều cao", unit: "cm" },
-  { key: "weight", label: "Cân nặng", unit: "kg" },
-  { key: "chest", label: "Vòng ngực", unit: "cm" },
-  { key: "waist", label: "Vòng bụng", unit: "cm" },
-  { key: "bicep", label: "Bắp tay", unit: "cm" },
-  { key: "forearm", label: "Cẳng tay", unit: "cm" },
-  { key: "thigh", label: "Đùi", unit: "cm" },
-  { key: "calf", label: "Bắp chuối", unit: "cm" },
+const MEASUREMENT_KEYS = [
+  { key: "height", unit: "cm" },
+  { key: "weight", unit: "kg" },
+  { key: "chest", unit: "cm" },
+  { key: "waist", unit: "cm" },
+  { key: "bicep", unit: "cm" },
+  { key: "forearm", unit: "cm" },
+  { key: "thigh", unit: "cm" },
+  { key: "calf", unit: "cm" },
 ];
 
 const TrainerProfile = () => {
+  const { t } = useTranslation('trainer');
   const { data: pt, isLoading, isError } = useMyPTDetail();
   const { data: employeeMe } = useMyEmployee();
   const updateMeMutation = useUpdateMyEmployee();
@@ -30,7 +32,7 @@ const TrainerProfile = () => {
     updateMeMutation.mutate(
       { ...employeeMe, avatar: url },
       {
-        onError: () => toast.error('Lưu ảnh đại diện thất bại'),
+        onError: () => toast.error(t('profile.avatar_error')),
       }
     );
   };
@@ -38,7 +40,7 @@ const TrainerProfile = () => {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400 text-sm">Đang tải...</div>
+        <div className="text-gray-500 dark:text-gray-400 text-sm">{t('profile.loading')}</div>
       </div>
     );
   }
@@ -46,7 +48,7 @@ const TrainerProfile = () => {
   if (isError || !pt) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-red-500 text-sm">Không thể tải thông tin hồ sơ.</div>
+        <div className="text-red-500 text-sm">{t('profile.error')}</div>
       </div>
     );
   }
@@ -98,14 +100,14 @@ const TrainerProfile = () => {
               </span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
-              {pt.professional_profile?.split(/\.\s+/)[0] || "Huấn luyện viên thể hình"}
+              {pt.professional_profile?.split(/\.\s+/)[0] || t('profile.default_bio')}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 justify-center lg:justify-end shrink-0">
             {[
-              { icon: Briefcase, value: pt.experience_years ? `${pt.experience_years} năm` : "—", label: "Kinh nghiệm" },
-              { icon: Award, value: awards.length || "—", label: "Giải thưởng" },
-              { icon: Calendar, value: birthYear, label: "Năm sinh" },
+              { icon: Briefcase, value: pt.experience_years ? `${pt.experience_years} ${t('profile.stats.experience_unit')}` : "—", label: t('profile.stats.experience') },
+              { icon: Award, value: awards.length || "—", label: t('profile.stats.awards') },
+              { icon: Calendar, value: birthYear, label: t('profile.stats.birth_year') },
             ].map(({ icon: Icon, value, label }) => (
               <div key={label} className="flex flex-col items-center gap-1.5 px-4 py-3 bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-xl text-center">
                 <Icon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
@@ -129,7 +131,7 @@ const TrainerProfile = () => {
           className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm flex flex-col overflow-hidden"
         >
           <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4 shrink-0">
-            <Dumbbell className="h-3.5 w-3.5" /> Hồ sơ chuyên môn
+            <Dumbbell className="h-3.5 w-3.5" /> {t('profile.professional_section')}
           </h3>
           <div className="flex-1 overflow-y-auto no-scrollbar">
             {experiencePoints.length > 0 ? (
@@ -147,7 +149,7 @@ const TrainerProfile = () => {
                 ))}
               </div>
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-gray-400">Chưa có thông tin.</div>
+              <div className="h-full flex items-center justify-center text-xs text-gray-400">{t('profile.no_professional_info')}</div>
             )}
           </div>
         </motion.div>
@@ -158,12 +160,12 @@ const TrainerProfile = () => {
           {/* Contact */}
           <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm">
             <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4">
-              <User className="h-3.5 w-3.5" /> Thông tin liên hệ
+              <User className="h-3.5 w-3.5" /> {t('profile.contact_section')}
             </h3>
             <div className="space-y-3">
               {[
-                { icon: Phone, label: "Số điện thoại", value: pt.phone },
-                { icon: Mail, label: "Email", value: pt.email },
+                { icon: Phone, label: t('profile.contact_phone'), value: pt.phone },
+                { icon: Mail, label: t('profile.contact_email'), value: pt.email },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label} className="flex items-center gap-3 p-3.5 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-800">
                   <div className="w-9 h-9 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0 shadow-sm">
@@ -181,7 +183,7 @@ const TrainerProfile = () => {
           {/* Awards */}
           <div className="flex-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm flex flex-col overflow-hidden min-h-0">
             <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4 shrink-0">
-              <Award className="h-3.5 w-3.5" /> Giải thưởng & Chứng chỉ
+              <Award className="h-3.5 w-3.5" /> {t('profile.awards_section')}
             </h3>
             <div className="flex-1 overflow-y-auto no-scrollbar">
               {awards.length > 0 ? (
@@ -202,7 +204,7 @@ const TrainerProfile = () => {
                   })}
                 </div>
               ) : (
-                <div className="h-full flex items-center justify-center text-xs text-gray-400">Chưa có thông tin.</div>
+                <div className="h-full flex items-center justify-center text-xs text-gray-400">{t('profile.no_awards')}</div>
               )}
             </div>
           </div>
@@ -216,13 +218,13 @@ const TrainerProfile = () => {
         className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl px-6 py-5 shadow-sm"
       >
         <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4">
-          <Activity className="h-3.5 w-3.5" /> Số đo thể hình
+          <Activity className="h-3.5 w-3.5" /> {t('profile.measurements_section')}
         </h3>
         <motion.div
           variants={staggerContainerVariants}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
         >
-          {measurementFields.map(({ key, label, unit }, i) => (
+          {MEASUREMENT_KEYS.map(({ key, unit }, i) => (
             <motion.div
               key={key}
               variants={cardVariants}
@@ -230,7 +232,7 @@ const TrainerProfile = () => {
               whileHover={{ scale: 1.04, y: -2 }}
               className="bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl py-3 px-3 text-center hover:border-gray-200 dark:hover:border-gray-700 transition-colors"
             >
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 leading-tight font-medium">{label}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 leading-tight font-medium">{t(`profile.measurements.${key}`)}</div>
               <div className="text-lg font-bold text-gray-900 dark:text-white leading-none">
                 {bodyIndex[key] != null ? (
                   <>

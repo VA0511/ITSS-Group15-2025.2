@@ -1,0 +1,169 @@
+{
+  "profile": {
+    "loading": "読み込み中...",
+    "error": "プロフィール情報を読み込めません。",
+    "avatar_error": "アバターの保存に失敗しました",
+    "role_badge": "トレーナー",
+    "stats": {
+      "experience": "経験",
+      "experience_unit": "年",
+      "awards": "受賞歴",
+      "birth_year": "生年"
+    },
+    "professional_section": "専門プロフィール",
+    "no_professional_info": "情報がありません。",
+    "contact_section": "連絡先情報",
+    "contact_phone": "電話番号",
+    "contact_email": "メール",
+    "awards_section": "受賞歴・資格",
+    "no_awards": "情報がありません。",
+    "measurements_section": "体型測定",
+    "measurements": {
+      "height": "身長",
+      "weight": "体重",
+      "chest": "胸囲",
+      "waist": "ウエスト",
+      "bicep": "上腕",
+      "forearm": "前腕",
+      "thigh": "太もも",
+      "calf": "ふくらはぎ"
+    },
+    "default_bio": "パーソナルトレーナー"
+  },
+  "students": {
+    "title": "受講生一覧",
+    "subtitle": "あなたとトレーニングした会員。",
+    "loading": "読み込み中...",
+    "no_data": "受講生がいません。",
+    "member_fallback": "会員 #{{id}}",
+    "table": {
+      "name": "受講生名",
+      "goal": "目標",
+      "package": "パッケージ",
+      "expiry": "有効期限",
+      "start_date": "PT開始日",
+      "membership": "会員資格"
+    },
+    "status": {
+      "active": "有効",
+      "inactive": "期限切れ"
+    },
+    "modal": {
+      "all_bookings": "すべての予約リクエスト",
+      "no_data": "データがありません。",
+      "close": "閉じる",
+      "table": {
+        "name": "受講生名",
+        "curriculum": "トレーニングプラン",
+        "date": "セッション日",
+        "status": "ステータス"
+      }
+    },
+    "booking_status": {
+      "Accepted": "確認済み",
+      "Pending": "保留中",
+      "Rejected": "拒否"
+    }
+  },
+  "schedule": {
+    "tab_my_schedule": "マイスケジュール",
+    "tab_requests": "会員リクエスト",
+    "select_day_hint": "日付を選んでスケジュールを確認",
+    "booking_requests_label": "予約リクエスト",
+    "my_teaching_label": "指導スケジュール",
+    "request_count": "{{count}} 件のリクエスト",
+    "session_count": "{{count}} セッション",
+    "no_requests": "リクエストなし",
+    "no_sessions": "予定なし",
+    "note_prefix": "メモ: ",
+    "accept_btn": "承認",
+    "reject_btn": "拒否",
+    "status": {
+      "Accepted": "確認済み",
+      "Pending": "保留中",
+      "Rejected": "拒否"
+    },
+    "request_detail": {
+      "title": "予約リクエスト詳細",
+      "member_section": "会員情報",
+      "member_id_prefix": "ID: MEM-",
+      "package_expiry_prefix": "· 期限: ",
+      "roadmap_goal_label": "ロードマップ目標",
+      "free_schedule_label": "空き時間",
+      "session_section": "セッションリクエスト",
+      "intensity_label": "強度: ",
+      "curriculum_label": "希望トレーニングプラン",
+      "curriculum_empty": "未入力",
+      "reject_btn": "拒否",
+      "accept_btn": "承認"
+    },
+    "reject_modal": {
+      "title": "拒否理由",
+      "placeholder": "拒否理由を入力（任意）...",
+      "cancel": "キャンセル",
+      "confirm": "拒否を確認"
+    }
+  },
+  "availability": {
+    "title": "指導スケジュール設定",
+    "subtitle": "週内で受講生を受け付けられる時間帯を選択",
+    "selected_count": "· {{count}} 枠選択済み",
+    "save_btn": "変更を保存",
+    "loading": "読み込み中...",
+    "error": "スケジュール情報を読み込めません。",
+    "days": {
+      "Mon": "月",
+      "Tue": "火",
+      "Wed": "水",
+      "Thu": "木",
+      "Fri": "金",
+      "Sat": "土",
+      "Sun": "日"
+    },
+    "legend_selected": "選択済み — 会員が予約可能",
+    "legend_unselected": "未選択",
+    "legend_note": "確認済みのセッションは更新時に影響されません"
+  },
+  "evaluation": {
+    "title": "セッション評価",
+    "past_sessions_count": "{{count}} 件の過去セッション",
+    "no_sessions": "過去のセッションがありません。",
+    "select_hint": "評価するセッションを選択",
+    "loading": "読み込み中...",
+    "badge_evaluated": "評価済み",
+    "badge_pending": "未評価",
+    "member_unknown": "不明",
+    "attendance_label": "出席状況",
+    "attendance_present": "出席",
+    "attendance_absent": "欠席",
+    "facility_label": "トレーニング施設",
+    "facility_placeholder": "施設を選択...",
+    "facility_fallback": "施設 #{{id}}",
+    "no_facilities": "施設がありません",
+    "fields": {
+      "pt_feedback_label": "セッションフィードバック",
+      "pt_feedback_placeholder": "セッションはいかがでしたか...",
+      "physical_condition_label": "身体状態",
+      "physical_condition_placeholder": "受講生の身体状態を評価...",
+      "session_result_label": "セッション結果",
+      "session_result_placeholder": "受講生が達成したこと...",
+      "nutrition_advice_label": "栄養アドバイス",
+      "nutrition_advice_placeholder": "食事の提案..."
+    },
+    "save_btn": "評価を保存"
+  },
+  "track_progress": {
+    "title": "インボディ指標の追跡",
+    "subtitle": "受講生の体重・体脂肪・筋肉量を更新（ID: {{id}}）。",
+    "form_title": "新しい指標を入力",
+    "weight_label": "体重 (kg)",
+    "weight_placeholder": "例: 65",
+    "bodyfat_label": "体脂肪率 (%)",
+    "bodyfat_placeholder": "例: 18",
+    "muscle_label": "筋肉量 (kg)",
+    "muscle_placeholder": "例: 30",
+    "save_btn": "マイルストーンを更新",
+    "chart_title": "進捗追跡チャート",
+    "chart_note": "(Rechartsで作成 - データはリアルタイムで更新)"
+  }
+}

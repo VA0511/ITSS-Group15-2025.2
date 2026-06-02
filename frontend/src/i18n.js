@@ -6,23 +6,26 @@ import commonEN from './locales/en/common.json';
 import authEN from './locales/en/auth.json';
 import layoutEN from './locales/en/layout.json';
 import ownerEN from './locales/en/owner.json';
+import trainerEN from './locales/en/trainer.json';
 import commonVI from './locales/vi/common.json';
 import authVI from './locales/vi/auth.json';
 import layoutVI from './locales/vi/layout.json';
 import ownerVI from './locales/vi/owner.json';
+import trainerVI from './locales/vi/trainer.json';
 import commonJA from './locales/ja/common.json';
 import authJA from './locales/ja/auth.json';
 import layoutJA from './locales/ja/layout.json';
 import ownerJA from './locales/ja/owner.json';
+import trainerJA from './locales/ja/trainer.json';
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources: {
-      en: { common: commonEN, auth: authEN, layout: layoutEN, owner: ownerEN },
-      vi: { common: commonVI, auth: authVI, layout: layoutVI, owner: ownerVI },
-      ja: { common: commonJA, auth: authJA, layout: layoutJA, owner: ownerJA },
+      en: { common: commonEN, auth: authEN, layout: layoutEN, owner: ownerEN, trainer: trainerEN },
+      vi: { common: commonVI, auth: authVI, layout: layoutVI, owner: ownerVI, trainer: trainerVI },
+      ja: { common: commonJA, auth: authJA, layout: layoutJA, owner: ownerJA, trainer: trainerJA },
     },
     fallbackLng: 'vi',
     defaultNS: 'common',

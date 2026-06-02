@@ -1,17 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { X, Phone, Mail, User, Clock, Target, BookOpen, Zap, MapPin, Calendar, Package, Loader2, Inbox } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useMyBookings } from '@/hooks/queries/useTraining';
 import { useUpdateBooking } from '@/hooks/mutations/useTrainingMutations';
 import { useMembers, useMemberDetails } from '@/hooks/queries/useMembers';
 
-const DAYS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-const STATUS_VI = { Accepted: 'Đã xác nhận', Pending: 'Chờ xác nhận', Rejected: 'Từ chối' };
+const DAY_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const TrainerSchedule = () => {
+  const { t, i18n } = useTranslation('trainer');
+  const locale = i18n.language === 'ja' ? 'ja-JP' : i18n.language === 'en' ? 'en-US' : 'vi-VN';
   const todayKey = format(new Date(), 'yyyy-MM-dd');
-  const dayNames = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 
   const [activeTab, setActiveTab] = useState('mySchedule');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -34,7 +35,7 @@ const TrainerSchedule = () => {
       .forEach((b) => {
         const dk = b.requested_start.slice(0, 10);
         const member = members.find((m) => m.id === b.member_id);
-        const memberName = member?.full_name || member?.name || `Hội viên #${b.member_id}`;
+        const memberName = member?.full_name || member?.name || t('students.member_fallback', { id: b.member_id });
         if (!map[dk]) map[dk] = [];
         map[dk].push({
           bookingId: b.id,
@@ -42,7 +43,7 @@ const TrainerSchedule = () => {
           endTime: b.requested_end.slice(11, 16),
           memberName,
           note: b.training_plan_note || '',
-          status: 'Đã xác nhận',
+          status: 'Accepted',
         });
       });
     return map;
@@ -55,7 +56,7 @@ const TrainerSchedule = () => {
       .forEach((b) => {
         const dk = b.requested_start.slice(0, 10);
         const member = members.find((m) => m.id === b.member_id);
-        const memberName = member?.full_name || member?.name || `Hội viên #${b.member_id}`;
+        const memberName = member?.full_name || member?.name || t('students.member_fallback', { id: b.member_id });
         if (!map[dk]) map[dk] = [];
         map[dk].push({
           bookingId: b.id,
@@ -71,7 +72,7 @@ const TrainerSchedule = () => {
           intensity: b.intensity || '',
           roadmapGoal: b.roadmap_goal || '',
           freeSchedule: b.member_free_schedule || '',
-          status: STATUS_VI[b.status] || b.status,
+          status: b.status,
         });
       });
     return map;
@@ -123,7 +124,7 @@ const TrainerSchedule = () => {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const monthName = currentDate.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+  const monthName = currentDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
   const calendarDays = buildCalendar();
 
   const selectDay = (day) => setSelectedDate(dateKey(year, month, day));
@@ -139,23 +140,23 @@ const TrainerSchedule = () => {
       return myScheduleData[dk]?.length > 0 ? 'bg-green-500' : null;
     }
     const reqs = memberRequestsData[dk] || [];
-    if (reqs.some((r) => r.status === 'Chờ xác nhận')) return 'bg-yellow-400';
-    if (reqs.some((r) => r.status === 'Đã xác nhận')) return 'bg-green-500';
-    if (reqs.some((r) => r.status === 'Từ chối')) return 'bg-red-400';
+    if (reqs.some((r) => r.status === 'Pending')) return 'bg-yellow-400';
+    if (reqs.some((r) => r.status === 'Accepted')) return 'bg-green-500';
+    if (reqs.some((r) => r.status === 'Rejected')) return 'bg-red-400';
     return null;
   };
 
   const getStatusBadgeClass = (status) => {
-    if (status === 'Đã xác nhận') return 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300';
-    if (status === 'Chờ xác nhận') return 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300';
-    if (status === 'Từ chối') return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300';
+    if (status === 'Accepted') return 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300';
+    if (status === 'Pending') return 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300';
+    if (status === 'Rejected') return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300';
     return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
   };
 
   const getAccentColor = (status) => {
-    if (status === 'Đã xác nhận') return '#16A34A';
-    if (status === 'Chờ xác nhận') return '#EAB308';
-    if (status === 'Từ chối') return '#EF4444';
+    if (status === 'Accepted') return '#16A34A';
+    if (status === 'Pending') return '#EAB308';
+    if (status === 'Rejected') return '#EF4444';
     return '#9CA3AF';
   };
 
@@ -184,9 +185,9 @@ const TrainerSchedule = () => {
 
             {/* Day headers */}
             <div className="grid grid-cols-7 mb-1 shrink-0">
-              {DAYS.map((day) => (
-                <div key={day} className="text-xs font-bold text-gray-400 dark:text-gray-500 text-center py-1">
-                  {day}
+              {DAY_KEYS.map((key) => (
+                <div key={key} className="text-xs font-bold text-gray-400 dark:text-gray-500 text-center py-1">
+                  {t(`availability.days.${key}`)}
                 </div>
               ))}
             </div>
@@ -224,7 +225,7 @@ const TrainerSchedule = () => {
 
           {/* Tabs */}
           <div className="border-t border-gray-100 dark:border-gray-800 p-3 flex gap-2 shrink-0">
-            {[['mySchedule', 'Lịch của tôi'], ['memberRequests', 'Yêu cầu hội viên']].map(([tab, label]) => (
+            {[['mySchedule', t('schedule.tab_my_schedule')], ['memberRequests', t('schedule.tab_requests')]].map(([tab, label]) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -245,7 +246,7 @@ const TrainerSchedule = () => {
           {!selectedDate ? (
             <div className="flex flex-col items-center justify-center h-full gap-3">
               <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center text-3xl">📅</div>
-              <div className="text-sm font-medium text-gray-400 dark:text-gray-500">Chọn một ngày để xem lịch</div>
+              <div className="text-sm font-medium text-gray-400 dark:text-gray-500">{t('schedule.select_day_hint')}</div>
             </div>
           ) : (
             <div>
@@ -253,16 +254,18 @@ const TrainerSchedule = () => {
                 <div>
                   <div className="text-base font-bold text-gray-800 dark:text-white">
                     {selectedDateObject
-                      ? `${dayNames[selectedDateObject.getDay()]}, ${selectedDateObject.getDate()}/${String(selectedDateObject.getMonth() + 1).padStart(2, '0')}/${selectedDateObject.getFullYear()}`
+                      ? selectedDateObject.toLocaleDateString(locale, { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
                       : ''}
                   </div>
                   <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                    {activeTab === 'memberRequests' ? 'Yêu cầu đặt lịch' : 'Lịch dạy của bạn'}
+                    {activeTab === 'memberRequests' ? t('schedule.booking_requests_label') : t('schedule.my_teaching_label')}
                   </div>
                 </div>
                 {selectedItems.length > 0 && (
                   <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    {selectedItems.length} {activeTab === 'memberRequests' ? 'yêu cầu' : 'buổi'}
+                    {activeTab === 'memberRequests'
+                      ? t('schedule.request_count', { count: selectedItems.length })
+                      : t('schedule.session_count', { count: selectedItems.length })}
                   </div>
                 )}
               </div>
@@ -276,7 +279,7 @@ const TrainerSchedule = () => {
                     }
                   </div>
                   <div className="text-sm text-gray-400 dark:text-gray-500 italic">
-                    {activeTab === 'memberRequests' ? 'Chưa có yêu cầu nào' : 'Không có lịch dạy nào'}
+                    {activeTab === 'memberRequests' ? t('schedule.no_requests') : t('schedule.no_sessions')}
                   </div>
                 </div>
               ) : (
@@ -301,26 +304,26 @@ const TrainerSchedule = () => {
                       <div className="flex-1 ml-2">
                         <div className="text-sm font-bold text-gray-800 dark:text-white mb-1">{item.memberName}</div>
                         {item.note && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400 italic">Ghi chú: {item.note}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 italic">{t('schedule.note_prefix')}{item.note}</div>
                         )}
                       </div>
                       <div className="flex flex-col gap-2 items-end">
                         <div className={`text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap ${getStatusBadgeClass(item.status)}`}>
-                          {item.status}
+                          {t(`schedule.status.${item.status}`, { defaultValue: item.status })}
                         </div>
-                        {activeTab === 'memberRequests' && item.status === 'Chờ xác nhận' && (
+                        {activeTab === 'memberRequests' && item.status === 'Pending' && (
                           <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
                             <button
                               onClick={() => handleUpdateStatus(item, 'Accepted')}
                               className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors font-semibold"
                             >
-                              Chấp nhận
+                              {t('schedule.accept_btn')}
                             </button>
                             <button
                               onClick={() => setRejectTarget(item)}
                               className="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors font-semibold"
                             >
-                              Từ chối
+                              {t('schedule.reject_btn')}
                             </button>
                           </div>
                         )}
@@ -339,7 +342,7 @@ const TrainerSchedule = () => {
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={() => setSelectedRequest(null)}>
         <div className="bg-white dark:bg-gray-950 rounded-2xl max-w-lg w-full my-auto border border-gray-200 dark:border-gray-800 shadow-2xl" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Chi tiết yêu cầu đặt lịch</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('schedule.request_detail.title')}</h2>
             <button onClick={() => setSelectedRequest(null)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
               <X className="h-5 w-5 text-gray-500" />
             </button>
@@ -347,7 +350,7 @@ const TrainerSchedule = () => {
 
           <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
             <div className="space-y-1.5">
-              <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">Thông tin hội viên</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">{t('schedule.request_detail.member_section')}</p>
               {loadingMember ? (
                 <div className="flex items-center justify-center py-4">
                   <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
@@ -360,7 +363,7 @@ const TrainerSchedule = () => {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-gray-900 dark:text-white">{selectedMemberDetail?.full_name || selectedRequest.memberName}</p>
-                      <p className="text-xs text-gray-400">ID: MEM-{selectedRequest.memberId}</p>
+                      <p className="text-xs text-gray-400">{t('schedule.request_detail.member_id_prefix')}{selectedRequest.memberId}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2 pt-1">
@@ -400,7 +403,7 @@ const TrainerSchedule = () => {
                       <Package className="h-3.5 w-3.5 text-gray-400 shrink-0" />
                       <span className="text-xs text-gray-600 dark:text-gray-400">{selectedMemberDetail.package}</span>
                       {selectedMemberDetail?.expiryDate && (
-                        <span className="text-xs text-gray-400 dark:text-gray-500">· HSD: {selectedMemberDetail.expiryDate}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{t('schedule.request_detail.package_expiry_prefix')}{selectedMemberDetail.expiryDate}</span>
                       )}
                     </div>
                   )}
@@ -408,7 +411,7 @@ const TrainerSchedule = () => {
                     <div className="flex items-start gap-2 pt-1 border-t border-gray-100 dark:border-gray-800">
                       <Target className="h-3.5 w-3.5 text-gray-400 shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">Mục tiêu lộ trình</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{t('schedule.request_detail.roadmap_goal_label')}</p>
                         <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5">{selectedRequest.roadmapGoal}</p>
                       </div>
                     </div>
@@ -417,7 +420,7 @@ const TrainerSchedule = () => {
                     <div className="flex items-start gap-2">
                       <Clock className="h-3.5 w-3.5 text-gray-400 shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">Lịch rảnh</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{t('schedule.request_detail.free_schedule_label')}</p>
                         <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5">{selectedRequest.freeSchedule}</p>
                       </div>
                     </div>
@@ -427,17 +430,17 @@ const TrainerSchedule = () => {
             </div>
 
             <div className="space-y-1.5">
-              <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">Yêu cầu buổi tập</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">{t('schedule.request_detail.session_section')}</p>
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-blue-500 shrink-0" />
                     <span className="text-sm font-semibold text-gray-800 dark:text-white">
-                      {new Date(`${selectedRequest.requestedStart.slice(0,10)}T00:00:00`).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                      {new Date(`${selectedRequest.requestedStart.slice(0,10)}T00:00:00`).toLocaleDateString(locale, { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </span>
                   </div>
                   <span className={`text-xs font-bold px-2.5 py-1 rounded ${getStatusBadgeClass(selectedRequest.status)}`}>
-                    {selectedRequest.status}
+                    {t(`schedule.status.${selectedRequest.status}`, { defaultValue: selectedRequest.status })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -448,7 +451,7 @@ const TrainerSchedule = () => {
                   <div className="flex items-center gap-2">
                     <Zap className="h-4 w-4 text-blue-500 shrink-0" />
                     <div>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">Cường độ: </span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{t('schedule.request_detail.intensity_label')}</span>
                       <span className="text-sm text-gray-700 dark:text-gray-300">{selectedRequest.intensity}</span>
                     </div>
                   </div>
@@ -456,26 +459,26 @@ const TrainerSchedule = () => {
                 <div className="flex items-start gap-2 pt-1 border-t border-blue-100 dark:border-blue-900/50">
                   <BookOpen className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Giáo trình mong muốn</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">{selectedRequest.note || <span className="italic text-gray-400 dark:text-gray-600">Chưa điền</span>}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{t('schedule.request_detail.curriculum_label')}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{selectedRequest.note || <span className="italic text-gray-400 dark:text-gray-600">{t('schedule.request_detail.curriculum_empty')}</span>}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {selectedRequest.status === 'Chờ xác nhận' && (
+            {selectedRequest.status === 'Pending' && (
               <div className="flex gap-3 pt-1">
                 <button
                   onClick={() => setRejectTarget(selectedRequest)}
                   className="flex-1 py-2.5 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 font-semibold rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm"
                 >
-                  Từ chối
+                  {t('schedule.request_detail.reject_btn')}
                 </button>
                 <button
                   onClick={() => { handleUpdateStatus(selectedRequest, 'Accepted'); setSelectedRequest(null); }}
                   className="flex-1 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors text-sm shadow-lg shadow-green-500/20"
                 >
-                  Chấp nhận
+                  {t('schedule.request_detail.accept_btn')}
                 </button>
               </div>
             )}
@@ -487,11 +490,11 @@ const TrainerSchedule = () => {
     {rejectTarget && (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={() => { setRejectTarget(null); setRejectReason(''); }}>
         <div className="bg-white dark:bg-gray-950 rounded-xl max-w-sm w-full border border-gray-200 dark:border-gray-800 shadow-2xl p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
-          <h3 className="text-base font-bold text-gray-900 dark:text-white">Lý do từ chối</h3>
+          <h3 className="text-base font-bold text-gray-900 dark:text-white">{t('schedule.reject_modal.title')}</h3>
           <textarea
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
-            placeholder="Nhập lý do từ chối (tùy chọn)..."
+            placeholder={t('schedule.reject_modal.placeholder')}
             rows={3}
             className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
           />
@@ -500,13 +503,13 @@ const TrainerSchedule = () => {
               onClick={() => { setRejectTarget(null); setRejectReason(''); }}
               className="flex-1 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
             >
-              Hủy
+              {t('schedule.reject_modal.cancel')}
             </button>
             <button
               onClick={handleConfirmReject}
               className="flex-1 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors"
             >
-              Xác nhận từ chối
+              {t('schedule.reject_modal.confirm')}
             </button>
           </div>
         </div>

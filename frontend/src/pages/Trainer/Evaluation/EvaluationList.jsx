@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ClipboardList, CheckCircle2, Clock, Save, User, Building2, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useTrainingSessions, useTrainingBookings } from '@/hooks/queries/useTraining';
 import { useAllMembers } from '@/hooks/queries/useMembers';
 import { useUpdateTrainingSession } from '@/hooks/mutations/useTrainingMutations';
@@ -8,12 +9,7 @@ import { useFacilities } from '@/hooks/queries/useFacilities';
 import { cn } from '@/lib/utils';
 import { slideUpVariants } from '@/lib/animations';
 
-const FIELDS = [
-  { key: 'pt_feedback', label: 'Nhận xét buổi tập', placeholder: 'Buổi tập diễn ra như thế nào...' },
-  { key: 'physical_condition', label: 'Tình trạng thể chất', placeholder: 'Đánh giá thể trạng học viên...' },
-  { key: 'session_result', label: 'Kết quả buổi tập', placeholder: 'Những gì học viên đạt được...' },
-  { key: 'nutrition_advice', label: 'Tư vấn dinh dưỡng', placeholder: 'Gợi ý chế độ ăn uống...' },
-];
+const FIELD_KEYS = ['pt_feedback', 'physical_condition', 'session_result', 'nutrition_advice'];
 
 const defaultForm = (session) => ({
   attendance_status: session.attendance_status || 'Present',
@@ -25,6 +21,8 @@ const defaultForm = (session) => ({
 });
 
 const EvaluationList = () => {
+  const { t, i18n } = useTranslation('trainer');
+  const locale = i18n.language === 'ja' ? 'ja-JP' : i18n.language === 'en' ? 'en-US' : 'vi-VN';
   const { data: sessions = [], isLoading } = useTrainingSessions();
   const { data: bookings = [] } = useTrainingBookings();
   const { data: members = [] } = useAllMembers();
@@ -56,7 +54,7 @@ const EvaluationList = () => {
     .map((s) => {
       const booking = bookingMap[s.booking_id];
       const member = booking ? memberMap[booking.member_id] : null;
-      return { ...s, memberName: member?.full_name || member?.name || 'Không rõ' };
+      return { ...s, memberName: member?.full_name || member?.name || t('evaluation.member_unknown') };
     });
 
   const getForm = (session) => forms[session.id] ?? defaultForm(session);
@@ -100,7 +98,7 @@ const EvaluationList = () => {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-64">
-        <div className="text-gray-500 dark:text-gray-400 text-sm">Đang tải...</div>
+        <div className="text-gray-500 dark:text-gray-400 text-sm">{t('evaluation.loading')}</div>
       </div>
     );
   }
@@ -121,17 +119,17 @@ const EvaluationList = () => {
           <div className="p-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
             <h1 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
               <ClipboardList className="h-4 w-4 text-blue-600" />
-              Đánh giá buổi tập
+              {t('evaluation.title')}
             </h1>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-              {pastSessions.length} buổi tập đã qua
+              {t('evaluation.past_sessions_count', { count: pastSessions.length })}
             </p>
           </div>
 
           <div className="flex-1 overflow-y-auto no-scrollbar">
             {pastSessions.length === 0 ? (
               <div className="text-center py-12 text-gray-400 dark:text-gray-500 text-sm">
-                Chưa có buổi tập nào đã qua.
+                {t('evaluation.no_sessions')}
               </div>
             ) : (
               pastSessions.map((session) => {
@@ -163,9 +161,9 @@ const EvaluationList = () => {
                         {session.memberName}
                       </div>
                       <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                        {sessionDate.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' })}
+                        {sessionDate.toLocaleDateString(locale, { weekday: 'short', day: '2-digit', month: '2-digit' })}
                         {' · '}
-                        {sessionDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                        {sessionDate.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                     {evaluated ? (
@@ -188,7 +186,7 @@ const EvaluationList = () => {
                 <ClipboardList className="h-8 w-8 text-blue-300 dark:text-blue-600" />
               </div>
               <div className="text-sm font-medium text-gray-400 dark:text-gray-500">
-                Chọn một buổi tập để điền đánh giá
+                {t('evaluation.select_hint')}
               </div>
             </div>
           ) : (
@@ -201,22 +199,22 @@ const EvaluationList = () => {
                 <div className="flex-1">
                   <div className="font-bold text-gray-900 dark:text-white">{selectedSession.memberName}</div>
                   <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                    {new Date(selectedSession.session_time).toLocaleDateString('vi-VN', {
+                    {new Date(selectedSession.session_time).toLocaleDateString(locale, {
                       weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric',
                     })}
                     {' · '}
-                    {new Date(selectedSession.session_time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(selectedSession.session_time).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
                 {selectedSession.pt_feedback ? (
                   <span className="flex items-center gap-1 text-xs font-semibold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2.5 py-1 rounded-full shrink-0">
                     <CheckCircle2 className="h-3.5 w-3.5" />
-                    Đã đánh giá
+                    {t('evaluation.badge_evaluated')}
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2.5 py-1 rounded-full shrink-0">
                     <Clock className="h-3.5 w-3.5" />
-                    Chưa đánh giá
+                    {t('evaluation.badge_pending')}
                   </span>
                 )}
               </div>
@@ -224,10 +222,10 @@ const EvaluationList = () => {
               {/* Attendance status */}
               <div className="mb-5">
                 <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-2">
-                  Trạng thái điểm danh
+                  {t('evaluation.attendance_label')}
                 </label>
                 <div className="flex gap-2">
-                  {[{ value: 'Present', label: 'Có mặt' }, { value: 'Absent', label: 'Vắng mặt' }].map(({ value, label }) => (
+                  {[{ value: 'Present', label: t('evaluation.attendance_present') }, { value: 'Absent', label: t('evaluation.attendance_absent') }].map(({ value, label }) => (
                     <button
                       key={value}
                       onClick={() => setField(selectedSession.id, 'attendance_status', value)}
@@ -249,7 +247,7 @@ const EvaluationList = () => {
               {/* Facility */}
               <div className="mb-5">
                 <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1.5">
-                  Cơ sở tập luyện
+                  {t('evaluation.facility_label')}
                 </label>
                 <div className="relative" ref={dropdownRef}>
                   <div
@@ -264,7 +262,7 @@ const EvaluationList = () => {
                           className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 text-xs font-medium px-2 py-1 rounded-lg"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          {facility?.facility_name ?? `Cơ sở #${fid}`}
+                          {facility?.facility_name ?? t('evaluation.facility_fallback', { id: fid })}
                           <button
                             type="button"
                             onClick={() => setField(selectedSession.id, 'facility_ids', selectedForm.facility_ids.filter((id) => id !== fid))}
@@ -276,14 +274,14 @@ const EvaluationList = () => {
                       );
                     })}
                     <span className="flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500 flex-1 min-w-0">
-                      {selectedForm.facility_ids.length === 0 && <span className="truncate">Chọn cơ sở tập luyện...</span>}
+                      {selectedForm.facility_ids.length === 0 && <span className="truncate">{t('evaluation.facility_placeholder')}</span>}
                       <Building2 className="h-4 w-4 ml-auto flex-shrink-0" />
                     </span>
                   </div>
                   {facilityDropdownOpen && (
                     <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-h-52 overflow-y-auto">
                       {allFacilities.length === 0 ? (
-                        <div className="p-3 text-sm text-gray-400 dark:text-gray-500 text-center">Không có cơ sở nào</div>
+                        <div className="p-3 text-sm text-gray-400 dark:text-gray-500 text-center">{t('evaluation.no_facilities')}</div>
                       ) : (
                         allFacilities.map((facility) => {
                           const selected = selectedForm.facility_ids.includes(facility.id);
@@ -326,15 +324,15 @@ const EvaluationList = () => {
 
               {/* Text fields — 2 columns on wider screens */}
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-5">
-                {FIELDS.map(({ key, label, placeholder }) => (
+                {FIELD_KEYS.map((key) => (
                   <div key={key}>
                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide block mb-1.5">
-                      {label}
+                      {t(`evaluation.fields.${key}_label`)}
                     </label>
                     <textarea
                       value={selectedForm[key]}
                       onChange={(e) => setField(selectedSession.id, key, e.target.value)}
-                      placeholder={placeholder}
+                      placeholder={t(`evaluation.fields.${key}_placeholder`)}
                       rows={4}
                       className="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-xl p-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 dark:focus:border-blue-500 resize-none transition-colors"
                     />
@@ -353,7 +351,7 @@ const EvaluationList = () => {
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                Lưu đánh giá
+                {t('evaluation.save_btn')}
               </button>
             </div>
           )}

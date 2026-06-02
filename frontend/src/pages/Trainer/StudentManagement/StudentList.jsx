@@ -1,15 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/Common/Table';
 import { useTrainingBookings } from '@/hooks/queries/useTraining';
 import { useMembers } from '@/hooks/queries/useMembers';
 import { slideUpVariants, sectionStaggerVariants, modalOverlayVariants, modalContentVariants } from '@/lib/animations';
 
-const STATUS_LABEL = {
-  Accepted: { text: 'Đã xác nhận', cls: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-  Pending:  { text: 'Chờ xác nhận', cls: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
-  Rejected: { text: 'Từ chối', cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
+const STATUS_BOOKING_CLS = {
+  Accepted: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  Pending:  'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  Rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+};
+
+const STATUS_MEMBER_CLS = {
+  active:   'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  inactive: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 };
 
 const formatDate = (dateStr) => {
@@ -17,20 +23,16 @@ const formatDate = (dateStr) => {
   return new Date(`${dateStr.slice(0, 10)}T00:00:00`).toLocaleDateString('vi-VN');
 };
 
-const getMemberName = (member, memberId) =>
-  member?.full_name || member?.name || `Hội viên #${memberId}`;
-
-const STATUS_MEMBER = {
-  active:   { text: 'Còn hạn', cls: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-  inactive: { text: 'Hết hạn', cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-};
-
 const StudentList = () => {
+  const { t } = useTranslation('trainer');
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const { data: bookingsRaw, isLoading: loadingBookings } = useTrainingBookings();
   const bookings = Array.isArray(bookingsRaw) ? bookingsRaw : [];
   const { data: membersResponse, isLoading: loadingMembers } = useMembers(1, 100);
   const members = membersResponse?.data || (Array.isArray(membersResponse) ? membersResponse : []);
+
+  const getMemberName = (member, memberId) =>
+    member?.full_name || member?.name || t('students.member_fallback', { id: memberId });
 
   const memberMap = useMemo(() => {
     const map = {};
@@ -85,31 +87,31 @@ const StudentList = () => {
         animate="visible"
       >
         <motion.div variants={slideUpVariants}>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Danh sách Học Viên</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Những học viên đã từng tập luyện với bạn.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('students.title')}</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('students.subtitle')}</p>
         </motion.div>
 
         <motion.div variants={slideUpVariants}>
         {isLoading ? (
-          <div className="py-20 text-center text-sm text-gray-500 dark:text-gray-400">Đang tải...</div>
+          <div className="py-20 text-center text-sm text-gray-500 dark:text-gray-400">{t('students.loading')}</div>
         ) : students.length === 0 ? (
-          <div className="py-20 text-center text-sm text-gray-500 dark:text-gray-400">Chưa có học viên nào.</div>
+          <div className="py-20 text-center text-sm text-gray-500 dark:text-gray-400">{t('students.no_data')}</div>
         ) : (
           <div className="rounded-xl overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-950 dark:ring-gray-800">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tên Học Viên</TableHead>
-                  <TableHead>Mục tiêu</TableHead>
-                  <TableHead>Gói tập</TableHead>
-                  <TableHead>Hết hạn</TableHead>
-                  <TableHead>Ngày bắt đầu PT</TableHead>
-                  <TableHead>Hội viên</TableHead>
+                  <TableHead>{t('students.table.name')}</TableHead>
+                  <TableHead>{t('students.table.goal')}</TableHead>
+                  <TableHead>{t('students.table.package')}</TableHead>
+                  <TableHead>{t('students.table.expiry')}</TableHead>
+                  <TableHead>{t('students.table.start_date')}</TableHead>
+                  <TableHead>{t('students.table.membership')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {students.map(({ memberId, member, firstSessionDate, roadmapGoal }) => {
-                  const memberStatus = STATUS_MEMBER[member?.status] ?? { text: member?.status || '—', cls: 'bg-gray-100 text-gray-600' };
+                  const memberStatusCls = STATUS_MEMBER_CLS[member?.status] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300';
                   return (
                   <TableRow
                     key={memberId}
@@ -135,8 +137,8 @@ const StudentList = () => {
                       {formatDate(firstSessionDate)}
                     </TableCell>
                     <TableCell>
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${memberStatus.cls}`}>
-                        {memberStatus.text}
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${memberStatusCls}`}>
+                        {t(`students.status.${member?.status}`, { defaultValue: member?.status || '—' })}
                       </span>
                     </TableCell>
                   </TableRow>
@@ -169,7 +171,7 @@ const StudentList = () => {
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                   {getMemberName(selectedMember, selectedStudentId)}
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Tất cả các yêu cầu đặt lịch</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('students.modal.all_bookings')}</p>
               </div>
               <button
                 onClick={() => setSelectedStudentId(null)}
@@ -181,21 +183,21 @@ const StudentList = () => {
 
             <div className="p-4">
               {selectedStudentBookings.length === 0 ? (
-                <div className="py-10 text-center text-sm text-gray-400 dark:text-gray-500">Không có dữ liệu.</div>
+                <div className="py-10 text-center text-sm text-gray-400 dark:text-gray-500">{t('students.modal.no_data')}</div>
               ) : (
                 <div className="rounded-xl overflow-hidden ring-1 ring-gray-200 dark:ring-gray-800">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Tên Học Viên</TableHead>
-                        <TableHead>Giáo trình tập luyện</TableHead>
-                        <TableHead>Ngày tập</TableHead>
-                        <TableHead>Trạng thái</TableHead>
+                        <TableHead>{t('students.modal.table.name')}</TableHead>
+                        <TableHead>{t('students.modal.table.curriculum')}</TableHead>
+                        <TableHead>{t('students.modal.table.date')}</TableHead>
+                        <TableHead>{t('students.modal.table.status')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {selectedStudentBookings.map((booking) => {
-                        const status = STATUS_LABEL[booking.status] ?? { text: booking.status, cls: 'bg-gray-100 text-gray-600' };
+                        const statusCls = STATUS_BOOKING_CLS[booking.status] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300';
                         return (
                           <TableRow key={booking.id}>
                             <TableCell className="font-semibold text-gray-900 dark:text-gray-100">
@@ -209,8 +211,8 @@ const StudentList = () => {
                               {formatDate(booking.requested_start)}
                             </TableCell>
                             <TableCell>
-                              <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${status.cls}`}>
-                                {status.text}
+                              <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${statusCls}`}>
+                                {t(`students.booking_status.${booking.status}`, { defaultValue: booking.status })}
                               </span>
                             </TableCell>
                           </TableRow>
@@ -227,7 +229,7 @@ const StudentList = () => {
                 onClick={() => setSelectedStudentId(null)}
                 className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Đóng
+                {t('students.modal.close')}
               </button>
             </div>
           </motion.div>

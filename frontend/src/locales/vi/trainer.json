@@ -1,0 +1,169 @@
+{
+  "profile": {
+    "loading": "Đang tải...",
+    "error": "Không thể tải thông tin hồ sơ.",
+    "avatar_error": "Lưu ảnh đại diện thất bại",
+    "role_badge": "Trainer",
+    "stats": {
+      "experience": "Kinh nghiệm",
+      "experience_unit": "năm",
+      "awards": "Giải thưởng",
+      "birth_year": "Năm sinh"
+    },
+    "professional_section": "Hồ sơ chuyên môn",
+    "no_professional_info": "Chưa có thông tin.",
+    "contact_section": "Thông tin liên hệ",
+    "contact_phone": "Số điện thoại",
+    "contact_email": "Email",
+    "awards_section": "Giải thưởng & Chứng chỉ",
+    "no_awards": "Chưa có thông tin.",
+    "measurements_section": "Số đo thể hình",
+    "measurements": {
+      "height": "Chiều cao",
+      "weight": "Cân nặng",
+      "chest": "Vòng ngực",
+      "waist": "Vòng bụng",
+      "bicep": "Bắp tay",
+      "forearm": "Cẳng tay",
+      "thigh": "Đùi",
+      "calf": "Bắp chuối"
+    },
+    "default_bio": "Huấn luyện viên thể hình"
+  },
+  "students": {
+    "title": "Danh sách Học Viên",
+    "subtitle": "Những học viên đã từng tập luyện với bạn.",
+    "loading": "Đang tải...",
+    "no_data": "Chưa có học viên nào.",
+    "member_fallback": "Hội viên #{{id}}",
+    "table": {
+      "name": "Tên Học Viên",
+      "goal": "Mục tiêu",
+      "package": "Gói tập",
+      "expiry": "Hết hạn",
+      "start_date": "Ngày bắt đầu PT",
+      "membership": "Hội viên"
+    },
+    "status": {
+      "active": "Còn hạn",
+      "inactive": "Hết hạn"
+    },
+    "modal": {
+      "all_bookings": "Tất cả các yêu cầu đặt lịch",
+      "no_data": "Không có dữ liệu.",
+      "close": "Đóng",
+      "table": {
+        "name": "Tên Học Viên",
+        "curriculum": "Giáo trình tập luyện",
+        "date": "Ngày tập",
+        "status": "Trạng thái"
+      }
+    },
+    "booking_status": {
+      "Accepted": "Đã xác nhận",
+      "Pending": "Chờ xác nhận",
+      "Rejected": "Từ chối"
+    }
+  },
+  "schedule": {
+    "tab_my_schedule": "Lịch của tôi",
+    "tab_requests": "Yêu cầu hội viên",
+    "select_day_hint": "Chọn một ngày để xem lịch",
+    "booking_requests_label": "Yêu cầu đặt lịch",
+    "my_teaching_label": "Lịch dạy của bạn",
+    "request_count": "{{count}} yêu cầu",
+    "session_count": "{{count}} buổi",
+    "no_requests": "Chưa có yêu cầu nào",
+    "no_sessions": "Không có lịch dạy nào",
+    "note_prefix": "Ghi chú: ",
+    "accept_btn": "Chấp nhận",
+    "reject_btn": "Từ chối",
+    "status": {
+      "Accepted": "Đã xác nhận",
+      "Pending": "Chờ xác nhận",
+      "Rejected": "Từ chối"
+    },
+    "request_detail": {
+      "title": "Chi tiết yêu cầu đặt lịch",
+      "member_section": "Thông tin hội viên",
+      "member_id_prefix": "ID: MEM-",
+      "package_expiry_prefix": "· HSD: ",
+      "roadmap_goal_label": "Mục tiêu lộ trình",
+      "free_schedule_label": "Lịch rảnh",
+      "session_section": "Yêu cầu buổi tập",
+      "intensity_label": "Cường độ: ",
+      "curriculum_label": "Giáo trình mong muốn",
+      "curriculum_empty": "Chưa điền",
+      "reject_btn": "Từ chối",
+      "accept_btn": "Chấp nhận"
+    },
+    "reject_modal": {
+      "title": "Lý do từ chối",
+      "placeholder": "Nhập lý do từ chối (tùy chọn)...",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận từ chối"
+    }
+  },
+  "availability": {
+    "title": "Thiết lập lịch dạy của tôi",
+    "subtitle": "Chọn các khung giờ bạn có thể nhận học viên trong tuần",
+    "selected_count": "· {{count}} khung đã chọn",
+    "save_btn": "Lưu thay đổi",
+    "loading": "Đang tải...",
+    "error": "Không thể tải thông tin lịch dạy.",
+    "days": {
+      "Mon": "Thứ 2",
+      "Tue": "Thứ 3",
+      "Wed": "Thứ 4",
+      "Thu": "Thứ 5",
+      "Fri": "Thứ 6",
+      "Sat": "Thứ 7",
+      "Sun": "CN"
+    },
+    "legend_selected": "Đã chọn — học viên có thể đặt lịch",
+    "legend_unselected": "Chưa chọn",
+    "legend_note": "Các buổi tập đã xác nhận sẽ không bị ảnh hưởng khi cập nhật"
+  },
+  "evaluation": {
+    "title": "Đánh giá buổi tập",
+    "past_sessions_count": "{{count}} buổi tập đã qua",
+    "no_sessions": "Chưa có buổi tập nào đã qua.",
+    "select_hint": "Chọn một buổi tập để điền đánh giá",
+    "loading": "Đang tải...",
+    "badge_evaluated": "Đã đánh giá",
+    "badge_pending": "Chưa đánh giá",
+    "member_unknown": "Không rõ",
+    "attendance_label": "Trạng thái điểm danh",
+    "attendance_present": "Có mặt",
+    "attendance_absent": "Vắng mặt",
+    "facility_label": "Cơ sở tập luyện",
+    "facility_placeholder": "Chọn cơ sở tập luyện...",
+    "facility_fallback": "Cơ sở #{{id}}",
+    "no_facilities": "Không có cơ sở nào",
+    "fields": {
+      "pt_feedback_label": "Nhận xét buổi tập",
+      "pt_feedback_placeholder": "Buổi tập diễn ra như thế nào...",
+      "physical_condition_label": "Tình trạng thể chất",
+      "physical_condition_placeholder": "Đánh giá thể trạng học viên...",
+      "session_result_label": "Kết quả buổi tập",
+      "session_result_placeholder": "Những gì học viên đạt được...",
+      "nutrition_advice_label": "Tư vấn dinh dưỡng",
+      "nutrition_advice_placeholder": "Gợi ý chế độ ăn uống..."
+    },
+    "save_btn": "Lưu đánh giá"
+  },
+  "track_progress": {
+    "title": "Theo dõi Chỉ số Inbody",
+    "subtitle": "Cập nhật cân nặng, mỡ, cơ cho học viên (ID: {{id}}).",
+    "form_title": "Nhập chỉ số mới",
+    "weight_label": "Cân nặng (kg)",
+    "weight_placeholder": "Ví dụ: 65",
+    "bodyfat_label": "Tỷ lệ mỡ BodyFat (%)",
+    "bodyfat_placeholder": "Ví dụ: 18",
+    "muscle_label": "Khối lượng Cơ (kg)",
+    "muscle_placeholder": "Ví dụ: 30",
+    "save_btn": "Cập nhật Cột mốc",
+    "chart_title": "Biểu Đồ Theo Dõi Tiến Độ",
+    "chart_note": "(Được tạo bởi Recharts - Dữ liệu sẽ update theo thực tế)"
+  }
+}
