@@ -1,6 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequestDate, openScheduledTab, openEvaluationsTab, todayKey }) => {
+  const { t } = useTranslation('member');
+
   return (
     <div className="flex gap-2 p-4 overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
       <button
@@ -11,7 +14,7 @@ const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequest
             : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
         }`}
       >
-        Lịch tập của tôi
+        {t('schedule.tabs.scheduled')}
       </button>
       <button
         onClick={() => {
@@ -24,7 +27,7 @@ const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequest
             : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
         }`}
       >
-        Đặt buổi tập
+        {t('schedule.tabs.booking')}
       </button>
       <button
         onClick={() => {
@@ -37,7 +40,7 @@ const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequest
             : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
         }`}
       >
-        Yêu cầu của tôi
+        {t('schedule.tabs.requests')}
       </button>
       <button
         onClick={openEvaluationsTab}
@@ -47,7 +50,7 @@ const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequest
             : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
         }`}
       >
-        Đánh giá buổi tập
+        {t('schedule.tabs.evaluations')}
       </button>
     </div>
   );

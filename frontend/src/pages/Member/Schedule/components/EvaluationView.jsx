@@ -1,10 +1,14 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const intensityMap = { Low: 'Nhẹ', Medium: 'Trung bình', High: 'Cao' };
+const EvaluationView = ({ selectedDate, selectedDateObject, locale, sessions }) => {
+  const { t } = useTranslation('member');
 
-const EvaluationView = ({ selectedDate, selectedDateObject, dayNames, sessions }) => {
   const dateDisplay = selectedDateObject
-    ? `${dayNames[selectedDateObject.getDay()]}, ${String(selectedDateObject.getDate()).padStart(2, '0')}/${String(selectedDateObject.getMonth() + 1).padStart(2, '0')}/${selectedDateObject.getFullYear()}`
+    ? (() => {
+        const weekday = selectedDateObject.toLocaleDateString(locale, { weekday: 'long' });
+        return `${weekday}, ${String(selectedDateObject.getDate()).padStart(2, '0')}/${String(selectedDateObject.getMonth() + 1).padStart(2, '0')}/${selectedDateObject.getFullYear()}`;
+      })()
     : selectedDate;
 
   if (!sessions || sessions.length === 0) {
@@ -13,11 +17,11 @@ const EvaluationView = ({ selectedDate, selectedDateObject, dayNames, sessions }
         <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4 text-2xl">
           📋
         </div>
-        <p className="text-gray-700 dark:text-gray-300 font-semibold">Không có đánh giá</p>
+        <p className="text-gray-700 dark:text-gray-300 font-semibold">{t('schedule.evaluation.no_eval')}</p>
         <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
           {selectedDate
-            ? 'Ngày này chưa có buổi tập nào được đánh giá'
-            : 'Chọn ngày có chấm màu để xem đánh giá của PT'}
+            ? t('schedule.evaluation.no_sessions_date')
+            : t('schedule.evaluation.select_hint')}
         </p>
       </div>
     );
@@ -29,7 +33,7 @@ const EvaluationView = ({ selectedDate, selectedDateObject, dayNames, sessions }
         <div className="w-1.5 h-5 bg-blue-600 rounded-full shrink-0" />
         <h2 className="text-sm font-bold text-gray-800 dark:text-white">{dateDisplay}</h2>
         <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
-          {sessions.length} buổi tập
+          {t('schedule.evaluation.session_count', { count: sessions.length })}
         </span>
       </div>
 
@@ -41,6 +45,7 @@ const EvaluationView = ({ selectedDate, selectedDateObject, dayNames, sessions }
 };
 
 const SessionCard = ({ session }) => {
+  const { t } = useTranslation('member');
   const isPresent = session.attendanceStatus === 'Present';
   const hasDetail =
     session.ptFeedback || session.physicalCondition || session.sessionResult || session.nutritionAdvice;
@@ -68,11 +73,11 @@ const SessionCard = ({ session }) => {
                 : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
             }`}
           >
-            {isPresent ? 'Có mặt' : 'Vắng mặt'}
+            {isPresent ? t('schedule.evaluation.present') : t('schedule.evaluation.absent')}
           </span>
           {session.intensity && (
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              ⚡ {intensityMap[session.intensity] ?? session.intensity}
+              ⚡ {t(`schedule.evaluation.intensity.${session.intensity}`, { defaultValue: session.intensity })}
             </span>
           )}
         </div>
@@ -81,20 +86,20 @@ const SessionCard = ({ session }) => {
       {/* Card body */}
       <div className="px-4 py-3 space-y-3">
         {session.ptFeedback && (
-          <InfoRow label="Nhận xét của PT" value={session.ptFeedback} highlight />
+          <InfoRow label={t('schedule.evaluation.pt_feedback')} value={session.ptFeedback} highlight />
         )}
         {session.physicalCondition && (
-          <InfoRow label="Tình trạng thể chất" value={session.physicalCondition} />
+          <InfoRow label={t('schedule.evaluation.physical')} value={session.physicalCondition} />
         )}
         {session.sessionResult && (
-          <InfoRow label="Kết quả buổi tập" value={session.sessionResult} />
+          <InfoRow label={t('schedule.evaluation.result')} value={session.sessionResult} />
         )}
         {session.nutritionAdvice && (
-          <InfoRow label="Lời khuyên dinh dưỡng" value={session.nutritionAdvice} />
+          <InfoRow label={t('schedule.evaluation.nutrition')} value={session.nutritionAdvice} />
         )}
         {!hasDetail && (
           <p className="text-sm text-gray-400 dark:text-gray-500 italic">
-            PT chưa nhập đánh giá chi tiết cho buổi này.
+            {t('schedule.evaluation.no_detail')}
           </p>
         )}
       </div>

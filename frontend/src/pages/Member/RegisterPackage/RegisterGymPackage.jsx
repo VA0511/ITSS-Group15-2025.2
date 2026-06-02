@@ -8,6 +8,7 @@ import {
 import Button from '@/components/Common/Button';
 import { usePackages, useMemberPackages } from '@/hooks/queries/usePackages';
 import { useMyMemberProfile } from '@/hooks/queries/useMembers';
+import { useTranslation } from 'react-i18next';
 
 // Category IDs
 const BASIC_CATEGORY_IDS = [1, 2, 3]; // VIP, Normal, Female-only
@@ -30,6 +31,8 @@ const SPECIALTY_COLOR = {
 };
 
 const RegisterGymPackage = () => {
+  const { t, i18n } = useTranslation('member');
+  const locale = i18n.language === 'ja' ? 'ja-JP' : i18n.language === 'en' ? 'en-US' : 'vi-VN';
   const { data: apiPackages = [], isLoading } = usePackages();
   const { data: memberPackagesRaw } = useMemberPackages();
   const { data: memberProfile } = useMyMemberProfile();
@@ -103,25 +106,25 @@ const RegisterGymPackage = () => {
 
   // Determine action state for a selected package
   const getActionState = (pkg) => {
-    if (!pkg) return { label: 'Chọn gói tập', disabled: true, variant: 'gray' };
+    if (!pkg) return { action: 'select', disabled: true };
 
     if (BASIC_CATEGORY_IDS.includes(pkg.category_id)) {
-      if (!activeBasicSub) return { action: 'register', label: 'Đăng Ký', disabled: false, variant: 'blue' };
+      if (!activeBasicSub) return { action: 'register', disabled: false };
       const activeIsVip = activeBasicSub.category_id === 1;
-      if (activeIsVip) return { action: 'highest', label: 'Gói VIP cao nhất', disabled: true, variant: 'purple' };
-      if (pkg.category_id === 1) return { action: 'upgrade', label: 'Nâng Cấp Lên VIP', disabled: false, variant: 'blue' };
-      return { action: 'blocked', label: 'Không thể đăng ký', disabled: true, variant: 'gray' };
+      if (activeIsVip) return { action: 'highest', disabled: true };
+      if (pkg.category_id === 1) return { action: 'upgrade', disabled: false };
+      return { action: 'blocked', disabled: true };
     } else {
       const activeSameCat = activeSpecialtyMap[pkg.category_id];
-      if (!activeSameCat) return { action: 'register', label: 'Đăng Ký', disabled: false, variant: 'blue' };
-      return { action: 'active', label: 'Danh mục đang hoạt động', disabled: true, variant: 'green' };
+      if (!activeSameCat) return { action: 'register', disabled: false };
+      return { action: 'active_cat', disabled: true };
     }
   };
 
   const handleCheckout = () => {
     if (!selectedPkg) return;
     const { action } = getActionState(selectedPkg);
-    if (action === 'blocked' || action === 'highest' || action === 'active') return;
+    if (action === 'blocked' || action === 'highest' || action === 'active_cat') return;
     navigate('/member/register/checkout', {
       state: {
         package: { ...selectedPkg, name: selectedPkg.package_name, priceRaw: selectedPkg.price, duration: selectedPkg.duration_days },
@@ -145,23 +148,23 @@ const RegisterGymPackage = () => {
   return (
     <div className="max-w-7xl mx-auto pb-20">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Đăng Ký Gói Tập</h1>
-        <p className="text-gray-500 text-sm mt-2">Chọn gói tập phù hợp và hoàn tất thanh toán qua thẻ / Momo / VNPay.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('register.title')}</h1>
+        <p className="text-gray-500 text-sm mt-2">{t('register.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* ── LEFT: Package List ── */}
         <div className="xl:col-span-2 space-y-8">
 
-          {/* SECTION 1: Gói Tập Cơ Bản */}
+          {/* SECTION 1: Basic Packages */}
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                 <Dumbbell className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Gói Tập Cơ Bản</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Chỉ đăng ký 1 gói tại một thời điểm. Có thể nâng cấp từ thường lên VIP.</p>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('register.basic_title')}</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{t('register.basic_subtitle')}</p>
               </div>
             </div>
 
@@ -176,14 +179,14 @@ const RegisterGymPackage = () => {
                   : <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />}
                 <div>
                   <p className={`text-xs font-semibold ${activeBasicSub.category_id === 1 ? 'text-purple-700 dark:text-purple-300' : 'text-amber-700 dark:text-amber-300'}`}>
-                    Đang có gói "{activeBasicSub.package_name}" còn hiệu lực
-                    {activeBasicSub.category_id === 1 ? ' — đây là gói cao nhất' : ' — chỉ có thể nâng cấp lên VIP'}
+                    {activeBasicSub.category_id === 1
+                      ? t('register.active_vip_warning', { name: activeBasicSub.package_name })
+                      : t('register.active_upgrade_warning', { name: activeBasicSub.package_name })}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Group basic: Normal, VIP (Female-only merged with Normal for layout) */}
             {['VIP', 'Normal', 'Female-only'].map(catName => {
               const pkgs = basicPackages.filter(p => p.category_name === catName);
               if (pkgs.length === 0) return null;
@@ -197,7 +200,7 @@ const RegisterGymPackage = () => {
                       : isFemale ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300'
                       : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                     }`}>
-                      {isVip ? 'VIP' : isFemale ? 'Dành cho Nữ' : 'Cơ Bản'}
+                      {isVip ? t('register.vip_badge') : isFemale ? t('register.female_badge') : t('register.basic_badge')}
                     </span>
                     <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
                   </div>
@@ -217,7 +220,7 @@ const RegisterGymPackage = () => {
                         >
                           {pkg.duration_days >= 180 && (
                             <div className="absolute -top-2.5 right-4 bg-red-500 text-white text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-widest">
-                              Tiết kiệm nhất
+                              {t('register.most_savings')}
                             </div>
                           )}
                           <div className="flex items-center gap-3">
@@ -226,15 +229,17 @@ const RegisterGymPackage = () => {
                             </div>
                             <div>
                               <p className="font-semibold text-gray-900 dark:text-white">{pkg.package_name}</p>
-                              <p className="text-xs text-gray-400 mt-0.5">{pkg.duration_days} ngày</p>
+                              <p className="text-xs text-gray-400 mt-0.5">{t('register.days', { count: pkg.duration_days })}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             {isCurrentActive && (
-                              <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-full font-semibold">Đang dùng</span>
+                              <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-full font-semibold">
+                                {t('register.active_badge')}
+                              </span>
                             )}
                             <p className="font-extrabold text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                              {pkg.price.toLocaleString('vi-VN')} đ
+                              {pkg.price.toLocaleString(locale)} đ
                             </p>
                           </div>
                         </button>
@@ -246,15 +251,15 @@ const RegisterGymPackage = () => {
             })}
           </div>
 
-          {/* SECTION 2: Gói Tập Chuyên Biệt */}
+          {/* SECTION 2: Specialty Packages */}
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                 <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Gói Tập Chuyên Biệt</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Có thể đăng ký nhiều loại cùng lúc miễn là khác danh mục (vd: vừa Yoga vừa Boxing).</p>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('register.specialty_title')}</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{t('register.specialty_subtitle')}</p>
               </div>
             </div>
 
@@ -262,21 +267,21 @@ const RegisterGymPackage = () => {
               <div className="mb-4 rounded-xl border border-green-200 bg-green-50 dark:bg-green-900/10 dark:border-green-800 p-3 flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
                 <p className="text-xs text-green-700 dark:text-green-300 font-medium">
-                  Đang hoạt động: {Object.values(activeSpecialtyMap).map(s => s.package_name).join(', ')}
+                  {t('register.active_specialty_info', { names: Object.values(activeSpecialtyMap).map(s => s.package_name).join(', ') })}
                 </p>
               </div>
             )}
 
             <div className="space-y-3 mt-4">
               {specialtyGroups.map(group => {
-                const meta = SPECIALTY_META[group.categoryId] || { label: group.categoryName, icon: Zap, color: 'orange', description: '' };
+                const meta = SPECIALTY_META[group.categoryId] || { label: group.categoryName, icon: Zap, color: 'orange' };
                 const colors = SPECIALTY_COLOR[meta.color] || SPECIALTY_COLOR.orange;
                 const isExpanded = !!expandedSpecialties[group.categoryId];
                 const isActiveCategory = !!activeSpecialtyMap[group.categoryId];
+                const descKey = `register.specialty_desc.${group.categoryId}`;
 
                 return (
                   <div key={group.categoryId} className={`rounded-2xl border-2 overflow-hidden transition-all ${isExpanded ? colors.border : 'border-gray-200 dark:border-gray-800'}`}>
-                    {/* Category Header */}
                     <button
                       onClick={() => toggleSpecialty(group.categoryId)}
                       className="w-full flex items-center justify-between px-5 py-4 bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
@@ -285,18 +290,19 @@ const RegisterGymPackage = () => {
                         <span className={`text-xs font-bold px-3 py-1 rounded-full ${colors.badge}`}>
                           {meta.label}
                         </span>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">{meta.description}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">{t(descKey)}</p>
                         {isActiveCategory && (
-                          <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-full font-semibold">Đang hoạt động</span>
+                          <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-full font-semibold">
+                            {t('register.active_category_badge')}
+                          </span>
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-gray-500 shrink-0">
-                        <span className="text-xs">{group.packages.length} gói</span>
+                        <span className="text-xs">{t('register.packages_count', { count: group.packages.length })}</span>
                         {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </div>
                     </button>
 
-                    {/* Packages inside category */}
                     {isExpanded && (
                       <div className="border-t border-gray-100 dark:border-gray-800 px-5 pb-4 pt-3 bg-gray-50/50 dark:bg-gray-900/30 space-y-2">
                         {group.packages.map(pkg => {
@@ -319,11 +325,11 @@ const RegisterGymPackage = () => {
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-900 dark:text-white text-sm">{pkg.package_name}</p>
-                                  <p className="text-xs text-gray-400">{pkg.duration_days} ngày</p>
+                                  <p className="text-xs text-gray-400">{t('register.days', { count: pkg.duration_days })}</p>
                                 </div>
                               </div>
                               <p className="font-extrabold text-blue-600 dark:text-blue-400 text-sm whitespace-nowrap">
-                                {pkg.price.toLocaleString('vi-VN')} đ
+                                {pkg.price.toLocaleString(locale)} đ
                               </p>
                             </button>
                           );
@@ -341,7 +347,7 @@ const RegisterGymPackage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-blue-500" />Hỗ trợ thanh toán
+                  <CreditCard className="h-4 w-4 text-blue-500" />{t('register.payment_title')}
                 </h3>
                 <div className="flex gap-2 flex-wrap">
                   {['VISA', 'MoMo', 'VNPay'].map(m => (
@@ -351,23 +357,23 @@ const RegisterGymPackage = () => {
               </div>
               <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-5 border border-blue-100 dark:border-blue-900/30">
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-green-500" />Cam kết của chúng tôi
+                  <ShieldCheck className="h-4 w-4 text-green-500" />{t('register.commitment_title')}
                 </h3>
                 <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                  <li>• Kích hoạt gói ngay lập tức</li>
-                  <li>• Quản lý lịch tập trực tuyến</li>
-                  <li>• Bảo mật thanh toán tuyệt đối</li>
+                  <li>• {t('register.commitment_1')}</li>
+                  <li>• {t('register.commitment_2')}</li>
+                  <li>• {t('register.commitment_3')}</li>
                 </ul>
               </div>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
-                <HelpCircle className="h-4 w-4 text-gray-500" />Lưu ý quan trọng
+                <HelpCircle className="h-4 w-4 text-gray-500" />{t('register.notes_title')}
               </h3>
               <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2 bg-yellow-50 dark:bg-yellow-900/10 p-4 rounded-xl border border-yellow-200 dark:border-yellow-900/30">
-                <p>Mọi thắc mắc liên hệ hotline hỗ trợ: <strong>1900 8888</strong></p>
-                <p>Gói tập sẽ được kích hoạt ngay sau khi thanh toán thành công.</p>
-                <p>Gói chuyên biệt có thể đăng ký đồng thời nhiều loại khác nhau (Yoga + Boxing, v.v.).</p>
+                <p>{t('register.hotline_note')}</p>
+                <p>{t('register.note_activate')}</p>
+                <p>{t('register.note_specialty')}</p>
               </div>
             </div>
           </div>
@@ -377,15 +383,15 @@ const RegisterGymPackage = () => {
         <div className="sticky top-24 h-fit">
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg shadow-gray-200/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-none">
             {!selectedPkg ? (
-              <div className="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">Chọn một gói tập để xem chi tiết</div>
+              <div className="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">{t('register.no_selection')}</div>
             ) : (() => {
               const isSpecialty = SPECIALTY_CATEGORY_IDS.includes(selectedPkg.category_id);
               const meta = isSpecialty ? (SPECIALTY_META[selectedPkg.category_id] || {}) : {};
               const benefits = selectedPkg.description
                 ? selectedPkg.description.split(',').map(s => s.trim()).filter(Boolean)
                 : isSpecialty
-                ? [meta.description || selectedPkg.category_name]
-                : ['Sử dụng toàn bộ máy tập cardio và tạ', 'Tủ để đồ cá nhân', 'Truy cập lớp tập nhóm'];
+                ? [t(`register.specialty_desc.${selectedPkg.category_id}`, { defaultValue: selectedPkg.category_name })]
+                : t('register.default_benefits').split('|');
               const imgUrl = isSpecialty
                 ? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600'
                 : selectedPkg.category_name === 'VIP'
@@ -394,7 +400,7 @@ const RegisterGymPackage = () => {
 
               return (
                 <>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Chi tiết gói</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('register.detail_title')}</h2>
                   <div className={`mb-3 inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                     isSpecialty
                       ? (SPECIALTY_COLOR[meta.color]?.badge || 'bg-gray-100 text-gray-600')
@@ -404,14 +410,14 @@ const RegisterGymPackage = () => {
                       ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300'
                       : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                   }`}>
-                    {isSpecialty ? meta.label : (selectedPkg.category_name === 'Female-only' ? 'Dành cho Nữ' : selectedPkg.category_name)}
+                    {isSpecialty ? meta.label : (selectedPkg.category_name === 'Female-only' ? t('register.female_badge') : selectedPkg.category_name)}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{selectedPkg.package_name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Thời hạn: {selectedPkg.duration_days} ngày</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('register.duration_label', { days: selectedPkg.duration_days })}</p>
 
                   <div className="space-y-3 mb-6">
                     <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />Quyền lợi bao gồm
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />{t('register.benefits_title')}
                     </h4>
                     <ul className="space-y-2">
                       {benefits.map((b, i) => (
@@ -426,7 +432,7 @@ const RegisterGymPackage = () => {
                   <div className="grid grid-cols-2 gap-3 mb-6">
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        <ImageIcon className="h-3.5 w-3.5 text-blue-600" />Không gian
+                        <ImageIcon className="h-3.5 w-3.5 text-blue-600" />{t('register.space_label')}
                       </div>
                       <div className="rounded-lg overflow-hidden aspect-video border border-gray-200 dark:border-gray-800">
                         <img src={imgUrl} alt={selectedPkg.package_name} className="w-full h-full object-cover" />
@@ -434,7 +440,7 @@ const RegisterGymPackage = () => {
                     </div>
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        <Video className="h-3.5 w-3.5 text-red-500" />Video
+                        <Video className="h-3.5 w-3.5 text-red-500" />{t('register.video_label')}
                       </div>
                       <div className="rounded-lg overflow-hidden aspect-video border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900">
                         <video key={selectedPkg.id} className="w-full h-full object-cover" controls poster={imgUrl}>
@@ -445,9 +451,9 @@ const RegisterGymPackage = () => {
                   </div>
 
                   <div className="mb-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Tổng thanh toán</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{t('register.total_label')}</span>
                     <span className="text-xl font-extrabold text-blue-600 dark:text-blue-400">
-                      {selectedPkg.price?.toLocaleString('vi-VN')} đ
+                      {selectedPkg.price?.toLocaleString(locale)} đ
                     </span>
                   </div>
 
@@ -458,16 +464,16 @@ const RegisterGymPackage = () => {
                     rightIcon={<ArrowRight className="h-4 w-4 opacity-70" />}
                     disabled={actionState.disabled}
                   >
-                    {actionState.label}
+                    {t(`register.action_${actionState.action}`)}
                   </Button>
                   {actionState.action === 'highest' && (
-                    <p className="text-xs text-purple-600 dark:text-purple-400 text-center mt-2">Bạn đang dùng gói VIP cao nhất</p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400 text-center mt-2">{t('register.msg_highest')}</p>
                   )}
                   {actionState.action === 'blocked' && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400 text-center mt-2">Chọn gói VIP để nâng cấp</p>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 text-center mt-2">{t('register.msg_blocked')}</p>
                   )}
-                  {actionState.action === 'active' && (
-                    <p className="text-xs text-green-600 dark:text-green-400 text-center mt-2">Danh mục này đang còn hiệu lực</p>
+                  {actionState.action === 'active_cat' && (
+                    <p className="text-xs text-green-600 dark:text-green-400 text-center mt-2">{t('register.msg_active_cat')}</p>
                   )}
                 </>
               );

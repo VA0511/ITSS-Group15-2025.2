@@ -1,4 +1,7 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+const DAY_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const CalendarView = ({
   currentDate,
@@ -15,6 +18,8 @@ const CalendarView = ({
   getCalendarDotClass,
   activeTab,
 }) => {
+  const { t } = useTranslation('member');
+
   return (
     <div className="p-5 sm:p-8 bg-white dark:bg-gray-950 h-full">
       <div className="flex items-center justify-between mb-6">
@@ -36,9 +41,9 @@ const CalendarView = ({
       </div>
 
       <div className="grid grid-cols-7 mb-1">
-        {['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'].map((d) => (
-          <div key={d} className="text-center text-xs font-bold text-gray-400 dark:text-gray-500 pb-2">
-            {d}
+        {DAY_KEYS.map((key) => (
+          <div key={key} className="text-center text-xs font-bold text-gray-400 dark:text-gray-500 pb-2">
+            {t(`schedule.calendar.days.${key}`)}
           </div>
         ))}
       </div>

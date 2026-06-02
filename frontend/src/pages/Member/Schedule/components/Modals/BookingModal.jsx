@@ -1,5 +1,8 @@
-import React from "react";
-import { X } from "lucide-react";
+import React from 'react';
+import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+const INTENSITY_KEYS = ['Low', 'Medium', 'High'];
 
 const BookingModal = ({
   bookingForm,
@@ -9,6 +12,8 @@ const BookingModal = ({
   setFormData,
   isPending,
 }) => {
+  const { t } = useTranslation('member');
+
   if (!bookingForm) return null;
 
   return (
@@ -16,7 +21,7 @@ const BookingModal = ({
       <div className="bg-white dark:bg-gray-950 rounded-xl max-w-md w-full my-auto border border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Đặt lịch tập
+            {t('schedule.booking_modal.title')}
           </h2>
           <button
             onClick={closeBookingForm}
@@ -40,14 +45,12 @@ const BookingModal = ({
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-              Ngày tập *
+              {t('schedule.booking_modal.date_label')}
             </label>
             <input
               type="date"
               value={formData.bookingDate}
-              onChange={(e) =>
-                setFormData({ ...formData, bookingDate: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, bookingDate: e.target.value })}
               min={new Date().toISOString().slice(0, 10)}
               required
               className="h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-950 dark:border-gray-800 dark:text-white"
@@ -57,28 +60,24 @@ const BookingModal = ({
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                Giờ bắt đầu *
+                {t('schedule.booking_modal.start_label')}
               </label>
               <input
                 type="time"
                 value={formData.startTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, startTime: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                 required
                 className="h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-950 dark:border-gray-800 dark:text-white"
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                Giờ kết thúc *
+                {t('schedule.booking_modal.end_label')}
               </label>
               <input
                 type="time"
                 value={formData.endTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, endTime: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                 required
                 className="h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-950 dark:border-gray-800 dark:text-white"
               />
@@ -87,21 +86,21 @@ const BookingModal = ({
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-              Cường độ tập
+              {t('schedule.booking_modal.intensity_label')}
             </label>
             <div className="flex gap-2">
-              {["Nhẹ", "Trung bình", "Nặng"].map((level) => (
+              {INTENSITY_KEYS.map((key) => (
                 <button
-                  key={level}
+                  key={key}
                   type="button"
-                  onClick={() => setFormData({ ...formData, intensity: level })}
+                  onClick={() => setFormData({ ...formData, intensity: key })}
                   className={`flex-1 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                    formData.intensity === level
-                      ? "bg-blue-600 border-blue-600 text-white"
-                      : "border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-400"
+                    formData.intensity === key
+                      ? 'bg-blue-600 border-blue-600 text-white'
+                      : 'border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-400'
                   }`}
                 >
-                  {level}
+                  {t(`schedule.booking_modal.intensity.${key}`)}
                 </button>
               ))}
             </div>
@@ -109,14 +108,12 @@ const BookingModal = ({
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-              Giáo trình mong muốn
+              {t('schedule.booking_modal.curriculum_label')}
             </label>
             <textarea
-              placeholder="Ghi chú mong muốn của bạn cho PT..."
+              placeholder={t('schedule.booking_modal.curriculum_placeholder')}
               value={formData.notes}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
               className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-950 dark:border-gray-800 dark:text-white resize-none"
             />
@@ -128,14 +125,14 @@ const BookingModal = ({
               onClick={closeBookingForm}
               className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
             >
-              Hủy
+              {t('schedule.booking_modal.cancel_btn')}
             </button>
             <button
               type="submit"
               disabled={isPending}
               className="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-60"
             >
-              {isPending ? "Đang gửi..." : "Gửi yêu cầu"}
+              {isPending ? t('schedule.booking_modal.submitting') : t('schedule.booking_modal.submit_btn')}
             </button>
           </div>
         </form>

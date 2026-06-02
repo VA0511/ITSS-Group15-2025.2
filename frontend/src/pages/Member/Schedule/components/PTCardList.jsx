@@ -1,10 +1,12 @@
 import React from 'react';
 import { User, ChevronRight, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { cardVariants, staggerContainerVariants } from '@/lib/animations';
 
 const PTCardList = ({ ptDetails, setSelectedTrainer, bookings = [] }) => {
-  // Identify PTs who have a pending booking from this member
+  const { t } = useTranslation('member');
+
   const getPTStatus = (ptId) => {
     const hasPending = bookings.some(b => b.pt_id === ptId && b.status === 'Pending');
     return hasPending ? 'Pending' : 'Available';
@@ -54,12 +56,12 @@ const PTCardList = ({ ptDetails, setSelectedTrainer, bookings = [] }) => {
                   <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-3">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {pt.experience_years || 0} năm KN
+                      {t('schedule.pt_card.experience', { years: pt.experience_years || 0 })}
                     </span>
                   </div>
 
                   <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed mb-4 opacity-80">
-                    {pt.professional_profile || "Chuyên gia huấn luyện cá nhân với lộ trình bài bản..."}
+                    {pt.professional_profile || t('schedule.pt_card.no_bio')}
                   </p>
 
                   <div className="flex items-center justify-between">
@@ -67,19 +69,19 @@ const PTCardList = ({ ptDetails, setSelectedTrainer, bookings = [] }) => {
                       onClick={() => setSelectedTrainer(pt.full_name)}
                       className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
                     >
-                      Xem chi tiết <ChevronRight className="h-3 w-3" />
+                      {t('schedule.pt_card.view_detail')} <ChevronRight className="h-3 w-3" />
                     </button>
-                    
+
                     {isPending ? (
                       <div className="px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 text-[10px] font-bold rounded-lg border border-yellow-100 dark:border-yellow-900/50">
-                        Chờ xác nhận
+                        {t('schedule.pt_card.pending')}
                       </div>
                     ) : (
                       <button
                         onClick={() => setSelectedTrainer(pt.full_name)}
                         className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                       >
-                        Đặt lịch ngay
+                        {t('schedule.pt_card.book_btn')}
                       </button>
                     )}
                   </div>
@@ -93,7 +95,7 @@ const PTCardList = ({ ptDetails, setSelectedTrainer, bookings = [] }) => {
       {ptDetails.length === 0 && (
         <div className="text-center py-12">
           <div className="text-4xl mb-4">🏋️‍♂️</div>
-          <p className="text-gray-500">Hiện chưa có huấn luyện viên nào sẵn sàng.</p>
+          <p className="text-gray-500">{t('schedule.pt_card.no_trainers')}</p>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 import { useMyBookings, usePTDetails, useTrainingSessions } from '@/hooks/queries/useTraining';
 import { useCreateBooking, useConfirmAttendance } from '@/hooks/mutations/useTrainingMutations';
@@ -14,10 +15,7 @@ import WorkoutDetailModal from './components/Modals/WorkoutDetailModal';
 import DeniedRequestModal from './components/Modals/DeniedRequestModal';
 import PTCardList from './components/PTCardList';
 
-const STATUS_VI = { Accepted: 'Đã xác nhận', Pending: 'Chờ xác nhận', Rejected: 'Từ chối' };
-
-const isPendingScheduledStatus = (status) =>
-  status === 'Chờ xác nhận' || status === 'Chưa xác nhận';
+const isPendingScheduledStatus = (status) => status === 'Unconfirmed';
 
 const getWorkoutDateTime = (dateKey, time) => new Date(`${dateKey}T${time}:00`);
 
@@ -35,6 +33,8 @@ const getNextUpcomingWorkout = (workoutMap) =>
     .sort((a, b) => a.dateTime - b.dateTime)[0];
 
 const Schedule = () => {
+  const { t, i18n } = useTranslation('member');
+  const locale = i18n.language === 'ja' ? 'ja-JP' : i18n.language === 'en' ? 'en-US' : 'vi-VN';
   const todayKey = format(new Date(), 'yyyy-MM-dd');
 
   const [activeTab, setActiveTab] = useState('scheduled');
@@ -73,9 +73,9 @@ const Schedule = () => {
         const session = sessions.find((s) => s.booking_id === b.id);
 
         let status;
-        if (session?.member_confirmed_at) status = 'Đã xác nhận';
-        else if (session) status = 'Chưa xác nhận';
-        else status = 'Đã lên lịch';
+        if (session?.member_confirmed_at) status = 'Confirmed';
+        else if (session) status = 'Unconfirmed';
+        else status = 'Scheduled';
 
         if (!map[dateKey]) map[dateKey] = [];
         map[dateKey].push({
@@ -83,15 +83,15 @@ const Schedule = () => {
           sessionId: session?.id ?? null,
           startTime: b.requested_start.slice(11, 16),
           endTime: b.requested_end.slice(11, 16),
-          name: `Buổi tập cùng ${ptName}`,
-          type: b.training_plan_note || 'Cá nhân',
+          name: t('schedule.session_with', { name: ptName }),
+          type: b.training_plan_note || 'Personal',
           location: '',
           trainer: ptName,
           status,
         });
       });
     return map;
-  }, [bookings, ptDetails, sessions]);
+  }, [bookings, ptDetails, sessions, t]);
 
   const requestsWorkouts = useMemo(() => {
     const map = {};
@@ -106,16 +106,16 @@ const Schedule = () => {
           bookingId: b.id,
           startTime: b.requested_start.slice(11, 16),
           endTime: b.requested_end.slice(11, 16),
-          name: `Yêu cầu tập cùng ${ptName}`,
-          type: b.training_plan_note || 'Cá nhân',
+          name: t('schedule.request_with', { name: ptName }),
+          type: b.training_plan_note || 'Personal',
           location: '',
           trainer: ptName,
-          status: STATUS_VI[b.status] || b.status,
+          status: b.status,
           denyReason: b.rejection_reason || '',
         });
       });
     return map;
-  }, [bookings, ptDetails]);
+  }, [bookings, ptDetails, t]);
 
   const completedSessionsMap = useMemo(() => {
     const map = {};
@@ -153,7 +153,7 @@ const Schedule = () => {
         startTime: '',
         endTime: '',
         name: pt.full_name,
-        type: `${pt.experience_years || 0} năm kinh nghiệm`,
+        type: `${pt.experience_years || 0}`,
         location: '',
         trainer: pt.full_name,
         isBookable: true,
@@ -162,7 +162,6 @@ const Schedule = () => {
     };
   }, [ptDetails, selectedDate]);
 
-  // Navigate calendar to next upcoming workout after data loads
   const hasNavigated = useRef(false);
   useEffect(() => {
     if (hasNavigated.current || Object.keys(scheduledWorkouts).length === 0) return;
@@ -174,7 +173,6 @@ const Schedule = () => {
     }
   }, [scheduledWorkouts]);
 
-  // Pre-fill booking date when modal opens
   useEffect(() => {
     if (bookingForm) {
       setFormData((prev) => ({ ...prev, bookingDate: selectedDate }));
@@ -227,8 +225,7 @@ const Schedule = () => {
   const nextMonth = () =>
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
 
-  const dayNames = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-  const monthName = currentDate.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+  const monthName = currentDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
   const selectedWorkouts = selectedDate ? (currentData[selectedDate] || []) : [];
   const requestDates = Object.keys(requestsWorkouts).sort();
   const defaultRequestDate = requestDates[0] || selectedDate;
@@ -259,11 +256,11 @@ const Schedule = () => {
 
   const getCalendarDotClass = (item) => {
     if (activeTab === 'scheduled') {
-      return item.status === 'Đã xác nhận' ? 'bg-green-500' : 'bg-blue-400';
+      return item.status === 'Confirmed' ? 'bg-green-500' : 'bg-blue-400';
     }
     if (activeTab === 'requests') {
-      if (item.status === 'Đã xác nhận') return 'bg-green-500';
-      if (item.status === 'Chờ xác nhận') return 'bg-yellow-400';
+      if (item.status === 'Accepted') return 'bg-green-500';
+      if (item.status === 'Pending') return 'bg-yellow-400';
       return 'bg-red-400';
     }
     if (activeTab === 'evaluations') {
@@ -274,22 +271,25 @@ const Schedule = () => {
 
   const getAccentColor = (item) => {
     if (activeTab === 'scheduled') {
-      if (item.status === 'Đã xác nhận') return '#16A34A';
-      if (item.status === 'Chưa xác nhận') return '#EAB308';
+      if (item.status === 'Confirmed') return '#16A34A';
+      if (item.status === 'Unconfirmed') return '#EAB308';
       return '#9CA3AF';
     }
     if (activeTab === 'requests') {
-      if (item.status === 'Đã xác nhận') return '#16A34A';
-      if (item.status === 'Chờ xác nhận') return '#EAB308';
+      if (item.status === 'Accepted') return '#16A34A';
+      if (item.status === 'Pending') return '#EAB308';
       return '#EF4444';
     }
     return item.isBookable ? '#3B82F6' : '#9CA3AF';
   };
 
   const getStatusBadgeClass = (status) => {
-    if (status === 'Đã xác nhận') return 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300';
-    if (status === 'Chờ xác nhận' || status === 'Chưa xác nhận') return 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300';
-    if (status === 'Từ chối') return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300';
+    if (status === 'Confirmed' || status === 'Accepted')
+      return 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300';
+    if (status === 'Unconfirmed' || status === 'Pending' || status === 'Scheduled')
+      return 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300';
+    if (status === 'Rejected')
+      return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300';
     return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
   };
 
@@ -370,7 +370,7 @@ const Schedule = () => {
             <EvaluationView
               selectedDate={selectedDate}
               selectedDateObject={selectedDateObject}
-              dayNames={dayNames}
+              locale={locale}
               sessions={selectedWorkouts}
             />
           ) : (
@@ -378,7 +378,7 @@ const Schedule = () => {
               activeTab={activeTab}
               selectedDate={selectedDate}
               selectedDateObject={selectedDateObject}
-              dayNames={dayNames}
+              locale={locale}
               selectedWorkouts={selectedWorkouts}
               getWorkoutDisplayName={(w) => w.name}
               setSelectedWorkout={setSelectedWorkout}

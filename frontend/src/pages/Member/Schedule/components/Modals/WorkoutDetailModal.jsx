@@ -1,15 +1,18 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-const WorkoutDetailModal = ({ 
-  selectedWorkout, 
-  setSelectedWorkout, 
-  activeTab, 
-  getWorkoutDisplayName, 
-  getStatusBadgeClass, 
+const WorkoutDetailModal = ({
+  selectedWorkout,
+  setSelectedWorkout,
+  activeTab,
+  getWorkoutDisplayName,
+  getStatusBadgeClass,
   setSelectedTrainer,
   setSelectedDeniedRequest
 }) => {
+  const { t } = useTranslation('member');
+
   if (!selectedWorkout) return null;
 
   return (
@@ -21,7 +24,9 @@ const WorkoutDetailModal = ({
           activeTab === 'requests' ? 'p-4' : 'p-6'
         }`}>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            {activeTab === 'requests' ? 'Chi tiết yêu cầu' : 'Chi tiết buổi tập'}
+            {activeTab === 'requests'
+              ? t('schedule.detail_modal.title_request')
+              : t('schedule.detail_modal.title_session')}
           </h2>
           <button
             onClick={() => setSelectedWorkout(null)}
@@ -33,37 +38,49 @@ const WorkoutDetailModal = ({
 
         <div className={`overflow-y-auto ${activeTab === 'requests' ? 'p-4 space-y-3 text-sm' : 'p-6 space-y-4'}`}>
           <div>
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Tên buổi tập</div>
+            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+              {t('schedule.detail_modal.name_label')}
+            </div>
             <p className="text-lg font-bold text-gray-900 dark:text-white">{getWorkoutDisplayName(selectedWorkout)}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Bắt đầu</div>
+              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+                {t('schedule.detail_modal.start_label')}
+              </div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">{selectedWorkout.startTime}</p>
             </div>
             <div>
-              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Kết thúc</div>
+              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+                {t('schedule.detail_modal.end_label')}
+              </div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">{selectedWorkout.endTime}</p>
             </div>
           </div>
 
           <div>
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Giáo trình</div>
+            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+              {t('schedule.detail_modal.curriculum_label')}
+            </div>
             <p className="text-sm text-blue-700 bg-blue-50 px-3 py-2 rounded-lg inline-block font-semibold">
-              {activeTab === 'booking' ? 'Khung giờ PT' : selectedWorkout.type}
+              {activeTab === 'booking' ? t('schedule.detail_modal.pt_slot') : selectedWorkout.type}
             </p>
           </div>
 
           <div>
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Địa điểm</div>
+            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+              {t('schedule.detail_modal.location_label')}
+            </div>
             <p className="text-sm text-gray-900 bg-gray-100 px-3 py-2 rounded-lg">
               {selectedWorkout.location}
             </p>
           </div>
 
           <div>
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Huấn luyện viên</div>
+            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+              {t('schedule.detail_modal.trainer_label')}
+            </div>
             <button
               onClick={() => {
                 setSelectedWorkout(null);
@@ -82,21 +99,27 @@ const WorkoutDetailModal = ({
             <div className="space-y-3 pt-2 border-t border-gray-100">
               {selectedWorkout.status && (
                 <div>
-                  <div className="text-xs font-bold text-gray-400 uppercase mb-1">Trạng thái</div>
+                  <div className="text-xs font-bold text-gray-400 uppercase mb-1">
+                    {t('schedule.detail_modal.status_label')}
+                  </div>
                   <span className={`text-xs font-bold px-2 py-1 rounded ${getStatusBadgeClass(selectedWorkout.status)}`}>
-                    {selectedWorkout.status}
+                    {t(`schedule.status.${selectedWorkout.status}`, { defaultValue: selectedWorkout.status })}
                   </span>
                 </div>
               )}
               {selectedWorkout.submittedAt && (
                 <div>
-                  <div className="text-xs font-bold text-gray-400 uppercase mb-1">Ngày gửi</div>
+                  <div className="text-xs font-bold text-gray-400 uppercase mb-1">
+                    {t('schedule.detail_modal.submitted_label')}
+                  </div>
                   <p className="text-xs font-semibold">{selectedWorkout.submittedAt}</p>
                 </div>
               )}
               {selectedWorkout.requestDetails?.curriculum && (
                 <div>
-                  <div className="text-xs font-bold text-gray-400 uppercase mb-1">Giáo trình mong muốn</div>
+                  <div className="text-xs font-bold text-gray-400 uppercase mb-1">
+                    {t('schedule.detail_modal.desired_curriculum')}
+                  </div>
                   <p className="text-xs italic">{selectedWorkout.requestDetails.curriculum}</p>
                 </div>
               )}
@@ -109,9 +132,9 @@ const WorkoutDetailModal = ({
             onClick={() => setSelectedWorkout(null)}
             className="flex-1 px-4 py-2 bg-gray-100 text-gray-900 font-semibold rounded-lg hover:bg-gray-200"
           >
-            Đóng
+            {t('schedule.detail_modal.close_btn')}
           </button>
-          {activeTab === 'requests' && selectedWorkout.status === 'Từ chối' && (
+          {activeTab === 'requests' && selectedWorkout.status === 'Rejected' && (
             <button
               onClick={() => {
                 setSelectedDeniedRequest(selectedWorkout);
@@ -119,7 +142,7 @@ const WorkoutDetailModal = ({
               }}
               className="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700"
             >
-              Lý do từ chối
+              {t('schedule.detail_modal.deny_reason_btn')}
             </button>
           )}
         </div>

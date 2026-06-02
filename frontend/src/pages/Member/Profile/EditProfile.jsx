@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/Common/Button';
 import Input from '@/components/Common/Input';
 import AvatarUpload from '@/components/Common/AvatarUpload';
@@ -9,6 +10,7 @@ import useAuthStore from '@/store/useAuthStore';
 import { toast } from '@/utils/toast';
 
 const EditProfile = () => {
+  const { t } = useTranslation('member');
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -48,7 +50,7 @@ const EditProfile = () => {
         });
       } catch (error) {
         console.error('Error fetching member data:', error);
-        toast.error('Không thể tải thông tin cá nhân');
+        toast.error(t('edit_profile.error_load'));
       } finally {
         setLoading(false);
       }
@@ -66,11 +68,11 @@ const EditProfile = () => {
         dob: formData.dob ? `${formData.dob}T00:00:00Z` : undefined,
       };
       await memberService.updateMember(formData.id, payload);
-      toast.success('Cập nhật thông tin thành công');
+      toast.success(t('edit_profile.success_update'));
       navigate('/member/profile');
     } catch (error) {
       console.error('Error updating member:', error);
-      toast.error('Có lỗi xảy ra khi cập nhật');
+      toast.error(t('edit_profile.error_update'));
     } finally {
       setSaving(false);
     }
@@ -99,11 +101,11 @@ const EditProfile = () => {
               <ArrowLeft className="h-5 w-5 text-gray-600" />
             </Button>
           </Link>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Chỉnh sửa hồ sơ</h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t('edit_profile.title')}</h1>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/member/profile">
-            <Button variant="outline" className="rounded-xl px-5">Hủy</Button>
+            <Button variant="outline" className="rounded-xl px-5">{t('edit_profile.cancel')}</Button>
           </Link>
           <Button
             type="submit"
@@ -112,7 +114,7 @@ const EditProfile = () => {
             className="rounded-xl px-5 font-bold"
             leftIcon={<Save className="h-4 w-4" />}
           >
-            Lưu thay đổi
+            {t('edit_profile.save')}
           </Button>
         </div>
       </div>
@@ -126,7 +128,7 @@ const EditProfile = () => {
             {/* Avatar */}
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950 p-5">
               <p className="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Ảnh đại diện
+                {t('edit_profile.avatar_section')}
               </p>
               <div className="flex flex-col items-center">
                 <AvatarUpload
@@ -134,22 +136,22 @@ const EditProfile = () => {
                   onUploaded={(url) => setFormData(prev => ({ ...prev, avatar: url }))}
                   size="lg"
                 />
-                <p className="mt-2 text-center text-xs font-semibold text-blue-600">Định dạng JPG, PNG hoặc GIF.</p>
-                <p className="text-center text-xs text-gray-400">Tối đa 5MB.</p>
+                <p className="mt-2 text-center text-xs font-semibold text-blue-600">{t('edit_profile.avatar_format')}</p>
+                <p className="text-center text-xs text-gray-400">{t('edit_profile.avatar_max_size')}</p>
               </div>
             </div>
 
             {/* Name + Member ID */}
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950 p-5 space-y-4">
               <Input
-                label="Họ và Tên (*)"
+                label={t('edit_profile.full_name_label')}
                 name="full_name"
                 value={formData.full_name}
                 onChange={handleChange}
                 required
               />
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Mã hội viên</label>
+                <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('edit_profile.member_id_label')}</label>
                 <input
                   value={formData.id ? `MEM-${formData.id}` : '---'}
                   disabled
@@ -166,11 +168,11 @@ const EditProfile = () => {
             {/* Personal Info */}
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950 p-5">
               <h3 className="mb-4 text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Thông tin cá nhân
+                {t('edit_profile.personal_info')}
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <Input
-                  label="Số điện thoại (*)"
+                  label={t('edit_profile.phone_label')}
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
@@ -178,27 +180,27 @@ const EditProfile = () => {
                   required
                 />
                 <Input
-                  label="Email"
+                  label={t('edit_profile.email_label')}
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   type="email"
                 />
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Giới tính</label>
+                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('edit_profile.gender_label')}</label>
                   <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
                     className="flex h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-2 font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all dark:border-gray-700 dark:bg-gray-950 dark:text-white"
                   >
-                    <option value="Nam">Nam</option>
-                    <option value="Nữ">Nữ</option>
-                    <option value="Khác">Khác</option>
+                    <option value="Nam">{t('edit_profile.gender_male')}</option>
+                    <option value="Nữ">{t('edit_profile.gender_female')}</option>
+                    <option value="Khác">{t('edit_profile.gender_other')}</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Ngày sinh</label>
+                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('edit_profile.dob_label')}</label>
                   <input
                     name="dob"
                     type="date"
@@ -210,7 +212,7 @@ const EditProfile = () => {
               </div>
               <div className="mt-4">
                 <Input
-                  label="Địa chỉ hiện tại"
+                  label={t('edit_profile.address_label')}
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
@@ -221,27 +223,27 @@ const EditProfile = () => {
             {/* Training Info */}
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950 p-5">
               <h3 className="mb-4 text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Thông tin tập luyện
+                {t('edit_profile.training_info')}
               </h3>
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Mục tiêu lộ trình</label>
+                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('edit_profile.roadmap_label')}</label>
                   <textarea
                     name="roadmap_goal"
                     value={formData.roadmap_goal}
                     onChange={handleChange}
-                    placeholder="VD: Giảm 5kg trong 3 tháng, tăng cơ vai..."
+                    placeholder={t('edit_profile.roadmap_placeholder')}
                     rows={3}
                     className="flex w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all dark:border-gray-700 dark:bg-gray-950 dark:text-white resize-none"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Lịch rảnh của bạn</label>
+                  <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('edit_profile.schedule_label')}</label>
                   <textarea
                     name="member_free_schedule"
                     value={formData.member_free_schedule}
                     onChange={handleChange}
-                    placeholder="VD: Sáng T2, T4, T6 từ 6h-8h..."
+                    placeholder={t('edit_profile.schedule_placeholder')}
                     rows={3}
                     className="flex w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all dark:border-gray-700 dark:bg-gray-950 dark:text-white resize-none"
                   />

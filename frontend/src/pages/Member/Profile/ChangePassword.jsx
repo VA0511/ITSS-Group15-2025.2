@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useChangePassword } from '@/hooks/mutations/useAuthMutations';
 
 const ChangePassword = () => {
+  const { t } = useTranslation('member');
   const navigate = useNavigate();
   const [form, setForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
   const [show, setShow] = useState({ old: false, new: false, confirm: false });
@@ -16,11 +18,11 @@ const ChangePassword = () => {
     setError('');
 
     if (form.newPassword.length < 6) {
-      setError('Mật khẩu mới phải có ít nhất 6 ký tự');
+      setError(t('change_password.pw_error_length'));
       return;
     }
     if (form.newPassword !== form.confirmPassword) {
-      setError('Mật khẩu mới và xác nhận không khớp');
+      setError(t('change_password.pw_error_match'));
       return;
     }
 
@@ -34,6 +36,12 @@ const ChangePassword = () => {
 
   const toggle = (field) => setShow((prev) => ({ ...prev, [field]: !prev[field] }));
 
+  const pwFields = [
+    { key: 'old', label: t('change_password.pw_current'), field: 'oldPassword' },
+    { key: 'new', label: t('change_password.pw_new'), field: 'newPassword' },
+    { key: 'confirm', label: t('change_password.pw_confirm'), field: 'confirmPassword' },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -42,11 +50,11 @@ const ChangePassword = () => {
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
           <ArrowLeft className="h-4 w-4" />
-          Quay lại
+          {t('change_password.back')}
         </button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Đổi Mật Khẩu</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Cập nhật mật khẩu đăng nhập của bạn</p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('change_password.title')}</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('change_password.subtitle')}</p>
         </div>
       </div>
 
@@ -61,11 +69,7 @@ const ChangePassword = () => {
             </div>
           )}
 
-          {[
-            { key: 'old', label: 'Mật khẩu hiện tại', field: 'oldPassword' },
-            { key: 'new', label: 'Mật khẩu mới', field: 'newPassword' },
-            { key: 'confirm', label: 'Xác nhận mật khẩu mới', field: 'confirmPassword' },
-          ].map(({ key, label, field }) => (
+          {pwFields.map(({ key, label, field }) => (
             <div key={key} className="space-y-1.5">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
               <div className="relative">
@@ -97,9 +101,9 @@ const ChangePassword = () => {
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70 mt-2"
           >
             {mutation.isPending ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> Đang xử lý...</>
+              <><Loader2 className="h-4 w-4 animate-spin" /> {t('change_password.submitting')}</>
             ) : (
-              'Đổi mật khẩu'
+              t('change_password.submit_btn')
             )}
           </button>
         </form>

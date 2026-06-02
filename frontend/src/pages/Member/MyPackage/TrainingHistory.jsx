@@ -1,11 +1,13 @@
 import React from 'react';
 import { CalendarCheck, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useTrainingSessions } from '@/hooks/queries/useTraining';
 import { format } from 'date-fns';
 import { slideUpVariants, cardVariants, staggerContainerVariants, sectionStaggerVariants } from '@/lib/animations';
 
 const TrainingHistory = () => {
+  const { t } = useTranslation('member');
   const { data: sessionsRes, isLoading } = useTrainingSessions();
   const sessions = (Array.isArray(sessionsRes) ? sessionsRes : []).filter(s => s.member_confirmed);
 
@@ -25,13 +27,13 @@ const TrainingHistory = () => {
       animate="visible"
     >
       <motion.div variants={slideUpVariants}>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Nhật ký Hoạt động</h1>
-        <p className="text-gray-500 text-sm mt-1">Lịch sử các buổi tập đã xác nhận tham gia của bạn.</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('history.title')}</h1>
+        <p className="text-gray-500 text-sm mt-1">{t('history.subtitle')}</p>
       </motion.div>
 
       {sessions.length === 0 ? (
         <motion.div variants={slideUpVariants} className="text-center py-10 text-gray-500 bg-gray-50 dark:bg-gray-900/30 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-800">
-          Chưa có hoạt động nào được ghi lại.
+          {t('history.no_data')}
         </motion.div>
       ) : (
         <motion.div variants={staggerContainerVariants} className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-300 before:to-transparent dark:before:via-gray-700">
@@ -44,7 +46,7 @@ const TrainingHistory = () => {
                 </div>
                 <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-200 bg-white shadow-sm flex flex-col dark:bg-gray-950 dark:border-gray-800 transition-all hover:border-blue-300 hover:shadow-md">
                   <span className="font-bold text-gray-900 dark:text-white">
-                    {item.pt_feedback ? 'Buổi tập có PT' : 'Buổi tập cá nhân'}
+                    {item.pt_feedback ? t('history.session_with_pt') : t('history.session_personal')}
                   </span>
                   <div className="flex justify-between items-center mt-2">
                     <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded dark:bg-blue-900/30 dark:text-blue-400">

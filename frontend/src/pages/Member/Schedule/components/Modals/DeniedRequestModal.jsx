@@ -1,7 +1,10 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const DeniedRequestModal = ({ selectedDeniedRequest, setSelectedDeniedRequest, getStatusBadgeClass }) => {
+  const { t } = useTranslation('member');
+
   if (!selectedDeniedRequest) return null;
 
   return (
@@ -9,7 +12,7 @@ const DeniedRequestModal = ({ selectedDeniedRequest, setSelectedDeniedRequest, g
       <div className="bg-white dark:bg-gray-950 rounded-xl max-w-sm w-full border border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-800">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-            Chi tiết từ chối
+            {t('schedule.denied_modal.title')}
           </h2>
           <button
             onClick={() => setSelectedDeniedRequest(null)}
@@ -21,29 +24,37 @@ const DeniedRequestModal = ({ selectedDeniedRequest, setSelectedDeniedRequest, g
 
         <div className="p-5 space-y-4">
           <div>
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Yêu cầu</div>
+            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+              {t('schedule.denied_modal.request_label')}
+            </div>
             <p className="text-base font-bold text-gray-900 dark:text-white">{selectedDeniedRequest.name}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Thời gian</div>
+              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+                {t('schedule.denied_modal.time_label')}
+              </div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
                 {selectedDeniedRequest.startTime} - {selectedDeniedRequest.endTime}
               </p>
             </div>
             <div>
-              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Trạng thái</div>
+              <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+                {t('schedule.denied_modal.status_label')}
+              </div>
               <span className={`text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap inline-block ${getStatusBadgeClass(selectedDeniedRequest.status)}`}>
-                {selectedDeniedRequest.status}
+                {t(`schedule.status.${selectedDeniedRequest.status}`, { defaultValue: selectedDeniedRequest.status })}
               </span>
             </div>
           </div>
 
           <div>
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">Lý do từ chối</div>
+            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-2">
+              {t('schedule.denied_modal.reason_label')}
+            </div>
             <p className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg border border-red-100 dark:border-red-800">
-              {selectedDeniedRequest.denyReason || 'Không có lý do cụ thể được cung cấp.'}
+              {selectedDeniedRequest.denyReason || t('schedule.denied_modal.no_reason')}
             </p>
           </div>
         </div>
@@ -53,7 +64,7 @@ const DeniedRequestModal = ({ selectedDeniedRequest, setSelectedDeniedRequest, g
             onClick={() => setSelectedDeniedRequest(null)}
             className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-lg hover:bg-gray-200"
           >
-            Đóng
+            {t('schedule.denied_modal.close_btn')}
           </button>
         </div>
       </div>

@@ -5,10 +5,13 @@ import Button from '@/components/Common/Button';
 import { useMemberPackages } from '@/hooks/queries/usePackages';
 import Loading from '@/components/Common/Loading';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const renewalMonthOptions = [1, 3, 6, 12];
 
 const RenewPackage = () => {
+  const { t, i18n } = useTranslation('member');
+  const locale = i18n.language === 'ja' ? 'ja-JP' : i18n.language === 'en' ? 'en-US' : 'vi-VN';
   const navigate = useNavigate();
   const { data: packagesRes, isLoading } = useMemberPackages();
   const packages = (() => {
@@ -64,16 +67,16 @@ const RenewPackage = () => {
   if (packages.length === 0) {
     return (
       <div className="space-y-6 max-w-lg mx-auto md:max-w-2xl pb-20 px-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gia hạn Gói Tập</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('renew.title')}</h1>
         <div className="rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-8 text-center">
           <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Bạn chưa có gói tập nào</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">Vui lòng đăng ký một gói tập trước khi gia hạn.</p>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('renew.no_package_title')}</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{t('renew.no_package_desc')}</p>
           <button
             onClick={() => navigate('/member/register')}
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
           >
-            Đăng Ký Gói Tập
+            {t('renew.no_package_btn')}
           </button>
         </div>
       </div>
@@ -82,7 +85,7 @@ const RenewPackage = () => {
 
   const handleRenewal = async () => {
     if (!selectedPkg || !renewalMonths) {
-      toast.error('Vui lòng chọn gói tập và thời gian gia hạn');
+      toast.error(t('renew.error_select'));
       return;
     }
 
@@ -105,12 +108,12 @@ const RenewPackage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <div className="space-y-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gia hạn Gói Tập</h1>
-            <p className="text-gray-500 text-sm mt-1">Chọn gói tập của bạn và thời gian gia hạn.</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('renew.title')}</h1>
+            <p className="text-gray-500 text-sm mt-1">{t('renew.subtitle')}</p>
           </div>
 
           <div className="space-y-3">
-            <label className="text-sm font-semibold text-gray-900 dark:text-white">Chọn Gói Tập Để Gia Hạn</label>
+            <label className="text-sm font-semibold text-gray-900 dark:text-white">{t('renew.select_label')}</label>
             <div className="grid gap-3">
               {packages.map((pkg) => {
                 const endDate = new Date(pkg.endDate);
@@ -140,11 +143,11 @@ const RenewPackage = () => {
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {isExpired ? (
                           <span className="text-red-600 dark:text-red-400">
-                            Đã hết hạn từ {Math.abs(daysRemaining)} ngày trước
+                            {t('renew.expired_ago', { count: Math.abs(daysRemaining) })}
                           </span>
                         ) : (
                           <span className="text-green-600 dark:text-green-400">
-                            Còn {daysRemaining} ngày ({endDate.toLocaleDateString('vi-VN')})
+                            {t('renew.days_remaining', { count: daysRemaining, date: endDate.toLocaleDateString(locale) })}
                           </span>
                         )}
                       </p>
@@ -158,16 +161,14 @@ const RenewPackage = () => {
           {selectedPkg && (
             <div className="space-y-3">
               <label className="text-sm font-semibold text-gray-900 dark:text-white">
-                Chọn Thời Gian Gia Hạn (Tháng)
+                {t('renew.months_label')}
               </label>
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-900 dark:text-white font-medium flex items-center justify-between hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
                 >
-                  <span>
-                    {renewalMonths} {renewalMonths === 1 ? 'tháng' : 'tháng'}
-                  </span>
+                  <span>{t('renew.months_option', { count: renewalMonths })}</span>
                   <ChevronDown className={`h-5 w-5 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isDropdownOpen && (
@@ -175,13 +176,10 @@ const RenewPackage = () => {
                     {renewalMonthOptions.map((months) => (
                       <button
                         key={months}
-                        onClick={() => {
-                          setRenewalMonths(months);
-                          setIsDropdownOpen(false);
-                        }}
+                        onClick={() => { setRenewalMonths(months); setIsDropdownOpen(false); }}
                         className="w-full text-left px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-900 dark:text-white font-medium first:rounded-t-lg last:rounded-b-lg"
                       >
-                        {months} {months === 1 ? 'tháng' : 'tháng'}
+                        {t('renew.months_option', { count: months })}
                       </button>
                     ))}
                   </div>
@@ -194,33 +192,33 @@ const RenewPackage = () => {
             <div className="rounded-xl bg-blue-50 dark:bg-blue-900/10 border-2 border-blue-200 dark:border-blue-900/30 p-6 space-y-4">
               <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500" />
-                Tóm tắt gia hạn
+                {t('renew.summary_title')}
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Gói tập</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('renew.summary_package')}</span>
                   <span className="font-semibold text-gray-900 dark:text-white">{selectedPkg.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Thời gian gia hạn</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">{renewalMonths} tháng</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('renew.summary_months')}</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">{t('renew.summary_months_value', { count: renewalMonths })}</span>
                 </div>
                 <div className="border-t border-blue-200 dark:border-blue-900/30 pt-3 flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Hạn kết thúc hiện tại</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('renew.summary_current_end')}</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {new Date(selectedPkg.endDate).toLocaleDateString('vi-VN')}
+                    {new Date(selectedPkg.endDate).toLocaleDateString(locale)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Hạn kết thúc mới</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('renew.summary_new_end')}</span>
                   <span className="font-bold text-green-600 dark:text-green-400">
-                    {newEndDate.toLocaleDateString('vi-VN')}
+                    {newEndDate.toLocaleDateString(locale)}
                   </span>
                 </div>
                 <div className="border-t border-blue-200 dark:border-blue-900/30 pt-3 flex justify-between items-center">
-                  <span className="text-gray-900 dark:text-white font-semibold">Giá gia hạn</span>
+                  <span className="text-gray-900 dark:text-white font-semibold">{t('renew.summary_price')}</span>
                   <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {renewalPrice.toLocaleString('vi-VN')} đ
+                    {renewalPrice.toLocaleString(locale)} đ
                   </span>
                 </div>
               </div>
@@ -234,7 +232,7 @@ const RenewPackage = () => {
               leftIcon={<ShoppingCart className="h-5 w-5" />}
               rightIcon={<ArrowRight className="h-5 w-5 opacity-70" />}
             >
-              Thanh Toán Gia Hạn
+              {t('renew.checkout_btn')}
             </Button>
           )}
         </div>
@@ -242,13 +240,13 @@ const RenewPackage = () => {
         {selectedPkg && (
           <div className="hidden lg:block">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-lg shadow-gray-200/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-none sticky top-24">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Chi tiết {selectedPkg.name}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('renew.detail_title', { name: selectedPkg.name })}</h2>
 
               {selectedPkg.facilities && selectedPkg.facilities.length > 0 && (
                 <div className="space-y-4 mt-6">
                   <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    Quyền lợi bao gồm
+                    {t('renew.benefits_title')}
                   </h3>
                   <ul className="space-y-3">
                     {selectedPkg.facilities.map((fac, idx) => (
@@ -263,15 +261,15 @@ const RenewPackage = () => {
 
               <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Ngày đăng ký:{' '}
+                  {t('renew.registered_date')}{' '}
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {new Date(selectedPkg.registeredDate).toLocaleDateString('vi-VN')}
+                    {new Date(selectedPkg.registeredDate).toLocaleDateString(locale)}
                   </span>
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Giá gốc:{' '}
+                  {t('renew.original_price')}{' '}
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {typeof selectedPkg.price === 'number' ? selectedPkg.price.toLocaleString('vi-VN') : selectedPkg.price} đ
+                    {typeof selectedPkg.price === 'number' ? selectedPkg.price.toLocaleString(locale) : selectedPkg.price} đ
                   </span>
                 </p>
               </div>
