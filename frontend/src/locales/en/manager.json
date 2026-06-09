@@ -27,7 +27,12 @@
     "status_done": "Completed",
     "status_in_progress": "In Progress",
     "status_cancelled": "Cancelled",
-    "status_scheduled": "Scheduled"
+    "status_scheduled": "Scheduled",
+    "total_label": "of total",
+    "none_yet": "None yet",
+    "members_label": "members",
+    "sessions": "sessions",
+    "with_member": "with {{name}}"
   },
   "feedbacks": {
     "title": "Member Feedbacks",

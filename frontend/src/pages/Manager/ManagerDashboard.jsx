@@ -18,7 +18,7 @@ import {
 } from '@/lib/animations';
 
 const ManagerDashboard = () => {
-  const { t } = useTranslation('manager');
+  const { t, i18n } = useTranslation('manager');
   const { data: memberResponse = {} } = useMembers(1, 1000);
   const { data: employeeResponse = {} } = useEmployees(1, 1000);
   const { data: bookingResponse = {} } = useTrainingBookings();
@@ -62,14 +62,21 @@ const ManagerDashboard = () => {
     return m?.full_name || m?.name || `HV #${id}`;
   };
 
+  const localeMap = {
+    vi: 'vi-VN',
+    en: 'en-US',
+    ja: 'ja-JP',
+  };
+  const currentLocale = localeMap[i18n.language] || 'vi-VN';
+
   const formatTime = (iso) => {
     const d = new Date(iso);
-    return isNaN(d.getTime()) ? '--:--' : d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    return isNaN(d.getTime()) ? '--:--' : d.toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
   };
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    return isNaN(d.getTime()) ? '--' : d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+    return isNaN(d.getTime()) ? '--' : d.toLocaleDateString(currentLocale, { day: '2-digit', month: '2-digit' });
   };
 
   const getSessionStatus = (booking) => {
@@ -125,43 +132,43 @@ const ManagerDashboard = () => {
 
   const stats = [
     {
-      title: 'Tổng hội viên',
+      title: t('dashboard.total_members'),
       value: String(totalMembers),
       icon: Users,
       trend: 'neutral',
-      trendValue: `${activeMembers} đang hoạt động`,
+      trendValue: `${activeMembers} ${t('dashboard.active')}`,
       trendLabel: '',
     },
     {
-      title: 'Hội viên hoạt động',
+      title: t('dashboard.active_members'),
       value: String(activeMembers),
       icon: UserCheck,
       trend: 'up',
       trendValue: totalMembers > 0 ? `${Math.round(activeMembers / totalMembers * 100)}%` : '0%',
-      trendLabel: 'tổng số',
+      trendLabel: t('dashboard.total_label'),
     },
     {
-      title: 'Mới tháng này',
+      title: t('dashboard.new_this_month'),
       value: String(newThisMonth),
       icon: UserPlus,
       trend: newThisMonth > 0 ? 'up' : 'neutral',
-      trendValue: newThisMonth > 0 ? `+${newThisMonth}` : 'Chưa có',
-      trendLabel: 'hội viên',
+      trendValue: newThisMonth > 0 ? `+${newThisMonth}` : t('dashboard.none_yet'),
+      trendLabel: t('dashboard.members_label'),
     },
     {
-      title: 'Lịch PT hôm nay',
+      title: t('dashboard.pt_schedule_today'),
       value: String(todaySchedules.length),
       icon: Calendar,
       trend: 'neutral',
-      trendValue: `${todayDone} hoàn thành`,
+      trendValue: `${todayDone} ${t('dashboard.completed')}`,
       trendLabel: '',
     },
     {
-      title: 'Phản hồi chờ xử lý',
+      title: t('dashboard.pending_feedback'),
       value: String(pendingFeedbackCount),
       icon: MessageSquare,
       trend: pendingFeedbackCount > 0 ? 'down' : 'neutral',
-      trendValue: pendingFeedbackCount > 0 ? 'Cần xử lý' : 'Đã xong',
+      trendValue: pendingFeedbackCount > 0 ? t('dashboard.need_process') : t('dashboard.done'),
       trendLabel: '',
     },
   ];
@@ -173,7 +180,10 @@ const ManagerDashboard = () => {
     Scheduled: 'bg-gray-100  text-gray-600  dark:bg-gray-800     dark:text-gray-400',
   };
   const statusLabel = {
-    Done: 'Hoàn thành', InProgress: 'Đang diễn ra', Cancelled: 'Đã hủy', Scheduled: 'Đã lên lịch',
+    Done: t('dashboard.status_done'),
+    InProgress: t('dashboard.status_in_progress'),
+    Cancelled: t('dashboard.status_cancelled'),
+    Scheduled: t('dashboard.status_scheduled'),
   };
 
   return (
@@ -181,10 +191,10 @@ const ManagerDashboard = () => {
       {/* Header */}
       <motion.div variants={slideUpVariants}>
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Bảng Điều Khiển
+          {t('dashboard.title')}
         </h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {now.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          {now.toLocaleDateString(currentLocale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </motion.div>
 
@@ -214,7 +224,7 @@ const ManagerDashboard = () => {
             <div>
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t('dashboard.pt_schedule_today')}</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                {todaySchedules.length} buổi · {todayDone} hoàn thành
+                {todaySchedules.length} {t('dashboard.sessions')} · {todayDone} {t('dashboard.completed')}
               </p>
             </div>
             <Link to="/manager/schedule">
@@ -224,7 +234,7 @@ const ManagerDashboard = () => {
 
           {todaySchedules.length === 0 ? (
             <div className="flex items-center justify-center py-12 text-sm text-gray-400 dark:text-gray-500">
-              Không có lịch PT hôm nay
+              {t('dashboard.no_schedule_today')}
             </div>
           ) : (
             <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
@@ -238,7 +248,9 @@ const ManagerDashboard = () => {
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{s.pt}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">với {s.member}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {t('dashboard.with_member', { name: s.member })}
+                    </p>
                   </div>
                   <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyle[s.status]}`}>
                     {statusLabel[s.status]}
@@ -263,7 +275,7 @@ const ManagerDashboard = () => {
 
           {expiringMembers.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-sm text-gray-400 dark:text-gray-500">
-              Không có hội viên sắp hết hạn
+              {t('dashboard.no_expiring_soon')}
             </div>
           ) : (
             <div className="space-y-1.5 max-h-96 overflow-y-auto pr-1">
@@ -282,7 +294,7 @@ const ManagerDashboard = () => {
                         {m.full_name || m.name || `HV #${m.id}`}
                       </p>
                       <p className="text-xs font-medium text-red-500 dark:text-red-400">
-                        Còn {daysLeft} ngày
+                        {t('dashboard.days_left', { days: daysLeft })}
                       </p>
                     </div>
                   </div>
@@ -299,7 +311,7 @@ const ManagerDashboard = () => {
         className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-950"
       >
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-          Truy cập nhanh
+          {t('dashboard.quick_access')}
         </p>
         <div className="flex flex-wrap gap-2">
           <Link to="/manager/members">

@@ -27,7 +27,12 @@
     "status_done": "完了",
     "status_in_progress": "進行中",
     "status_cancelled": "キャンセル済み",
-    "status_scheduled": "予定あり"
+    "status_scheduled": "予定あり",
+    "total_label": "合計",
+    "none_yet": "未設定",
+    "members_label": "会員",
+    "sessions": "セッション",
+    "with_member": "{{name}} と"
   },
   "feedbacks": {
     "title": "会員フィードバック",

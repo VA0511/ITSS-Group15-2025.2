@@ -27,7 +27,12 @@
     "status_done": "Hoàn thành",
     "status_in_progress": "Đang diễn ra",
     "status_cancelled": "Đã hủy",
-    "status_scheduled": "Đã lên lịch"
+    "status_scheduled": "Đã lên lịch",
+    "total_label": "tổng số",
+    "none_yet": "Chưa có",
+    "members_label": "hội viên",
+    "sessions": "buổi",
+    "with_member": "với {{name}}"
   },
   "feedbacks": {
     "title": "Phản Hồi Của Hội Viên",
