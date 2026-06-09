@@ -104,9 +104,7 @@ const MemberDashboard = () => {
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {t('dashboard.greeting', { name: member?.full_name || user?.username })}
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {t('dashboard.member_id', { id: member?.id || '...' })}
-        </p>
+
       </motion.div>
 
       <motion.div
