@@ -108,7 +108,7 @@
   },
   "reports": {
     "title": "Statistics Reports",
-    "subtitle": "Statistics on revenue, members and packages",
+    "subtitle": "Analysis of revenue, members, and performance",
     "export": "Export Report",
     "filter_1m": "Last 1 month",
     "filter_3m": "Last 3 months",
@@ -122,12 +122,30 @@
     "active_members": "Active Members",
     "avg_invoice_value": "Avg Invoice Value",
     "per_transaction": "per transaction",
-    "chart_invoices": "Transactions by Month",
+    "chart_invoices": "Invoices by Month",
     "chart_revenue": "Revenue by Month",
     "chart_packages": "Package Distribution",
     "chart_member_status": "Member Status",
     "active": "Active",
-    "paused": "Paused"
+    "paused": "Paused",
+    "months": {
+      "0": "Jan",
+      "1": "Feb",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aug",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Dec"
+    },
+    "other": "Other",
+    "active_status": "active",
+    "million_vnd_suffix": "M",
+    "transactions_unit": "transactions"
   },
   "schedule": {
     "title": "Training Schedule",

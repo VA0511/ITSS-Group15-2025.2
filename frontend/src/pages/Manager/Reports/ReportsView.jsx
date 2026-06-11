@@ -12,18 +12,12 @@ const PACKAGE_COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '
 
 // Trích loại gói từ tên đầy đủ: bỏ "Gói " đầu + thời hạn ở cuối
 const extractPackageType = (name) => {
-    if (!name) return 'Khác';
+    if (!name) return 'other';
     let type = name.replace(/^Gói\s+/i, '');
     type = type.replace(/\s+(\d+\s*tháng|tháng|nửa\s+năm|\d+\s*năm)$/i, '');
-    return type.trim() || 'Khác';
+    const trimmed = type.trim();
+    return (trimmed === 'Khác' || !trimmed) ? 'other' : trimmed;
 };
-
-const ptPerformanceData = [
-    { name: 'Hùng Gym', sessions: 28, rating: 4.8 },
-    { name: 'Tùng PT', sessions: 24, rating: 4.7 },
-    { name: 'Lan Coach', sessions: 31, rating: 4.9 },
-    { name: 'Minh Trainer', sessions: 19, rating: 4.6 }
-];
 
 const ReportsView = () => {
     const { t } = useTranslation('manager');
@@ -41,11 +35,9 @@ const ReportsView = () => {
         return (value / 1000000).toFixed(0);
     };
 
-    // Helper function to get month name in Vietnamese
-    const getMonthNameVi = (date) => {
-        const months = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-            'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-        return months[date.getMonth()];
+    // Helper function to get translated month name
+    const getMonthName = (date) => {
+        return t(`reports.months.${date.getMonth()}`);
     };
 
     // Helper function to get number of months for timeframe
@@ -76,7 +68,7 @@ const ReportsView = () => {
             const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
             const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
             monthsData[monthKey] = {
-                month: getMonthNameVi(date),
+                month: getMonthName(date),
                 revenue: 0,
                 members: 0,
                 count: 0
@@ -95,7 +87,7 @@ const ReportsView = () => {
         });
 
         return Object.values(monthsData);
-    }, [invoicesResponse, timeframe]);
+    }, [invoicesResponse, timeframe, t]);
 
     // Get filtered data
     const filteredInvoices = useMemo(() => {
@@ -126,13 +118,24 @@ const ReportsView = () => {
         });
 
         return Object.entries(typeMap)
-            .map(([name, value]) => ({ name, value }))
+            .map(([name, value]) => {
+                let displayName = name;
+                if (name === 'other') {
+                    displayName = t('reports.other');
+                } else {
+                    displayName = t(`reports.packages.${name.toLowerCase()}`, name);
+                }
+                return {
+                    name: displayName,
+                    value,
+                };
+            })
             .sort((a, b) => b.value - a.value)
             .map((item, index) => ({
                 ...item,
                 fill: PACKAGE_COLORS[index % PACKAGE_COLORS.length],
             }));
-    }, [filteredInvoices]);
+    }, [filteredInvoices, t]);
 
     const totalRevenue = filteredInvoices.reduce((sum, invoice) => sum + parseFloat(invoice.amount || 0), 0);
     const avgRevenue = filteredInvoices.length > 0 ? totalRevenue / getMonthsForTimeframe(timeframe) : 0;
@@ -154,13 +157,13 @@ const ReportsView = () => {
             {/* Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Báo Cáo</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('reports.title')}</h1>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Phân tích doanh thu, hội viên, và hiệu suất
+                        {t('reports.subtitle')}
                     </p>
                 </div>
                 <Button onClick={() => window.print()}>
-                    <Download size={16} /> Xuất báo cáo
+                    <Download size={16} /> {t('reports.export')}
                 </Button>
             </div>
 
@@ -172,10 +175,10 @@ const ReportsView = () => {
                     onChange={(e) => setTimeframe(e.target.value)}
                     className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
                 >
-                    <option value="1month">Tháng này</option>
-                    <option value="3months">3 tháng</option>
-                    <option value="6months">6 tháng</option>
-                    <option value="1year">1 năm</option>
+                    <option value="1month">{t('reports.filter_1m')}</option>
+                    <option value="3months">{t('reports.filter_3m')}</option>
+                    <option value="6months">{t('reports.filter_6m')}</option>
+                    <option value="1year">{t('reports.filter_1y')}</option>
                 </select>
             </div>
 
@@ -184,30 +187,30 @@ const ReportsView = () => {
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
                     <p className="text-sm text-gray-500 dark:text-gray-400">{t('reports.total_revenue')}</p>
                     <p className="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(totalRevenue)}</p>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Average {formatCurrency(avgRevenue)}/month</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('reports.avg_revenue', { amount: formatCurrency(avgRevenue) })}</p>
                 </div>
 
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Số lượng hoá đơn</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('reports.total_invoices')}</p>
                     <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">{invoiceCount}</p>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Average {(invoiceCount / getMonthsForTimeframe(timeframe)).toFixed(1)}/month</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('reports.avg_invoices', { count: (invoiceCount / getMonthsForTimeframe(timeframe)).toFixed(1) })}</p>
                 </div>
 
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Tổng hội viên</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('reports.total_members')}</p>
                     <p className="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">{totalMembers}</p>
                     <div className="mt-1 flex gap-2">
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs">{activeMemberPercent}%</Badge>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">đang hoạt động</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{t('reports.active_status')}</span>
                     </div>
                 </div>
 
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Trung bình hoá đơn</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('reports.avg_invoice_value')}</p>
                     <p className="mt-2 text-3xl font-bold text-orange-600 dark:text-orange-400">
                         {invoiceCount > 0 ? formatCurrency(totalRevenue / invoiceCount) : formatCurrency(0)}
                     </p>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">mỗi giao dịch</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('reports.per_transaction')}</p>
                 </div>
 
             </div>
@@ -216,7 +219,7 @@ const ReportsView = () => {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {/* Invoice Count Chart */}
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-                    <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">Số lượng hoá đơn theo tháng</h3>
+                    <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">{t('reports.chart_invoices')}</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" />
@@ -237,7 +240,7 @@ const ReportsView = () => {
                             <XAxis dataKey="month" />
                             <YAxis tickFormatter={(value) => `${formatRevenueToMillion(value)}M`} />
                             <Tooltip
-                                formatter={(value) => `${formatRevenueToMillion(value)} triệu đ`}
+                                formatter={(value) => `${formatRevenueToMillion(value)}${t('reports.million_vnd_suffix')}`}
                                 labelFormatter={(label) => `${label}`}
                             />
                             <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981' }} />
@@ -248,14 +251,14 @@ const ReportsView = () => {
                 {/* Package Distribution */}
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
                     <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">{t('reports.chart_packages')}</h3>
-                    <ResponsiveContainer width="100%" height={340}>
+                    <ResponsiveContainer width="100%" height={360}>
                         <PieChart>
                             <Pie
                                 data={packageDistribution}
                                 cx="50%"
-                                cy="42%"
-                                innerRadius={55}
-                                outerRadius={95}
+                                cy="38%"
+                                innerRadius={50}
+                                outerRadius={80}
                                 paddingAngle={3}
                                 dataKey="value"
                                 stroke="none"
@@ -264,12 +267,15 @@ const ReportsView = () => {
                                     <Cell key={`cell-${index}`} fill={entry.fill} />
                                 ))}
                             </Pie>
-                            <Tooltip formatter={(value, name) => [`${value} giao dịch`, name]} />
+                            <Tooltip formatter={(value, name) => [`${value} ${t('reports.transactions_unit')}`, name]} />
                             <Legend
                                 verticalAlign="bottom"
-                                height={48}
                                 iconType="circle"
-                                wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                                wrapperStyle={{ 
+                                    fontSize: '12px', 
+                                    paddingTop: '16px',
+                                    bottom: 0
+                                }}
                             />
                         </PieChart>
                     </ResponsiveContainer>
@@ -277,11 +283,11 @@ const ReportsView = () => {
 
                 {/* Member Status */}
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-                    <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">Trạng thái hội viên</h3>
+                    <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">{t('reports.chart_member_status')}</h3>
                     <div className="space-y-3">
                         <div>
                             <div className="flex items-center justify-between mb-1">
-                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Đang hoạt động</p>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('reports.active')}</p>
                                 <span className="text-sm font-semibold text-gray-900 dark:text-white">{activeMembers} ({activeMemberPercent}%)</span>
                             </div>
                             <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -293,7 +299,7 @@ const ReportsView = () => {
                         </div>
                         <div>
                             <div className="flex items-center justify-between mb-1">
-                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Tạm dừng</p>
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('reports.paused')}</p>
                                 <span className="text-sm font-semibold text-gray-900 dark:text-white">{totalMembers - activeMembers} ({((totalMembers - activeMembers) / totalMembers * 100).toFixed(1)}%)</span>
                             </div>
                             <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700">
@@ -306,8 +312,6 @@ const ReportsView = () => {
                     </div>
                 </div>
             </div>
-
-
 
         </div>
     );

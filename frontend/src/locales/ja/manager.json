@@ -108,7 +108,7 @@
   },
   "reports": {
     "title": "統計レポート",
-    "subtitle": "収益、会員、およびパッケージに関する統計",
+    "subtitle": "収益、会員、およびパフォーマンスの分析",
     "export": "レポートをエクスポート",
     "filter_1m": "過去1ヶ月",
     "filter_3m": "過去3ヶ月",
@@ -122,12 +122,30 @@
     "active_members": "アクティブ会員",
     "avg_invoice_value": "平均請求額",
     "per_transaction": "1取引あたり",
-    "chart_invoices": "月別の取引",
+    "chart_invoices": "月別の請求書数",
     "chart_revenue": "月別の収益",
     "chart_packages": "パッケージの分布",
     "chart_member_status": "会員のステータス",
     "active": "アクティブ",
-    "paused": "一時停止"
+    "paused": "一時停止",
+    "months": {
+      "0": "1月",
+      "1": "2月",
+      "2": "3月",
+      "3": "4月",
+      "4": "5月",
+      "5": "6月",
+      "6": "7月",
+      "7": "8月",
+      "8": "9月",
+      "9": "10月",
+      "10": "11月",
+      "11": "12月"
+    },
+    "other": "その他",
+    "active_status": "アクティブ",
+    "million_vnd_suffix": "百万ドン",
+    "transactions_unit": "取引"
   },
   "schedule": {
     "title": "トレーニングスケジュール",
