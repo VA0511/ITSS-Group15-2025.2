@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { authService } from '@/services/authService';
 import useAuthStore from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +25,7 @@ export const useLogin = () => {
 };
 
 export const useChangePassword = () => {
+  const { t } = useTranslation();
   const updateUser = useAuthStore((state) => state.updateUser);
 
   return useMutation({
@@ -31,13 +33,13 @@ export const useChangePassword = () => {
       authService.changePassword({ oldPassword, newPassword }),
     onSuccess: () => {
       updateUser({ isFirstLogin: false });
-      toast.success('Đổi mật khẩu thành công!');
+      toast.success(t('notifications.change_password_success'));
     },
     onError: (error) => {
       const msg =
         typeof error?.response?.data === 'string'
           ? error.response.data.trim()
-          : error?.message || 'Đổi mật khẩu thất bại';
+          : error?.message || t('notifications.change_password_error');
       toast.error(msg);
     },
   });

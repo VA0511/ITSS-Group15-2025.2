@@ -39,14 +39,14 @@ const MemberDetailView = () => {
     const toggleStatusMutation = useMutation({
         mutationFn: (isActive) => memberService.updateMemberStatus(parseInt(id), isActive),
         onSuccess: (data, isActive) => {
-            toast.success(!isActive ? 'Đã tạm dừng hội viên' : 'Đã kích hoạt lại hội viên');
+            toast.success(!isActive ? t('members.toast.suspend_success') : t('members.toast.activate_success'));
             queryClient.invalidateQueries({ queryKey: ['memberDetail', parseInt(id)] });
             // Invalidate all members queries regardless of pagination
             queryClient.invalidateQueries({ queryKey: ['members'], exact: false });
             queryClient.invalidateQueries({ queryKey: ['allMembers'] });
         },
         onError: (err) => {
-            toast.error(err?.response?.data || err?.message || 'Cập nhật trạng thái thất bại');
+            toast.error(err?.response?.data || err?.message || t('members.toast.update_status_error'));
         },
     });
 

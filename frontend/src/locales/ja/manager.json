@@ -89,7 +89,19 @@
     "activate_account": "アカウントを有効化",
     "info": "情報",
     "go_back": "戻る",
-    "pagination": "{{page}} / {{total}} ページ (合計: {{count}} 名)"
+    "pagination": "{{page}} / {{total}} ページ (合計: {{count}} 名)",
+    "toast": {
+      "create_success_email": "アカウントが正常に作成されました！パスワードが会員のメールに送信されました。",
+      "create_success_no_email": "アカウントが正常に作成されました！（メールを送信できませんでした。手動でお知らせください）",
+      "create_error": "アカウントの作成に失敗しました",
+      "enter_name": "氏名を入力してください",
+      "email_format": "メールアドレスの形式が正しくありません。例: example@gmail.com",
+      "email_required": "メールアドレスは必須です。",
+      "email_in_use": "このメールアドレスは既に他のアカウントで使用されています。",
+      "suspend_success": "会員アカウントを一時停止しました",
+      "activate_success": "会員アカウントを再有効化しました",
+      "update_status_error": "ステータスの更新に失敗しました"
+    }
   },
   "packages": {
     "title": "パッケージ管理",
@@ -213,5 +225,12 @@
     "status_unknown": "不明",
     "no_package": "パッケージなし",
     "no_note": "メモなし"
+  },
+  "profile": {
+    "title": "プロフィール",
+    "avatar_success": "アバターを更新しました",
+    "avatar_error": "アバターの保存に失敗しました",
+    "loading": "保存中...",
+    "not_found": "従業員情報が見つかりません。"
   }
 }

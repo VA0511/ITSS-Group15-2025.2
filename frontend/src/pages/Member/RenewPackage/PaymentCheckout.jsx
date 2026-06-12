@@ -65,7 +65,7 @@ const PaymentCheckout = () => {
       navigate("/member/my-package");
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error("Thanh toán thất bại. Vui lòng thử lại.");
+      toast.error(t('checkout.payment_failed'));
     } finally {
       setIsProcessing(false);
     }

@@ -89,7 +89,19 @@
     "activate_account": "Activate Account",
     "info": "Information",
     "go_back": "Go Back",
-    "pagination": "Page {{page}} / {{total}} (Total: {{count}} members)"
+    "pagination": "Page {{page}} / {{total}} (Total: {{count}} members)",
+    "toast": {
+      "create_success_email": "Account created successfully! Password has been sent to the member's email.",
+      "create_success_no_email": "Account created successfully! (Unable to send email, please notify manually)",
+      "create_error": "Failed to create account",
+      "enter_name": "Please enter full name",
+      "email_format": "Invalid email format. E.g.: example@gmail.com",
+      "email_required": "Email is required.",
+      "email_in_use": "This email is already in use by another account.",
+      "suspend_success": "Member suspended successfully",
+      "activate_success": "Member reactivated successfully",
+      "update_status_error": "Failed to update status"
+    }
   },
   "packages": {
     "title": "Package Management",
@@ -213,5 +225,12 @@
     "status_unknown": "Unknown",
     "no_package": "No package",
     "no_note": "No note"
+  },
+  "profile": {
+    "title": "Personal Profile",
+    "avatar_success": "Avatar updated successfully",
+    "avatar_error": "Failed to save avatar",
+    "loading": "Saving...",
+    "not_found": "Employee information not found."
   }
 }

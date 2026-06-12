@@ -465,6 +465,8 @@
     "confirm_upgrade_btn": "Confirm Upgrade",
     "processing": "Processing...",
     "legal_note": "By clicking \"Confirm & Complete\", you agree to our Terms of Service and Privacy Policy.",
-    "no_package_error": "Please select a package before proceeding to payment."
+    "no_package_error": "Please select a package before proceeding to payment.",
+    "payment_failed": "Payment failed. Please try again.",
+    "upgrade_success": "Upgrade successful! VIP package is valid until {{endDate}}."
   }
 }

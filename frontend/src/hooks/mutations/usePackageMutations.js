@@ -1,32 +1,36 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { packageService } from '@/services/packageService';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export const useCreatePackage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (newPackage) => packageService.createPackage(newPackage),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['packages'] });
-      toast.success('Thêm gói dịch vụ thành công!');
+      toast.success(t('notifications.create_package_success'));
     },
   });
 };
 
 export const useUpdatePackage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }) => packageService.updatePackage(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['packages'] });
-      toast.success('Cập nhật gói dịch vụ thành công!');
+      toast.success(t('notifications.update_package_success'));
     },
   });
 };
 
 export const useDeletePackage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -52,14 +56,15 @@ export const useDeletePackage = () => {
       if (context?.previousData) {
         queryClient.setQueryData(['memberPackages'], context.previousData);
       }
-      toast.error('Xóa gói dịch vụ thất bại. Vui lòng thử lại.');
+      toast.error(t('notifications.delete_package_error'));
     },
     onSuccess: () => {
-      toast.success('Đã xóa gói dịch vụ');
+      toast.success(t('notifications.delete_package_success'));
     },
   });
 };
 export const useRegisterPackage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -110,30 +115,32 @@ export const useRegisterPackage = () => {
       if (context?.previousData) {
         queryClient.setQueryData(['memberPackages'], context.previousData);
       }
-      toast.error('Đăng ký gói tập thất bại. Vui lòng thử lại.');
+      toast.error(t('notifications.register_package_error'));
     },
     onSuccess: () => {
-      toast.success('Đăng ký gói tập thành công!');
+      toast.success(t('notifications.register_package_success'));
     },
   });
 };
 
 export const useUpgradePackage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (upgradeData) => packageService.upgradePackage(upgradeData),
     onError: () => {
-      toast.error('Nâng cấp gói tập thất bại. Vui lòng thử lại.');
+      toast.error(t('notifications.upgrade_package_error'));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['memberPackages'] });
-      toast.success('Nâng cấp gói tập thành công!');
+      toast.success(t('notifications.upgrade_package_success'));
     },
   });
 };
 
 export const useRenewPackage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -167,10 +174,10 @@ export const useRenewPackage = () => {
       if (context?.previousData) {
         queryClient.setQueryData(['memberPackages'], context.previousData);
       }
-      toast.error('Gia hạn gói tập thất bại. Vui lòng thử lại.');
+      toast.error(t('notifications.renew_package_error'));
     },
     onSuccess: () => {
-      toast.success('Gia hạn gói tập thành công!');
+      toast.success(t('notifications.renew_package_success'));
     },
   });
 };

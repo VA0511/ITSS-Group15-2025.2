@@ -465,6 +465,8 @@
     "confirm_upgrade_btn": "Xác nhận Nâng Cấp",
     "processing": "Đang xử lý...",
     "legal_note": "Bằng việc nhấn \"Xác nhận & Hoàn tất\", bạn đồng ý với Điều khoản dịch vụ & Chính sách bảo mật của chúng tôi.",
-    "no_package_error": "Vui lòng chọn gói tập trước khi thanh toán."
+    "no_package_error": "Vui lòng chọn gói tập trước khi thanh toán.",
+    "payment_failed": "Thanh toán thất bại. Vui lòng thử lại.",
+    "upgrade_success": "Nâng cấp thành công! Gói VIP có hiệu lực đến {{endDate}}."
   }
 }

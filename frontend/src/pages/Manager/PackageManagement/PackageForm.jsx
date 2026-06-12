@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import PackageFormComponent from '@/components/Forms/PackageForm';
 import { ArrowLeft } from 'lucide-react';
@@ -7,7 +7,7 @@ import { toast } from '@/utils/toast';
 
 import { useTranslation } from 'react-i18next';
 const PackageFormPage = () => {
-    const { t } = useTranslation('manager');
+    const { t } = useTranslation(['manager', 'common']);
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
@@ -36,7 +36,11 @@ const PackageFormPage = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(isEditing ? 'Cập nhật thay đổi thành công!' : 'Đã thiết lập gói tập mới thành công!');
+      toast.success(
+        isEditing
+          ? t('notifications.update_package_success', { ns: 'common' })
+          : t('notifications.create_package_success', { ns: 'common' })
+      );
       navigate('/owner/packages');
     }, 500);
   };

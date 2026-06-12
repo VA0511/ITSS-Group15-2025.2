@@ -465,6 +465,8 @@
     "confirm_upgrade_btn": "アップグレードを確認",
     "processing": "処理中...",
     "legal_note": "「確認して完了」をクリックすることで、利用規約とプライバシーポリシーに同意したことになります。",
-    "no_package_error": "支払いに進む前にプランを選択してください。"
+    "no_package_error": "支払いに進む前にプランを選択してください。",
+    "payment_failed": "決済に失敗しました。もう一度お試しください。",
+    "upgrade_success": "アップグレードに成功しました！VIPプランの有効期限は{{endDate}}までです。"
   }
 }

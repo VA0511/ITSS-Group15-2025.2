@@ -89,7 +89,19 @@
     "activate_account": "Mở khóa tài khoản",
     "info": "Thông tin",
     "go_back": "Quay lại",
-    "pagination": "Trang {{page}} / {{total}} (Tổng: {{count}} hội viên)"
+    "pagination": "Trang {{page}} / {{total}} (Tổng: {{count}} hội viên)",
+    "toast": {
+      "create_success_email": "Tạo tài khoản thành công! Email đã được gửi đến hội viên.",
+      "create_success_no_email": "Tạo tài khoản thành công! (Không thể gửi email, vui lòng thông báo thủ công)",
+      "create_error": "Tạo tài khoản thất bại",
+      "enter_name": "Vui lòng nhập họ và tên",
+      "email_format": "Email không đúng định dạng. Ví dụ: example@gmail.com",
+      "email_required": "Email là bắt buộc.",
+      "email_in_use": "Email này đã được sử dụng bởi tài khoản khác.",
+      "suspend_success": "Đã tạm dừng hội viên",
+      "activate_success": "Đã kích hoạt lại hội viên",
+      "update_status_error": "Cập nhật trạng thái thất bại"
+    }
   },
   "packages": {
     "title": "Quản Lý Gói Tập",
@@ -213,5 +225,12 @@
     "status_unknown": "Không xác định",
     "no_package": "Chưa có gói",
     "no_note": "Không có ghi chú"
+  },
+  "profile": {
+    "title": "Hồ sơ cá nhân",
+    "avatar_success": "Đã cập nhật ảnh đại diện",
+    "avatar_error": "Lưu ảnh đại diện thất bại",
+    "loading": "Đang lưu...",
+    "not_found": "Không tìm thấy thông tin nhân viên."
   }
 }

@@ -78,7 +78,7 @@ const RegisterGymPackageCheckout = () => {
           newPackageId: selectedPackage.id,
           newEndDate: upgradeCalc.newEndDate.toISOString(),
         });
-        toast.success(`Nâng cấp thành công! Gói VIP có hiệu lực đến ${upgradeCalc.newEndDate.toLocaleDateString(locale)}.`);
+        toast.success(t('checkout.upgrade_success', { endDate: upgradeCalc.newEndDate.toLocaleDateString(locale) }));
       } else {
         await registerPackageMutation.mutateAsync({
           ...selectedPackage,
@@ -90,7 +90,7 @@ const RegisterGymPackageCheckout = () => {
       navigate("/member/my-package");
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error('Thanh toán thất bại. Vui lòng thử lại.');
+      toast.error(t('checkout.payment_failed'));
     } finally {
       setIsProcessing(false);
     }

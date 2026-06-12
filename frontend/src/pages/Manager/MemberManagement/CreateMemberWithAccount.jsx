@@ -11,12 +11,12 @@ import Button from '@/components/Common/Button';
 import { useTranslation } from 'react-i18next';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-const getEmailErrorMsg = (error) => {
+const getEmailErrorMsg = (error, t) => {
   const status = error?.response?.status;
   const raw = error?.response?.data?.message || error?.response?.data || '';
   const msg = typeof raw === 'string' ? raw.toLowerCase() : '';
   if (msg.includes('email') || msg.includes('mail')) return raw;
-  if (status === 409) return 'Email này đã được sử dụng bởi tài khoản khác.';
+  if (status === 409) return t('members.toast.email_in_use');
   return null;
 };
 
@@ -75,17 +75,17 @@ const CreateMemberWithAccount = () => {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       toast.success(
         result?.email_sent
-          ? 'Tạo tài khoản thành công! Email đã được gửi đến hội viên.'
-          : 'Tạo tài khoản thành công! (Không thể gửi email, vui lòng thông báo thủ công)'
+          ? t('members.toast.create_success_email')
+          : t('members.toast.create_success_no_email')
       );
       navigate('/manager/members');
     },
     onError: (error) => {
-      const emailMsg = getEmailErrorMsg(error);
+      const emailMsg = getEmailErrorMsg(error, t);
       if (emailMsg) {
         setEmailError(emailMsg);
       } else {
-        toast.error(error?.response?.data?.message || error?.response?.data || error?.message || 'Tạo tài khoản thất bại');
+        toast.error(error?.response?.data?.message || error?.response?.data || error?.message || t('members.toast.create_error'));
       }
     },
   });
@@ -98,22 +98,22 @@ const CreateMemberWithAccount = () => {
 
   const handleEmailBlur = () => {
     if (form.email && !EMAIL_REGEX.test(form.email.trim())) {
-      setEmailError('Email không đúng định dạng. Ví dụ: example@gmail.com');
+      setEmailError(t('members.toast.email_format'));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.full_name.trim()) {
-      toast.error('Vui lòng nhập họ và tên');
+      toast.error(t('members.toast.enter_name'));
       return;
     }
     if (!form.email.trim()) {
-      setEmailError('Email là bắt buộc.');
+      setEmailError(t('members.toast.email_required'));
       return;
     }
     if (!EMAIL_REGEX.test(form.email.trim())) {
-      setEmailError('Email không đúng định dạng. Ví dụ: example@gmail.com');
+      setEmailError(t('members.toast.email_format'));
       return;
     }
     setEmailError('');

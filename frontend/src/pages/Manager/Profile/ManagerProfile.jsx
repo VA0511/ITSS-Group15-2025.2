@@ -17,8 +17,8 @@ const ManagerProfile = () => {
     updateMeMutation.mutate(
       { ...employee, avatar: url },
       {
-        onSuccess: () => toast.success('Đã cập nhật ảnh đại diện'),
-        onError: () => toast.error('Lưu ảnh đại diện thất bại'),
+        onSuccess: () => toast.success(t('profile.avatar_success')),
+        onError: () => toast.error(t('profile.avatar_error')),
         onSettled: () => setSaving(false),
       }
     );
