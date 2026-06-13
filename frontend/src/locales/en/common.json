@@ -75,5 +75,47 @@
     "error_status": "Error updating status: ",
     "change_password_success": "Password changed successfully!",
     "change_password_error": "Failed to change password"
+  },
+  "notification_bell": {
+    "title": "Notifications",
+    "mark_all_read": "Mark as read",
+    "no_notifications": "No notifications",
+    "time_ago": {
+      "just_now": "Just now",
+      "minutes_ago": "{{count}}m ago",
+      "hours_ago": "{{count}}h ago",
+      "days_ago": "{{count}}d ago"
+    },
+    "types": {
+      "booking_request": {
+        "badge": "New",
+        "title": "New booking request",
+        "body": "{{memberName}} has sent a booking request",
+        "body_fallback": "{{body}}"
+      },
+      "booking_accepted": {
+        "badge": "Accepted",
+        "title": "Booking accepted",
+        "body": "PT {{ptName}} has accepted your booking request",
+        "body_fallback": "{{body}}"
+      },
+      "booking_rejected": {
+        "badge": "Rejected",
+        "title": "Booking rejected",
+        "body": "PT {{ptName}} has rejected your booking request",
+        "body_with_reason": "PT {{ptName}} has rejected your booking request: {{reason}}",
+        "body_fallback": "{{body}}"
+      },
+      "booking_cancelled": {
+        "badge": "Cancelled",
+        "title": "Booking cancelled",
+        "body_member": "One of your bookings has been cancelled",
+        "body_pt": "Booking with member {{memberName}} has been cancelled",
+        "body_fallback": "{{body}}"
+      },
+      "default": {
+        "badge": "Notif"
+      }
+    }
   }
 }

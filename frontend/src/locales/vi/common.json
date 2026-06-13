@@ -75,5 +75,47 @@
     "error_status": "Lỗi khi cập nhật trạng thái: ",
     "change_password_success": "Đổi mật khẩu thành công!",
     "change_password_error": "Đổi mật khẩu thất bại"
+  },
+  "notification_bell": {
+    "title": "Thông báo",
+    "mark_all_read": "Đánh dấu đã đọc",
+    "no_notifications": "Không có thông báo nào",
+    "time_ago": {
+      "just_now": "Vừa xong",
+      "minutes_ago": "{{count}} phút trước",
+      "hours_ago": "{{count}} giờ trước",
+      "days_ago": "{{count}} ngày trước"
+    },
+    "types": {
+      "booking_request": {
+        "badge": "Mới",
+        "title": "Yêu cầu đặt lịch mới",
+        "body": "{{memberName}} đã gửi yêu cầu đặt lịch tập",
+        "body_fallback": "{{body}}"
+      },
+      "booking_accepted": {
+        "badge": "Chấp nhận",
+        "title": "Lịch tập đã được chấp nhận",
+        "body": "PT {{ptName}} đã chấp nhận lịch tập của bạn",
+        "body_fallback": "{{body}}"
+      },
+      "booking_rejected": {
+        "badge": "Từ chối",
+        "title": "Lịch tập bị từ chối",
+        "body": "PT {{ptName}} đã từ chối lịch tập của bạn",
+        "body_with_reason": "PT {{ptName}} đã từ chối lịch tập của bạn: {{reason}}",
+        "body_fallback": "{{body}}"
+      },
+      "booking_cancelled": {
+        "badge": "Hủy",
+        "title": "Lịch tập đã bị hủy",
+        "body_member": "Một lịch tập của bạn đã bị hủy",
+        "body_pt": "Lịch tập với hội viên {{memberName}} đã bị hủy",
+        "body_fallback": "{{body}}"
+      },
+      "default": {
+        "badge": "TB"
+      }
+    }
   }
 }

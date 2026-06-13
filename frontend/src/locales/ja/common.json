@@ -75,5 +75,47 @@
     "error_status": "ステータス更新エラー: ",
     "change_password_success": "パスワードを変更しました！",
     "change_password_error": "パスワードの変更に失敗しました"
+  },
+  "notification_bell": {
+    "title": "通知",
+    "mark_all_read": "既読にする",
+    "no_notifications": "通知はありません",
+    "time_ago": {
+      "just_now": "たった今",
+      "minutes_ago": "{{count}} 分前",
+      "hours_ago": "{{count}} 時間前",
+      "days_ago": "{{count}} 日前"
+    },
+    "types": {
+      "booking_request": {
+        "badge": "新規",
+        "title": "新規予約リクエスト",
+        "body": "{{memberName}}さんがトレーニング予約リクエストを送信しました",
+        "body_fallback": "{{body}}"
+      },
+      "booking_accepted": {
+        "badge": "承認",
+        "title": "予約承認",
+        "body": "PT {{ptName}}さんがあなたの予約を承認しました",
+        "body_fallback": "{{body}}"
+      },
+      "booking_rejected": {
+        "badge": "拒否",
+        "title": "予約拒否",
+        "body": "PT {{ptName}}さんがあなたの予約を拒否しました",
+        "body_with_reason": "PT {{ptName}}さんがあなたの予約を拒否しました: {{reason}}",
+        "body_fallback": "{{body}}"
+      },
+      "booking_cancelled": {
+        "badge": "キャンセル",
+        "title": "予約キャンセル",
+        "body_member": "予約の1つがキャンセルされました",
+        "body_pt": "受講生 {{memberName}}さんとの予約がキャンセルされました",
+        "body_fallback": "{{body}}"
+      },
+      "default": {
+        "badge": "通知"
+      }
+    }
   }
 }
