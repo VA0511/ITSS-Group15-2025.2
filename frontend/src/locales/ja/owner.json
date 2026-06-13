@@ -15,7 +15,27 @@
     },
     "chart": {
       "revenue_title": "直近7ヶ月の売上",
-      "revenue_desc": "実際の取引による月次売上合計"
+      "revenue_desc": "実際の取引による月次売上合計",
+      "retention_title": "継続率",
+      "retention_desc": "前週と比較した会員継続率",
+      "member_stats_title": "会員統計",
+      "member_stats_desc": "週間の会員ステータス概要",
+      "member_active": "アクティブ",
+      "member_new": "新規登録",
+      "member_expired": "期限切れ",
+      "package_sold_title": "売れ筋パッケージ",
+      "package_sold_desc": "今月のパッケージ販売数",
+      "package_sold_qty": "販売数",
+      "equipment_status_title": "設備状態",
+      "equipment_status_desc": "稼働中、メンテナンス中、故障中の機器を追跡",
+      "equipment_ready": "稼働中",
+      "equipment_maintenance": "メンテナンス中",
+      "equipment_broken": "故障中",
+      "equipment_new": "新規",
+      "service_dist_title": "サービス分布",
+      "service_dist_desc": "会員のサービス登録比率",
+      "service_member_unit": "名",
+      "week_name": "第{{count}}週"
     }
   },
   "account": {

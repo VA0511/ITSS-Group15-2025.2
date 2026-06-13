@@ -2,6 +2,7 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import useThemeStore from '@/store/useThemeStore';
+import { useTranslation } from 'react-i18next';
 
 const defaultData = [
   { name: 'T2', new: 40, active: 240, dropped: 20 },
@@ -13,15 +14,19 @@ const defaultData = [
   { name: 'CN', new: 34, active: 430, dropped: 10 },
 ];
 
-const MemberStatsChart = ({ data: propData, className }) => {
+const MemberStatsChart = ({ data: propData, className, title, description }) => {
   const data = (propData && propData.length > 0) ? propData : defaultData;
   const isDark = useThemeStore((state) => state.theme === 'dark');
+  const { t } = useTranslation('owner');
+
+  const displayTitle = title || t('dashboard.chart.member_stats_title', { defaultValue: 'Thống kê hội viên' });
+  const displayDescription = description || t('dashboard.chart.member_stats_desc', { defaultValue: 'Tình trạng hội viên trong tuần' });
 
   return (
     <div className={cn("rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950", className)}>
       <div className="mb-4">
-        <h3 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Thống kê hội viên</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Tình trạng hội viên trong tuần</p>
+        <h3 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{displayTitle}</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{displayDescription}</p>
       </div>
       
       <div className="h-[300px] w-full mt-6">
@@ -53,9 +58,9 @@ const MemberStatsChart = ({ data: propData, className }) => {
               wrapperStyle={{ paddingTop: '20px' }}
               iconType="circle"
             />
-            <Bar dataKey="active" name="Hoạt động" fill={isDark ? "#818cf8" : "#6366f1"} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="new" name="Đăng ký mới" fill={isDark ? "#34d399" : "#10b981"} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="dropped" name="Hết hạn" fill={isDark ? "#f87171" : "#ef4444"} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="active" name={t('dashboard.chart.member_active', { defaultValue: 'Hoạt động' })} fill={isDark ? "#818cf8" : "#6366f1"} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="new" name={t('dashboard.chart.member_new', { defaultValue: 'Đăng ký mới' })} fill={isDark ? "#34d399" : "#10b981"} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="dropped" name={t('dashboard.chart.member_expired', { defaultValue: 'Hết hạn' })} fill={isDark ? "#f87171" : "#ef4444"} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

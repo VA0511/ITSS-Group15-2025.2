@@ -15,7 +15,27 @@
     },
     "chart": {
       "revenue_title": "Doanh thu 7 tháng gần nhất",
-      "revenue_desc": "Tổng doanh thu theo tháng từ giao dịch thực tế"
+      "revenue_desc": "Tổng doanh thu theo tháng từ giao dịch thực tế",
+      "retention_title": "Tỷ lệ giữ chân",
+      "retention_desc": "Tỷ lệ hội viên gia hạn so với tuần trước",
+      "member_stats_title": "Thống kê hội viên",
+      "member_stats_desc": "Tình trạng hội viên trong tuần",
+      "member_active": "Hoạt động",
+      "member_new": "Đăng ký mới",
+      "member_expired": "Hết hạn",
+      "package_sold_title": "Gói tập bán chạy",
+      "package_sold_desc": "Số lượng gói tập đã bán trong tháng",
+      "package_sold_qty": "Số gói",
+      "equipment_status_title": "Tình trạng thiết bị",
+      "equipment_status_desc": "Theo dõi số thiết bị đang hoạt động, bảo trì và đã hỏng",
+      "equipment_ready": "Sẵn sàng",
+      "equipment_maintenance": "Bảo trì",
+      "equipment_broken": "Hỏng",
+      "equipment_new": "Mới",
+      "service_dist_title": "Phân phối Dịch vụ",
+      "service_dist_desc": "Tỷ lệ đăng ký dịch vụ của hội viên",
+      "service_member_unit": "Hội viên",
+      "week_name": "Tuần {{count}}"
     }
   },
   "account": {

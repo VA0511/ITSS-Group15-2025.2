@@ -27,13 +27,13 @@ const parseArr = (raw) => {
   return [];
 };
 
-const fmt = (n) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
+const formatCurrency = (n, lang = 'vi-VN') =>
+  new Intl.NumberFormat(lang, { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
 
-const monthLabel = (d) => `T${d.getMonth() + 1}`;
+const monthLabel = (d, lang = 'vi-VN') => d.toLocaleDateString(lang, { month: 'short' });
 
 const OwnerDashboard = () => {
-  const { t } = useTranslation('owner');
+  const { t, i18n } = useTranslation('owner');
   const { data: membersRaw } = useMembers(1, 1000);
   const { data: txRaw } = useTransactions();
   const { data: employeesRaw } = useEmployees(1, 200);
@@ -68,7 +68,7 @@ const OwnerDashboard = () => {
   const retentionRate = members.length > 0 ? Math.round(activeCount / members.length * 100) : 0;
 
   const statsCards = [
-    { title: t('dashboard.stats.revenue'), value: fmt(monthRevenue), icon: ArrowUpRight, trend: 'up', trendValue: t('dashboard.stats.current_month'), trendLabel: t('dashboard.stats.compared_to_last_month') },
+    { title: t('dashboard.stats.revenue'), value: formatCurrency(monthRevenue, i18n.language), icon: ArrowUpRight, trend: 'up', trendValue: t('dashboard.stats.current_month'), trendLabel: t('dashboard.stats.compared_to_last_month') },
     { title: t('dashboard.stats.new_members'), value: String(newMembersCount), icon: Users, trend: 'up', trendValue: t('dashboard.stats.this_month'), trendLabel: t('dashboard.stats.compared_to_last_month') },
     { title: t('dashboard.stats.retention'), value: `${retentionRate}%`, icon: ShieldCheck, trend: retentionRate >= 70 ? 'up' : 'down', trendValue: `${activeCount}/${members.length}`, trendLabel: t('dashboard.stats.compared_to_last_month') },
     { title: t('dashboard.stats.staff'), value: String(employees.length), icon: Briefcase, trend: 'neutral', trendValue: t('dashboard.stats.total'), trendLabel: t('dashboard.stats.compared_to_last_month') },
@@ -82,10 +82,10 @@ const OwnerDashboard = () => {
       const total = transactions
         .filter(t => { const td = new Date(t.date); return td.getMonth() === m && td.getFullYear() === y; })
         .reduce((s, t) => s + (t.amount || 0), 0);
-      result.push({ name: monthLabel(d), total });
+      result.push({ name: monthLabel(d, i18n.language), total });
     }
     return result;
-  }, [transactions, curMonth, curYear]);
+  }, [transactions, curMonth, curYear, i18n.language]);
 
   const memberChartData = useMemo(() => {
     const result = [];
@@ -108,34 +108,34 @@ const OwnerDashboard = () => {
         const expDate = new Date(exp);
         return expDate.getMonth() === m && expDate.getFullYear() === y;
       }).length;
-      result.push({ name: monthLabel(d), new: newCount, active, dropped });
+      result.push({ name: monthLabel(d, i18n.language), new: newCount, active, dropped });
     }
     return result;
-  }, [transactions, members, curMonth, curYear]);
+  }, [transactions, members, curMonth, curYear, i18n.language]);
 
   const packageData = useMemo(() => {
     const counts = {};
-    transactions.forEach(t => {
-      const pkg = t.package || 'KhÃ¡c';
+    transactions.forEach(tx => {
+      const pkg = tx.package || t('feedback.type.other', { defaultValue: 'Other' });
       counts[pkg] = (counts[pkg] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 6);
-  }, [transactions]);
+  }, [transactions, t]);
 
   const packageSoldData = useMemo(() => {
     const counts = {};
-    transactions.forEach(t => {
-      const pkg = t.package || 'KhÃ¡c';
+    transactions.forEach(tx => {
+      const pkg = tx.package || t('feedback.type.other', { defaultValue: 'Other' });
       counts[pkg] = (counts[pkg] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([name, sold]) => ({ name, sold }))
       .sort((a, b) => b.sold - a.sold)
       .slice(0, 6);
-  }, [transactions]);
+  }, [transactions, t]);
 
   const staffChartData = useMemo(() => {
     const trainerSessionMap = {};

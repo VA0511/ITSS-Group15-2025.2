@@ -15,7 +15,27 @@
     },
     "chart": {
       "revenue_title": "Revenue – Last 7 Months",
-      "revenue_desc": "Total monthly revenue from actual transactions"
+      "revenue_desc": "Total monthly revenue from actual transactions",
+      "retention_title": "Retention Rate",
+      "retention_desc": "Member renewal rate compared to previous week",
+      "member_stats_title": "Member Statistics",
+      "member_stats_desc": "Weekly member status overview",
+      "member_active": "Active",
+      "member_new": "New Registration",
+      "member_expired": "Expired",
+      "package_sold_title": "Best Selling Packages",
+      "package_sold_desc": "Number of packages sold this month",
+      "package_sold_qty": "Packages Sold",
+      "equipment_status_title": "Equipment Status",
+      "equipment_status_desc": "Track operating, under maintenance, and broken machines",
+      "equipment_ready": "Operating",
+      "equipment_maintenance": "Under Maintenance",
+      "equipment_broken": "Broken",
+      "equipment_new": "New",
+      "service_dist_title": "Service Distribution",
+      "service_dist_desc": "Member service registration ratio",
+      "service_member_unit": "Members",
+      "week_name": "Week {{count}}"
     }
   },
   "account": {
