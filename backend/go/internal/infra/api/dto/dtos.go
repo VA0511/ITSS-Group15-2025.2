@@ -110,17 +110,21 @@ type MemberResponse struct {
 type PackageRequest struct {
 	CategoryID   int     `json:"category_id"`
 	PackageName  string  `json:"package_name"`
-	DurationDays int     `json:"duration_days"`
+	DurationDays *int    `json:"duration_days"`
 	Price        float64 `json:"price"`
+	PricingType  string  `json:"pricing_type"`
+	TotalSessions *int   `json:"total_sessions"`
 }
 
 type PackageResponse struct {
 	ID           int     `json:"id"`
 	CategoryID   int     `json:"category_id"`
 	PackageName  string  `json:"package_name"`
-	DurationDays int     `json:"duration_days"`
+	DurationDays *int    `json:"duration_days"`
 	Price        float64 `json:"price"`
 	Description  string  `json:"description"`
+	PricingType  string  `json:"pricing_type"`
+	TotalSessions *int   `json:"total_sessions"`
 }
 
 type PTDetailRequest struct {
@@ -150,6 +154,7 @@ type ServiceCategoryRequest struct {
 	CategoryName        string `json:"category_name"`
 	BenefitsDescription string `json:"benefits_description"`
 	AllowedGender       string `json:"allowed_gender"`
+	CategoryType        string `json:"category_type"`
 }
 
 type ServiceCategoryResponse struct {
@@ -157,6 +162,7 @@ type ServiceCategoryResponse struct {
 	CategoryName        string `json:"category_name"`
 	BenefitsDescription string `json:"benefits_description"`
 	AllowedGender       string `json:"allowed_gender"`
+	CategoryType        string `json:"category_type"`
 }
 
 type SubscriptionRequest struct {

@@ -5,4 +5,5 @@ type ServiceCategory struct {
 	CategoryName        string `json:"category_name"`
 	BenefitsDescription string `json:"benefits_description"`
 	AllowedGender       string `json:"allowed_gender"`
+	CategoryType        string `json:"category_type"`
 }

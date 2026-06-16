@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PackageFormComponent from '@/components/Forms/PackageForm';
@@ -7,6 +7,7 @@ import Button from '@/components/Common/Button';
 import { toast } from '@/utils/toast';
 import { packageService } from '@/services/packageService';
 import { useCreatePackage, useUpdatePackage } from '@/hooks/mutations/usePackageMutation';
+import { useServiceCategories } from '@/hooks/queries/useServiceCategories';
 
 const PackageFormPage = () => {
   const { t } = useTranslation('owner');
@@ -19,6 +20,9 @@ const PackageFormPage = () => {
 
   const createMutation = useCreatePackage();
   const updateMutation = useUpdatePackage();
+  const { data: serviceCategoriesData, isLoading: isLoadingCategories } = useServiceCategories();
+
+  const serviceCategories = serviceCategoriesData?.data || serviceCategoriesData || [];
 
   useEffect(() => {
     if (isEditing) {
@@ -28,10 +32,12 @@ const PackageFormPage = () => {
           const data = response.data || response;
           setInitialData({
             name: data.package_name || data.name,
+            categoryId: data.category_id,
+            pricingType: data.pricing_type || 'time_based',
             durationMonths: data.duration_days ? Math.round(data.duration_days / 30) : 1,
+            totalSessions: data.total_sessions || 10,
             price: data.price || 0,
             description: data.description || '',
-            type: { 1: 'VIP', 2: 'Normal', 3: 'Female-only' }[data.category_id] || 'Normal',
             status: data.is_active === true ? 'active' : 'inactive',
           });
         })
@@ -45,16 +51,22 @@ const PackageFormPage = () => {
     }
   }, [id, isEditing]);
 
-  const handleSubmit = (data) => {
-    setIsLoading(true);
-    const payload = {
+  const formatPayload = (data) => {
+    return {
       package_name: data.name,
-      category_id: { 'VIP': 1, 'Normal': 2, 'Female-only': 3 }[data.type] || 2,
-      duration_days: data.durationMonths * 30,
+      category_id: Number(data.categoryId),
+      pricing_type: data.pricingType,
+      duration_days: data.pricingType === 'time_based' ? (data.durationMonths * 30) : null,
+      total_sessions: data.pricingType === 'session_based' ? data.totalSessions : null,
       price: parseFloat(data.price),
       is_active: data.status === 'active' || data.status === true,
       description: data.description
     };
+  };
+
+  const handleSubmit = (data) => {
+    setIsLoading(true);
+    const payload = formatPayload(data);
 
     if (isEditing) {
       updateMutation.mutate(
@@ -81,7 +93,22 @@ const PackageFormPage = () => {
     }
   };
 
-  if (isEditing && !initialData) {
+  const handleSaveAndAddAnother = (data) => {
+    setIsLoading(true);
+    const payload = formatPayload(data);
+    createMutation.mutate(
+      payload,
+      {
+        onSuccess: () => {
+          setIsLoading(false);
+          toast.success("Đã lưu gói thành công! Bạn có thể tạo tiếp mức giá thứ 2.");
+        },
+        onError: () => setIsLoading(false)
+      }
+    );
+  };
+
+  if ((isEditing && !initialData) || isLoadingCategories) {
     return <div className="p-8 text-center text-gray-500">{t('package.form.loading')}</div>;
   }
 
@@ -107,7 +134,9 @@ const PackageFormPage = () => {
         <PackageFormComponent 
           initialData={initialData} 
           onSubmit={handleSubmit} 
+          onSaveAndAddAnother={handleSaveAndAddAnother}
           isLoading={isLoading} 
+          serviceCategories={serviceCategories}
         />
       </div>
     </div>

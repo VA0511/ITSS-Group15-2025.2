@@ -10,9 +10,9 @@ import { usePackages, useMemberPackages } from '@/hooks/queries/usePackages';
 import { useMyMemberProfile } from '@/hooks/queries/useMembers';
 import { useTranslation } from 'react-i18next';
 
-// Category IDs
-const BASIC_CATEGORY_IDS = [1, 2, 3]; // VIP, Normal, Female-only
-const SPECIALTY_CATEGORY_IDS = [4, 5, 6, 7, 8]; // Aerobic, Yoga, Boxing, Pilates, Dưỡng sinh
+// We now compute these dynamically from API data based on category_type
+// Fallbacks for initial render
+let BASIC_CATEGORY_IDS = [1, 2, 3];
 
 const SPECIALTY_META = {
   4: { label: 'Aerobic', icon: Zap, color: 'orange', description: 'Tăng cường sức bền tim mạch, đốt mỡ hiệu quả' },
@@ -61,14 +61,20 @@ const RegisterGymPackage = () => {
   // Active basic subscription (category 1,2,3)
   const activeBasicSub = memberSubs.find(s => BASIC_CATEGORY_IDS.includes(s.category_id));
 
+  // All packages as array, filtering out inactive ones
+  const rawPackages = (Array.isArray(apiPackages) ? apiPackages : (apiPackages.data || [])).filter(p => p.is_active !== false);
+
+  // Dynamically determine BASIC_CATEGORY_IDS and SPECIALTY_CATEGORY_IDS
+  if (rawPackages.length > 0) {
+    BASIC_CATEGORY_IDS = [...new Set(rawPackages.filter(p => p.category_type === 'basic' || [1,2,3].includes(p.category_id)).map(p => p.category_id))];
+  }
+  const SPECIALTY_CATEGORY_IDS = [...new Set(rawPackages.map(p => p.category_id).filter(id => !BASIC_CATEGORY_IDS.includes(id)))];
+
   // Active specialty subscriptions keyed by category_id
   const activeSpecialtyMap = {};
   memberSubs
     .filter(s => SPECIALTY_CATEGORY_IDS.includes(s.category_id))
     .forEach(s => { activeSpecialtyMap[s.category_id] = s; });
-
-  // All packages as array
-  const rawPackages = Array.isArray(apiPackages) ? apiPackages : (apiPackages.data || []);
 
   // Basic packages (categories 1-3), gender-filtered
   const basicPackages = rawPackages
@@ -187,7 +193,7 @@ const RegisterGymPackage = () => {
               </div>
             )}
 
-            {['VIP', 'Normal', 'Female-only'].map(catName => {
+            {[...new Set(basicPackages.map(p => p.category_name))].map(catName => {
               const pkgs = basicPackages.filter(p => p.category_name === catName);
               if (pkgs.length === 0) return null;
               const isVip = catName === 'VIP';
@@ -200,7 +206,7 @@ const RegisterGymPackage = () => {
                       : isFemale ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300'
                       : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                     }`}>
-                      {isVip ? t('register.vip_badge') : isFemale ? t('register.female_badge') : t('register.basic_badge')}
+                      {isVip ? t('register.vip_badge') : isFemale ? t('register.female_badge') : (catName === 'Normal' ? t('register.basic_badge') : catName)}
                     </span>
                     <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
                   </div>
@@ -229,7 +235,11 @@ const RegisterGymPackage = () => {
                             </div>
                             <div>
                               <p className="font-semibold text-gray-900 dark:text-white">{pkg.package_name}</p>
-                              <p className="text-xs text-gray-400 mt-0.5">{t('register.days', { count: pkg.duration_days })}</p>
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                {pkg.pricing_type === 'session_based' 
+                                  ? `${pkg.total_sessions} buổi` 
+                                  : `${Math.round(pkg.duration_days / 30)} tháng`}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -325,7 +335,11 @@ const RegisterGymPackage = () => {
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-900 dark:text-white text-sm">{pkg.package_name}</p>
-                                  <p className="text-xs text-gray-400">{t('register.days', { count: pkg.duration_days })}</p>
+                                  <p className="text-xs text-gray-400">
+                                    {pkg.pricing_type === 'session_based' 
+                                      ? `${pkg.total_sessions} buổi` 
+                                      : `${Math.round(pkg.duration_days / 30)} tháng`}
+                                  </p>
                                 </div>
                               </div>
                               <p className="font-extrabold text-blue-600 dark:text-blue-400 text-sm whitespace-nowrap">
@@ -390,7 +404,7 @@ const RegisterGymPackage = () => {
               const benefits = selectedPkg.description
                 ? selectedPkg.description.split(',').map(s => s.trim()).filter(Boolean)
                 : isSpecialty
-                ? [t(`register.specialty_desc.${selectedPkg.category_id}`, { defaultValue: selectedPkg.category_name })]
+                ? [t(`register.specialty_desc.${selectedPkg.category_id}`, { defaultValue: meta.description || selectedPkg.category_name })]
                 : t('register.default_benefits').split('|');
               const imgUrl = isSpecialty
                 ? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600'
@@ -413,7 +427,11 @@ const RegisterGymPackage = () => {
                     {isSpecialty ? meta.label : (selectedPkg.category_name === 'Female-only' ? t('register.female_badge') : selectedPkg.category_name)}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{selectedPkg.package_name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('register.duration_label', { days: selectedPkg.duration_days })}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    Thời hạn: {selectedPkg.pricing_type === 'session_based' 
+                      ? `${selectedPkg.total_sessions} buổi` 
+                      : `${Math.round(selectedPkg.duration_days / 30)} tháng`}
+                  </p>
 
                   <div className="space-y-3 mb-6">
                     <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2 text-sm">

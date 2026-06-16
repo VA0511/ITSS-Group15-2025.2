@@ -21,8 +21,11 @@ const PackageList = () => {
   // const deleteMutation = useDeletePackage(); 
 
   const getDurationText = (pkg) => {
+    if (pkg.pricing_type === 'session_based') {
+      return `${pkg.total_sessions} buổi`;
+    }
     if (pkg.duration_days) {
-      return `${pkg.duration_days} ${t('package.days')}`;
+      return `${Math.round(pkg.duration_days / 30)} tháng`;
     }
     const unitMap = {
       'Tháng': t('package.months'),
