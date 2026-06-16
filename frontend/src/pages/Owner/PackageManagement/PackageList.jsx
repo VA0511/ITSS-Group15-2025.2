@@ -22,9 +22,9 @@ const PackageList = () => {
 
   const getDurationText = (pkg) => {
     if (pkg.pricing_type === 'session_based') {
-      return `${pkg.total_sessions} buổi`;
+      return `${pkg.total_sessions || 0} buổi`;
     }
-    if (pkg.duration_days) {
+    if (pkg.duration_days !== undefined && pkg.duration_days !== null) {
       return `${Math.round(pkg.duration_days / 30)} tháng`;
     }
     const unitMap = {

@@ -147,13 +147,18 @@ func (h *MemberRegistrationHandler) CreateMemberWithAccount(w http.ResponseWrite
 			return
 		}
 
+		durationDays := 0
+		if pkg.DurationDays != nil {
+			durationDays = *pkg.DurationDays
+		}
+
 		now := time.Now()
 		sub := &entity.Subscription{
 			MemberID:         member.ID,
 			PackageID:        req.PackageID,
 			RegistrationDate: now,
 			StartDate:        now,
-			EndDate:          now.AddDate(0, 0, pkg.DurationDays),
+			EndDate:          now.AddDate(0, 0, durationDays),
 			Status:           "active",
 		}
 		if err := h.subUC.CreateSubscription(sub); err != nil {

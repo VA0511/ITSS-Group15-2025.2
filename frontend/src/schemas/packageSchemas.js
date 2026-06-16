@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const packageSchema = z.object({
+  name: z.string().min(3, "Tên gói tập phải có ít nhất 3 ký tự (VD: Thể hình Cơ bản)"),
   categoryId: z.union([
     z.coerce.number().min(1),
     z.literal('NEW_CATEGORY')

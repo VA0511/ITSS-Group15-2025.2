@@ -56,9 +56,9 @@ const PackageFormPage = () => {
       package_name: data.name,
       category_id: Number(data.categoryId),
       pricing_type: data.pricingType,
-      duration_days: data.pricingType === 'time_based' ? (data.durationMonths * 30) : null,
-      total_sessions: data.pricingType === 'session_based' ? data.totalSessions : null,
-      price: parseFloat(data.price),
+      duration_days: data.pricingType === 'time_based' ? (Number(data.durationMonths) * 30) : null,
+      total_sessions: data.pricingType === 'session_based' ? Number(data.totalSessions) : null,
+      price: Number(data.price),
       is_active: data.status === 'active' || data.status === true,
       description: data.description
     };

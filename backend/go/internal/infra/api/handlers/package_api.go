@@ -1,4 +1,4 @@
-﻿package handlers
+package handlers
 
 import (
 	"encoding/json"
@@ -22,7 +22,10 @@ func NewPackageHandler(u package_usecase.PackageUsecase) *PackageHandler {
 
 func (h *PackageHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var pkg entity.MembershipPackage
-	json.NewDecoder(r.Body).Decode(&pkg)
+	if err := json.NewDecoder(r.Body).Decode(&pkg); err != nil {
+		http.Error(w, "Invalid payload: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 	err := h.usecase.CreatePackage(&pkg)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -89,13 +92,12 @@ func (h *PackageHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 func (h *PackageHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 	var pkg entity.MembershipPackage
-	err := json.NewDecoder(r.Body).Decode(&pkg)
-	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&pkg); err != nil {
+		http.Error(w, "Invalid payload: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	pkg.ID = id
-	err = h.usecase.UpdatePackage(&pkg)
+	err := h.usecase.UpdatePackage(&pkg)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

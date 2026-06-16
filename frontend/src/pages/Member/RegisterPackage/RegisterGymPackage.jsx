@@ -237,8 +237,8 @@ const RegisterGymPackage = () => {
                               <p className="font-semibold text-gray-900 dark:text-white">{pkg.package_name}</p>
                               <p className="text-xs text-gray-400 mt-0.5">
                                 {pkg.pricing_type === 'session_based' 
-                                  ? `${pkg.total_sessions} buổi` 
-                                  : `${Math.round(pkg.duration_days / 30)} tháng`}
+                                  ? `${pkg.total_sessions || 0} buổi` 
+                                  : `${Math.round((pkg.duration_days || 0) / 30)} tháng`}
                               </p>
                             </div>
                           </div>
@@ -300,7 +300,9 @@ const RegisterGymPackage = () => {
                         <span className={`text-xs font-bold px-3 py-1 rounded-full ${colors.badge}`}>
                           {meta.label}
                         </span>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">{t(descKey)}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
+                          {t(descKey) !== descKey ? t(descKey) : (group.packages[0]?.description || 'Dịch vụ chuyên biệt')}
+                        </p>
                         {isActiveCategory && (
                           <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded-full font-semibold">
                             {t('register.active_category_badge')}
@@ -337,8 +339,8 @@ const RegisterGymPackage = () => {
                                   <p className="font-semibold text-gray-900 dark:text-white text-sm">{pkg.package_name}</p>
                                   <p className="text-xs text-gray-400">
                                     {pkg.pricing_type === 'session_based' 
-                                      ? `${pkg.total_sessions} buổi` 
-                                      : `${Math.round(pkg.duration_days / 30)} tháng`}
+                                      ? `${pkg.total_sessions || 0} buổi` 
+                                      : `${Math.round((pkg.duration_days || 0) / 30)} tháng`}
                                   </p>
                                 </div>
                               </div>
@@ -404,7 +406,9 @@ const RegisterGymPackage = () => {
               const benefits = selectedPkg.description
                 ? selectedPkg.description.split(',').map(s => s.trim()).filter(Boolean)
                 : isSpecialty
-                ? [t(`register.specialty_desc.${selectedPkg.category_id}`, { defaultValue: meta.description || selectedPkg.category_name })]
+                ? [t(`register.specialty_desc.${selectedPkg.category_id}`) !== `register.specialty_desc.${selectedPkg.category_id}` 
+                    ? t(`register.specialty_desc.${selectedPkg.category_id}`) 
+                    : (meta.description || selectedPkg.category_name)]
                 : t('register.default_benefits').split('|');
               const imgUrl = isSpecialty
                 ? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600'
@@ -429,8 +433,8 @@ const RegisterGymPackage = () => {
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{selectedPkg.package_name}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                     Thời hạn: {selectedPkg.pricing_type === 'session_based' 
-                      ? `${selectedPkg.total_sessions} buổi` 
-                      : `${Math.round(selectedPkg.duration_days / 30)} tháng`}
+                      ? `${selectedPkg.total_sessions || 0} buổi` 
+                      : `${Math.round((selectedPkg.duration_days || 0) / 30)} tháng`}
                   </p>
 
                   <div className="space-y-3 mb-6">
