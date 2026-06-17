@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Search, Eye } from 'lucide-react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Search, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '@/components/Common/Button';
 import Input from '@/components/Common/Input';
@@ -87,6 +87,12 @@ const TransactionsView = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 20;
+
+    useEffect(() => {
+        setPage(1);
+    }, [searchTerm, typeFilter, statusFilter]);
 
     const { data: apiTransactions = [], isLoading, isError, error } = useTransactions();
 
@@ -117,6 +123,12 @@ const TransactionsView = () => {
             return matchSearch && matchType && matchStatus;
         });
     }, [transactions, searchTerm, typeFilter, statusFilter]);
+
+    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+    const paginatedTransactions = useMemo(() => {
+        const start = (page - 1) * itemsPerPage;
+        return filteredTransactions.slice(start, start + itemsPerPage);
+    }, [filteredTransactions, page]);
 
     const stats = useMemo(() => {
         const completedTransactions = transactions.filter((txn) => txn.status === 'completed');
@@ -251,7 +263,7 @@ const TransactionsView = () => {
                                 </td>
                             </tr>
                         ) : (
-                            filteredTransactions.map((txn) => {
+                            paginatedTransactions.map((txn) => {
                                 const typeConfig = resolveTypeConfig(txn.type);
                                 const currentStatusConfig = resolveStatusConfig(txn.status);
 
@@ -288,6 +300,35 @@ const TransactionsView = () => {
                         )}
                     </tbody>
                 </table>
+                
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-between border-t border-gray-100 px-6 py-4 dark:border-gray-800">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Hiển thị từ <span className="font-medium">{(page - 1) * itemsPerPage + 1}</span> đến <span className="font-medium">{Math.min(page * itemsPerPage, filteredTransactions.length)}</span> trong tổng số <span className="font-medium">{filteredTransactions.length}</span> giao dịch
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <span className="text-sm text-gray-700 dark:text-gray-300 mx-2">
+                                Trang {page} / {totalPages}
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                            >
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </motion.div>
 
             {showDetailModal && selectedTransaction && (

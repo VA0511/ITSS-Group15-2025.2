@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"gym-management/internal/domain/entity"
+	"gym-management/internal/domain/usecase/invoice_usecase"
 	"gym-management/internal/domain/usecase/member_usecase"
 	"gym-management/internal/domain/usecase/package_usecase"
 	"gym-management/internal/domain/usecase/subscription_usecase"
@@ -19,10 +20,11 @@ type SubscriptionHandler struct {
 	usecase        subscription_usecase.SubscriptionUsecase
 	memberUsecase  member_usecase.MemberUsecase
 	packageUsecase package_usecase.PackageUsecase
+	invoiceUsecase invoice_usecase.InvoiceUsecase
 }
 
-func NewSubscriptionHandler(u subscription_usecase.SubscriptionUsecase, mu member_usecase.MemberUsecase, pu package_usecase.PackageUsecase) *SubscriptionHandler {
-	return &SubscriptionHandler{usecase: u, memberUsecase: mu, packageUsecase: pu}
+func NewSubscriptionHandler(u subscription_usecase.SubscriptionUsecase, mu member_usecase.MemberUsecase, pu package_usecase.PackageUsecase, iu invoice_usecase.InvoiceUsecase) *SubscriptionHandler {
+	return &SubscriptionHandler{usecase: u, memberUsecase: mu, packageUsecase: pu, invoiceUsecase: iu}
 }
 
 func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -100,6 +102,16 @@ func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	invoice := &entity.Invoice{
+		MemberID:       subscription.MemberID,
+		SubscriptionID: subscription.ID,
+		TotalAmount:    newPkg.Price,
+		PaymentStatus:  "Paid",
+		PaymentMethod:  "VNPay",
+		Notes:          "Đăng ký mới - " + newPkg.PackageName,
+	}
+	h.invoiceUsecase.CreateInvoice(invoice)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -324,10 +336,17 @@ func (h *SubscriptionHandler) Renew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var body struct {
-		NewEndDate time.Time `json:"new_end_date"`
+		NewEndDate   time.Time `json:"new_end_date"`
+		RenewalPrice float64   `json:"renewal_price"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	sub, err := h.usecase.GetSubscriptionByID(id)
+	if err != nil {
+		http.Error(w, "subscription not found", http.StatusNotFound)
 		return
 	}
 
@@ -337,11 +356,6 @@ func (h *SubscriptionHandler) Renew(w http.ResponseWriter, r *http.Request) {
 		member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
 		if err != nil {
 			http.Error(w, "member not found", http.StatusInternalServerError)
-			return
-		}
-		sub, err := h.usecase.GetSubscriptionByID(id)
-		if err != nil {
-			http.Error(w, "subscription not found", http.StatusNotFound)
 			return
 		}
 		if sub.MemberID != member.ID {
@@ -354,6 +368,25 @@ func (h *SubscriptionHandler) Renew(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Fetch package name to include in invoice
+	pkgName := "Gói tập"
+	if sub != nil {
+		pkg, err := h.packageUsecase.GetPackageByID(sub.PackageID)
+		if err == nil && pkg != nil {
+			pkgName = pkg.PackageName
+		}
+	}
+
+	invoice := &entity.Invoice{
+		MemberID:       sub.MemberID,
+		SubscriptionID: id,
+		TotalAmount:    body.RenewalPrice,
+		PaymentStatus:  "Paid",
+		PaymentMethod:  "VNPay",
+		Notes:          "Gia hạn - " + pkgName,
+	}
+	h.invoiceUsecase.CreateInvoice(invoice)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "subscription renewed successfully"})

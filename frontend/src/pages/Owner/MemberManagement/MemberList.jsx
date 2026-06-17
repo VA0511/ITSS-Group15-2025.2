@@ -73,11 +73,7 @@ const MemberList = () => {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('member.title')}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('member.subtitle')}</p>
         </div>
-        <Link to="/owner/members/create">
-          <Button leftIcon={<Plus className="h-4 w-4" />}>
-            {t('member.add_btn')}
-          </Button>
-        </Link>
+
       </motion.div>
 
       <motion.div variants={slideUpVariants} className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
@@ -107,7 +103,7 @@ const MemberList = () => {
                   <TableHead>{t('member.table.name')}</TableHead>
                   <TableHead>{t('member.table.package')}</TableHead>
                   <TableHead>{t('member.table.phone')}</TableHead>
-                  <TableHead>{t('member.table.date')}</TableHead>
+                  <TableHead>Hạn / Số buổi</TableHead>
                   <TableHead>{t('member.table.status')}</TableHead>
                   <TableHead className="text-right">{t('member.table.actions')}</TableHead>
                 </TableRow>
@@ -141,9 +137,12 @@ const MemberList = () => {
                       </TableCell>
                       <TableCell>{member.phone || member.Phone || 'N/A'}</TableCell>
                       <TableCell>
-                        {member.joinDate
-                          ? new Date(member.joinDate).toLocaleDateString('vi-VN')
-                          : 'N/A'}
+                        {member.pricingType === 'session_based'
+                          ? <span>{member.sessionsRemaining || 0} buổi</span>
+                          : (member.expiryDate && member.expiryDate !== '0001-01-01'
+                            ? new Date(member.expiryDate).toLocaleDateString('vi-VN')
+                            : 'N/A')
+                        }
                       </TableCell>
                       <TableCell>
                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${

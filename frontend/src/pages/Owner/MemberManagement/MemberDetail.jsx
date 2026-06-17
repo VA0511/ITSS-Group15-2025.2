@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Activity, DollarSign, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -126,17 +126,21 @@ const MemberDetail = () => {
                    {/* Hiển thị badge trạng thái cho gói hiện tại */}
                    {member.package && member.package !== 'Chưa đăng ký' && (
                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                       new Date(member.expiryDate) >= new Date() 
+                       member.status === 'active' || member.Status === 'active'
                         ? "bg-green-100 text-green-700" 
                         : "bg-red-100 text-red-700"
                      }`}>
-                       {new Date(member.expiryDate) >= new Date() ? t('member.detail.package.status_active') : t('member.detail.package.status_expired')}
+                       {member.status === 'active' || member.Status === 'active' ? t('member.detail.package.status_active') : t('member.detail.package.status_expired')}
                      </span>
                    )}
                  </div>
                  <p className="text-sm text-gray-500 mt-1">
                    {member.package && member.package !== 'Chưa đăng ký'
-                    ? t('member.detail.package.expiry', { date: new Date(member.expiryDate).toLocaleDateString('vi-VN') })
+                    ? (member.pricingType === 'session_based' 
+                        ? `Còn lại: ${member.sessionsRemaining || 0} buổi`
+                        : (member.expiryDate && member.expiryDate !== '0001-01-01' 
+                            ? t('member.detail.package.expiry', { date: new Date(member.expiryDate).toLocaleDateString('vi-VN') }) 
+                            : 'N/A'))
                     : t('member.detail.package.not_registered')}
                  </p>
                </div>
@@ -157,7 +161,8 @@ const MemberDetail = () => {
             ) : historyResponse?.data?.length > 0 ? (
               <div className="space-y-4">
                 {historyResponse.data.map((item) => {
-                  const isExpired = new Date(item.end_date) < new Date();
+                  const hasValidEndDate = item.end_date && !item.end_date.startsWith('0001-01-01');
+                  const isExpired = hasValidEndDate ? new Date(item.end_date) < new Date() : false;
                   
                   return (
                     <div key={item.id} className="relative pl-6 border-l-2 border-gray-100 dark:border-gray-800 pb-4 last:pb-0">
@@ -173,7 +178,10 @@ const MemberDetail = () => {
                           <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {t('member.detail.history.period', { start: new Date(item.start_date).toLocaleDateString("vi-VN"), end: new Date(item.end_date).toLocaleDateString("vi-VN") })}
+                              {hasValidEndDate 
+                                ? t('member.detail.history.period', { start: new Date(item.start_date).toLocaleDateString("vi-VN"), end: new Date(item.end_date).toLocaleDateString("vi-VN") })
+                                : `Từ ${new Date(item.start_date).toLocaleDateString("vi-VN")}`
+                              }
                             </span>
                             <span className="flex items-center gap-1">
                               <DollarSign className="h-3 w-3" /> 

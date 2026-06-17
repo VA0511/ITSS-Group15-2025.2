@@ -9,7 +9,8 @@ type MemberListItemDTO struct {
 	Status            string `json:"status"`            // từ Member.is_active (true->active, false->inactive)
 	ExpiryDate        string `json:"expiryDate"`        // từ Subscription.end_date
 	JoinDate          string `json:"joinDate"`          // từ Subscription.start_date
-	SessionsRemaining int    `json:"sessionsRemaining"` // số ngày còn lại = end_date - today
+	SessionsRemaining int    `json:"sessionsRemaining"` // số ngày/buổi còn lại
+	PricingType       string `json:"pricingType"`       // 'time_based' hoặc 'session_based'
 	RoadmapGoal       string `json:"roadmap_goal"`      // từ Member.roadmap_goal
 	Avatar            string `json:"avatar"`
 }
@@ -31,4 +32,6 @@ type MemberDetailDTO struct {
 	Avatar             string `json:"avatar"`
 	RoadmapGoal        string `json:"roadmap_goal"`
 	MemberFreeSchedule string `json:"member_free_schedule"`
+	PricingType        string `json:"pricingType"`
+	SessionsRemaining  int    `json:"sessionsRemaining"`
 }

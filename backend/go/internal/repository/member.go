@@ -139,10 +139,16 @@ SELECT DISTINCT ON (m.id)
     COALESCE(m.full_name, ''),
     COALESCE(m.phone, ''),
     COALESCE(mp.package_name, 'Chưa đăng ký') as package_name,
-    CASE WHEN m.is_active = false THEN 'inactive' WHEN s.end_date IS NOT NULL AND s.end_date >= CURRENT_DATE THEN 'active' ELSE 'inactive' END as status,
+    CASE 
+        WHEN m.is_active = false THEN 'inactive' 
+        WHEN mp.pricing_type = 'session_based' AND s.remaining_sessions > 0 THEN 'active'
+        WHEN mp.pricing_type != 'session_based' AND s.end_date IS NOT NULL AND s.end_date >= CURRENT_DATE THEN 'active' 
+        ELSE 'inactive' 
+    END as status,
     COALESCE(TO_CHAR(s.end_date, 'YYYY-MM-DD'), '') as end_date,
     COALESCE(TO_CHAR(s.registration_date, 'YYYY-MM-DD'), '') as registration_date,
-    COALESCE((s.end_date::date - CURRENT_DATE), 0) as sessions_remaining,
+    COALESCE(s.remaining_sessions, COALESCE((s.end_date::date - CURRENT_DATE), 0)) as sessions_remaining,
+    COALESCE(mp.pricing_type, 'time_based') as pricing_type,
     COALESCE(m.roadmap_goal, '') as roadmap_goal,
     COALESCE(m.avatar, '') as avatar
 FROM "Member" m
@@ -160,10 +166,10 @@ ORDER BY m.id DESC, s.registration_date DESC
 	var members []*dto.MemberListItemDTO
 	for rows.Next() {
 		var id int
-		var fullName, phone, packageName, status, endDate, startDate, roadmapGoal, avatar string
+		var fullName, phone, packageName, status, endDate, startDate, roadmapGoal, avatar, pricingType string
 		var sessionsRemaining int
 
-		err := rows.Scan(&id, &fullName, &phone, &packageName, &status, &endDate, &startDate, &sessionsRemaining, &roadmapGoal, &avatar)
+		err := rows.Scan(&id, &fullName, &phone, &packageName, &status, &endDate, &startDate, &sessionsRemaining, &pricingType, &roadmapGoal, &avatar)
 		if err != nil {
 			return nil, err
 		}
@@ -177,6 +183,7 @@ ORDER BY m.id DESC, s.registration_date DESC
 			ExpiryDate:        endDate,
 			JoinDate:          startDate,
 			SessionsRemaining: sessionsRemaining,
+			PricingType:       pricingType,
 			RoadmapGoal:       roadmapGoal,
 			Avatar:            avatar,
 		}
@@ -200,21 +207,28 @@ func (r *memberRepository) GetMemberByIDWithDetails(id int) (*dto.MemberDetailDT
         m.id, m.full_name, m.phone, m.email, m.gender,
         TO_CHAR(m.dob, 'YYYY-MM-DD'), m.address,
         COALESCE(sub.package_name, 'Chưa đăng ký'),
-        CASE WHEN m.is_active = false THEN 'inactive' WHEN sub.end_date IS NOT NULL AND sub.end_date::date >= CURRENT_DATE THEN 'active' ELSE 'inactive' END,
+        CASE 
+            WHEN m.is_active = false THEN 'inactive' 
+            WHEN sub.pricing_type = 'session_based' AND sub.remaining_sessions > 0 THEN 'active'
+            WHEN sub.pricing_type != 'session_based' AND sub.end_date IS NOT NULL AND sub.end_date::date >= CURRENT_DATE THEN 'active' 
+            ELSE 'inactive' 
+        END,
         COALESCE(TO_CHAR(sub.end_date, 'YYYY-MM-DD'), ''),
         COALESCE(TO_CHAR(sub.registration_date, 'YYYY-MM-DD'), ''),
         m.is_active,
         COALESCE(m.avatar, ''),
         COALESCE(m.roadmap_goal, ''),
-        COALESCE(m.member_free_schedule, '')
+        COALESCE(m.member_free_schedule, ''),
+        COALESCE(sub.pricing_type, 'time_based'),
+        COALESCE(sub.remaining_sessions, COALESCE((sub.end_date::date - CURRENT_DATE), 0))
     FROM "Member" m
     LEFT JOIN LATERAL (
-        -- Lấy subscription có ngày kết thúc xa nhất (gói hiện tại)
-        SELECT s.end_date, s.registration_date, mp.package_name
+        -- Lấy subscription có ngày kết thúc xa nhất hoặc số buổi còn lại nhiều nhất
+        SELECT s.end_date, s.registration_date, s.remaining_sessions, mp.package_name, mp.pricing_type
         FROM "Subscription" s
         JOIN "MembershipPackage" mp ON s.package_id = mp.id
         WHERE s.member_id = m.id
-        ORDER BY s.end_date DESC
+        ORDER BY s.end_date DESC, s.remaining_sessions DESC
         LIMIT 1
     ) sub ON true
     WHERE m.id = $1`
@@ -235,6 +249,8 @@ func (r *memberRepository) GetMemberByIDWithDetails(id int) (*dto.MemberDetailDT
 		&memberDetail.Avatar,
 		&memberDetail.RoadmapGoal,
 		&memberDetail.MemberFreeSchedule,
+		&memberDetail.PricingType,
+		&memberDetail.SessionsRemaining,
 	)
 
 	return memberDetail, err

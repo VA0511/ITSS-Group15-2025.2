@@ -136,7 +136,7 @@ func main() {
 	accountHandler := handlers.NewAccountHandler(accountUsecase)
 	authHandler := handlers.NewAuthHandler(authUsecase)
 	serviceCategoryHandler := handlers.NewServiceCategoryHandler(serviceCategoryUsecase)
-	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase, memberUsecase, packageUsecase)
+	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionUsecase, memberUsecase, packageUsecase, invoiceUsecase)
 	trainingBookingHandler := handlers.NewTrainingBookingHandler(trainingBookingUsecase, memberUsecase, employeeUsecase, trainingSessionUsecase, notifHub)
 	trainingSessionHandler := handlers.NewTrainingSessionHandler(trainingSessionUsecase, memberUsecase, employeeUsecase)
 	ptDetailHandler := handlers.NewPTDetailHandler(ptDetailUsecase)
