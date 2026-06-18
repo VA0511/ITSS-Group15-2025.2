@@ -19,6 +19,9 @@ export const trainingService = {
   getSessions: async () => {
     return axios.get('/training-sessions');
   },
+  getMyCheckInHistory: async () => {
+    return axios.get('/members/me/checkin-history');
+  },
   getSessionById: async (id) => {
     return axios.get(`/training-sessions/${id}`);
   },

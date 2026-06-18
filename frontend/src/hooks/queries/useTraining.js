@@ -26,6 +26,15 @@ export const useMyBookings = () => {
   });
 };
 
+export const useMyCheckInHistory = () => {
+  return useQuery({
+    queryKey: ['myCheckInHistory'],
+    queryFn: async () => toArray(await trainingService.getMyCheckInHistory()),
+    staleTime: 0,
+  });
+};
+
+
 export const useTrainingSessionDetails = (id) => {
   return useQuery({
     queryKey: ['trainingSession', id],

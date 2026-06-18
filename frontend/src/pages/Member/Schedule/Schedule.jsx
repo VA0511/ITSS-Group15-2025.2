@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
-import { useMyBookings, usePTDetails, useTrainingSessions } from '@/hooks/queries/useTraining';
+import { useMyBookings, usePTDetails, useTrainingSessions, useMyCheckInHistory } from '@/hooks/queries/useTraining';
 import { useCreateBooking, useConfirmAttendance } from '@/hooks/mutations/useTrainingMutations';
 
 import ScheduleTabs from './components/ScheduleTabs';
@@ -11,6 +11,7 @@ import WorkoutList from './components/WorkoutList';
 import EvaluationView from './components/EvaluationView';
 import EvaluationTimeline from './components/EvaluationTimeline';
 import RequestsTimeline from './components/RequestsTimeline';
+import CheckInHistoryTimeline from './components/CheckInHistoryTimeline';
 import TrainerModal from './components/Modals/TrainerModal';
 import BookingModal from './components/Modals/BookingModal';
 import WorkoutDetailModal from './components/Modals/WorkoutDetailModal';
@@ -58,9 +59,11 @@ const Schedule = () => {
   const { data: bookingsRaw } = useMyBookings();
   const { data: ptDetailsRaw } = usePTDetails();
   const { data: sessionsRaw } = useTrainingSessions();
+  const { data: checkInHistoryRaw } = useMyCheckInHistory();
   const bookings = Array.isArray(bookingsRaw) ? bookingsRaw : [];
   const ptDetails = Array.isArray(ptDetailsRaw) ? ptDetailsRaw : [];
   const sessions = Array.isArray(sessionsRaw) ? sessionsRaw : [];
+  const checkInHistories = Array.isArray(checkInHistoryRaw) ? checkInHistoryRaw : [];
   const { mutate: createBooking, isPending: isCreating } = useCreateBooking();
   const { mutate: confirmAttendance } = useConfirmAttendance();
 
@@ -267,6 +270,12 @@ const Schedule = () => {
     }
   };
 
+  const openCheckInHistoryTab = () => {
+    setActiveTab('checkin_history');
+    setSelectedDate(todayKey);
+    setCurrentDate(new Date());
+  };
+
   const getCalendarDotClass = (item) => {
     if (activeTab === 'scheduled') {
       return item.status === 'Confirmed' ? 'bg-green-500' : 'bg-blue-400';
@@ -353,6 +362,7 @@ const Schedule = () => {
           openScheduledTab={openScheduledTab}
           openBookingTab={openBookingTab}
           openEvaluationsTab={openEvaluationsTab}
+          openCheckInHistoryTab={openCheckInHistoryTab}
           todayKey={todayKey}
         />
 
@@ -361,6 +371,14 @@ const Schedule = () => {
           <div className="flex-1 overflow-y-auto">
             <EvaluationTimeline
               completedSessionsMap={completedSessionsMap}
+              locale={locale}
+            />
+          </div>
+        ) : activeTab === 'checkin_history' ? (
+          /* ── CheckInHistory: full-width timeline, no calendar ── */
+          <div className="flex-1 overflow-y-auto">
+            <CheckInHistoryTimeline
+              checkInHistories={checkInHistories}
               locale={locale}
             />
           </div>

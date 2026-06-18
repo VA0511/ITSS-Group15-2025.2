@@ -14,6 +14,7 @@ type TrainingSessionUsecase interface {
 	UpdateTrainingSession(trainingSession *entity.TrainingSession) error
 	DeleteTrainingSession(id int) error
 	ConfirmAttendance(id int, memberID int) error
+	GetMyHistory(memberID int) ([]*entity.CheckInHistory, error)
 }
 
 type trainingSessionUsecase struct {
@@ -72,4 +73,8 @@ func (u *trainingSessionUsecase) GetSessionsByPTEmployeeID(employeeID int) ([]*e
 
 func (u *trainingSessionUsecase) ConfirmAttendance(id int, memberID int) error {
 	return u.repo.ConfirmAttendance(id, memberID)
+}
+
+func (u *trainingSessionUsecase) GetMyHistory(memberID int) ([]*entity.CheckInHistory, error) {
+	return u.repo.GetMyHistory(memberID)
 }

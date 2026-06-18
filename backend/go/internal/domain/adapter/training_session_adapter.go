@@ -10,4 +10,5 @@ type TrainingSessionRepository interface {
 	Update(ts *entity.TrainingSession) error
 	Delete(id int) error
 	ConfirmAttendance(id int, memberID int) error
+	GetMyHistory(memberID int) ([]*entity.CheckInHistory, error)
 }

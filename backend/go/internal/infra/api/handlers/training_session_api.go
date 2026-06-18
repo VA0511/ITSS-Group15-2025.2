@@ -157,3 +157,29 @@ func (h *TrainingSessionHandler) ConfirmAttendance(w http.ResponseWriter, r *htt
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func (h *TrainingSessionHandler) GetMyHistory(w http.ResponseWriter, r *http.Request) {
+	currentUser, ok := middleware.GetAuthenticatedUser(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
+	if err != nil {
+		http.Error(w, "member not found", http.StatusNotFound)
+		return
+	}
+
+	histories, err := h.usecase.GetMyHistory(member.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if histories == nil {
+		histories = []*entity.CheckInHistory{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(histories)
+}

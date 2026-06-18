@@ -166,6 +166,7 @@ func NewRouter(
 	allRoles.HandleFunc("/packages/{id}", packageHandler.GetByID).Methods("GET")
 
 	// Member-specific: specific paths first
+	allRoles.HandleFunc("/members/me/checkin-history", trainingSessionHandler.GetMyHistory).Methods("GET")
 	allRoles.HandleFunc("/members/me/subscriptions", subscriptionHandler.GetMySubscriptions).Methods("GET")
 	allRoles.HandleFunc("/members/me/feedbacks", feedbackHandler.GetMyFeedbacks).Methods("GET")
 	allRoles.HandleFunc("/members/account/{id}", memberHandler.GetByAccountID).Methods("GET")

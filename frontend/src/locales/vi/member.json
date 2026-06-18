@@ -145,7 +145,8 @@
       "scheduled": "Lịch tập của tôi",
       "booking": "Đặt buổi tập",
       "requests": "Yêu cầu của tôi",
-      "evaluations": "Đánh giá buổi tập"
+      "evaluations": "Đánh giá buổi tập",
+      "checkin_history": "Lịch sử tập"
     },
     "calendar": {
       "days": {

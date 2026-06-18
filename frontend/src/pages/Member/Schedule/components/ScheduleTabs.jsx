@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequestDate, openScheduledTab, openBookingTab, openEvaluationsTab, todayKey }) => {
+const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequestDate, openScheduledTab, openBookingTab, openEvaluationsTab, openCheckInHistoryTab, todayKey }) => {
   const { t } = useTranslation('member');
 
   return (
@@ -48,6 +48,16 @@ const ScheduleTabs = ({ activeTab, setActiveTab, setSelectedDate, defaultRequest
         }`}
       >
         {t('schedule.tabs.evaluations')}
+      </button>
+      <button
+        onClick={openCheckInHistoryTab}
+        className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap ${
+          activeTab === 'checkin_history'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+        }`}
+      >
+        {t('schedule.tabs.checkin_history')}
       </button>
     </div>
   );
