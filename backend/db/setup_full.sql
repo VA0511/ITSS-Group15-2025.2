@@ -297,7 +297,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM "Employee"
-        WHERE "id" = NEW.employee_id AND "position" = 'PT'
+        WHERE "id" = NEW.employee_id AND UPPER("position") IN ('PT', 'TRAINER')
     ) THEN
         RAISE EXCEPTION 'Chi nhan vien co vi tri PT moi duoc them vao bang PT_Detail';
     END IF;

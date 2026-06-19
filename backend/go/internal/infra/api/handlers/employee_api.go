@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"gym-management/internal/domain/entity"
 	"gym-management/internal/domain/usecase/employee_usecase"
@@ -88,9 +89,76 @@ func (h *EmployeeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *EmployeeHandler) Update(w http.ResponseWriter, r *http.Request) {
-	var employee entity.Employee
-	json.NewDecoder(r.Body).Decode(&employee)
-	err := h.usecase.UpdateEmployee(&employee)
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	existing, err := h.usecase.GetEmployeeByID(id)
+	if err != nil {
+		http.Error(w, "Employee not found", http.StatusNotFound)
+		return
+	}
+
+	var req map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if val, ok := req["full_name"]; ok {
+		existing.FullName = val.(string)
+	}
+	if val, ok := req["phone"]; ok {
+		existing.Phone = val.(string)
+	}
+	if val, ok := req["position"]; ok {
+		existing.Position = val.(string)
+	}
+	if val, ok := req["salary"]; ok {
+		switch v := val.(type) {
+		case float64:
+			existing.Salary = v
+		case int:
+			existing.Salary = float64(v)
+		}
+	}
+	if val, ok := req["account_id"]; ok {
+		if val == nil {
+			existing.AccountID = 0
+		} else {
+			switch v := val.(type) {
+			case float64:
+				existing.AccountID = int(v)
+			case int:
+				existing.AccountID = v
+			}
+		}
+	}
+	if val, ok := req["gender"]; ok {
+		existing.Gender = val.(string)
+	}
+	if val, ok := req["dob"]; ok {
+		dobStr := val.(string)
+		if dobStr != "" {
+			t, err := time.Parse("2006-01-02", dobStr[:10])
+			if err == nil {
+				existing.DOB = t
+			}
+		}
+	}
+	if val, ok := req["email"]; ok {
+		existing.Email = val.(string)
+	}
+	if val, ok := req["address"]; ok {
+		existing.Address = val.(string)
+	}
+	if val, ok := req["avatar"]; ok {
+		existing.Avatar = val.(string)
+	}
+
+	err = h.usecase.UpdateEmployee(existing)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

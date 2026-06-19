@@ -28,7 +28,18 @@
       "thigh": "太もも",
       "calf": "ふくらはぎ"
     },
-    "default_bio": "パーソナルトレーナー"
+    "default_bio": "パーソナルトレーナー",
+    "edit_btn": "プロフィールを編集",
+    "save_btn": "変更を保存",
+    "cancel_btn": "キャンセル",
+    "edit_success": "プロフィールを更新しました",
+    "edit_error": "プロフィールの更新に失敗しました",
+    "placeholder_fullname": "氏名を入力してください...",
+    "placeholder_phone": "電話番号を入力してください...",
+    "placeholder_email": "メールアドレスを入力してください...",
+    "placeholder_profile": "自己紹介文を入力してください（ドットまたは改行区切り）...",
+    "placeholder_experience": "経験年数...",
+    "placeholder_achievements": "実績と資格（セミコロン ';' 区切り）..."
   },
   "students": {
     "title": "受講生一覧",

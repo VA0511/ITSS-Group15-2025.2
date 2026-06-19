@@ -28,7 +28,18 @@
       "thigh": "Thigh",
       "calf": "Calf"
     },
-    "default_bio": "Personal Trainer"
+    "default_bio": "Personal Trainer",
+    "edit_btn": "Edit Profile",
+    "save_btn": "Save Changes",
+    "cancel_btn": "Cancel",
+    "edit_success": "Profile updated successfully",
+    "edit_error": "Failed to update profile",
+    "placeholder_fullname": "Enter full name...",
+    "placeholder_phone": "Enter phone number...",
+    "placeholder_email": "Enter email...",
+    "placeholder_profile": "Enter professional profile points (separated by period or new line)...",
+    "placeholder_experience": "Years of experience...",
+    "placeholder_achievements": "Achievements & Certifications (separated by semicolon ';')..."
   },
   "students": {
     "title": "Student List",

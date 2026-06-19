@@ -28,7 +28,18 @@
       "thigh": "Đùi",
       "calf": "Bắp chuối"
     },
-    "default_bio": "Huấn luyện viên thể hình"
+    "default_bio": "Huấn luyện viên thể hình",
+    "edit_btn": "Chỉnh sửa hồ sơ",
+    "save_btn": "Lưu thay đổi",
+    "cancel_btn": "Hủy",
+    "edit_success": "Cập nhật hồ sơ thành công",
+    "edit_error": "Cập nhật hồ sơ thất bại",
+    "placeholder_fullname": "Nhập họ và tên...",
+    "placeholder_phone": "Nhập số điện thoại...",
+    "placeholder_email": "Nhập email...",
+    "placeholder_profile": "Nhập giới thiệu bản thân (mỗi ý cách nhau bởi dấu chấm hoặc xuống dòng)...",
+    "placeholder_experience": "Số năm kinh nghiệm...",
+    "placeholder_achievements": "Chứng chỉ & thành tích (Phân cách bằng dấu chấm phẩy ';')..."
   },
   "students": {
     "title": "Danh sách Học Viên",
