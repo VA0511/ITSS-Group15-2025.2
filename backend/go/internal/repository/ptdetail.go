@@ -29,11 +29,27 @@ func (r *ptDetailRepository) Create(ptDetail *entity.PTDetail) error {
 }
 
 func (r *ptDetailRepository) GetByID(employeeID int) (*entity.PTDetail, error) {
+	var pos string
+	err := r.db.QueryRow(`SELECT position FROM "Employee" WHERE id = $1`, employeeID).Scan(&pos)
+	if err != nil {
+		return nil, err
+	}
+
+	var exists bool
+	err = r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM "PT_Detail" WHERE employee_id = $1)`, employeeID).Scan(&exists)
+	if err == nil && !exists {
+		_, err = r.db.Exec(`INSERT INTO "PT_Detail" (employee_id, professional_profile, body_index, experience_years, achievements, available_schedule) VALUES ($1, $2, $3, $4, $5, $6)`,
+			employeeID, "Chưa cập nhật thông tin giới thiệu.", "{}", "0", "", "")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	query := `SELECT pd.employee_id, COALESCE(e.full_name, ''), COALESCE(e.phone, ''), COALESCE(e.email, ''), COALESCE(e.dob, CURRENT_DATE), pd.professional_profile, pd.body_index, pd.experience_years, COALESCE(pd.achievements, ''), COALESCE(pd.available_schedule, '') FROM "PT_Detail" pd JOIN "Employee" e ON e.id = pd.employee_id WHERE pd.employee_id = $1`
 	row := r.db.QueryRow(query, employeeID)
 
 	var ptDetail entity.PTDetail
-	err := row.Scan(&ptDetail.EmployeeID, &ptDetail.FullName, &ptDetail.Phone, &ptDetail.Email, &ptDetail.DOB, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
+	err = row.Scan(&ptDetail.EmployeeID, &ptDetail.FullName, &ptDetail.Phone, &ptDetail.Email, &ptDetail.DOB, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
 	if err != nil {
 		return nil, err
 	}
@@ -42,11 +58,28 @@ func (r *ptDetailRepository) GetByID(employeeID int) (*entity.PTDetail, error) {
 }
 
 func (r *ptDetailRepository) GetByAccountID(accountID int) (*entity.PTDetail, error) {
+	var empID int
+	var pos string
+	err := r.db.QueryRow(`SELECT id, position FROM "Employee" WHERE account_id = $1`, accountID).Scan(&empID, &pos)
+	if err != nil {
+		return nil, err
+	}
+
+	var exists bool
+	err = r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM "PT_Detail" WHERE employee_id = $1)`, empID).Scan(&exists)
+	if err == nil && !exists {
+		_, err = r.db.Exec(`INSERT INTO "PT_Detail" (employee_id, professional_profile, body_index, experience_years, achievements, available_schedule) VALUES ($1, $2, $3, $4, $5, $6)`,
+			empID, "Chưa cập nhật thông tin giới thiệu.", "{}", "0", "", "")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	query := `SELECT pd.employee_id, COALESCE(e.full_name, ''), COALESCE(e.phone, ''), COALESCE(e.email, ''), COALESCE(e.dob, CURRENT_DATE), pd.professional_profile, pd.body_index, pd.experience_years, COALESCE(pd.achievements, ''), COALESCE(pd.available_schedule, '') FROM "PT_Detail" pd JOIN "Employee" e ON e.id = pd.employee_id WHERE e.account_id = $1`
 	row := r.db.QueryRow(query, accountID)
 
 	var ptDetail entity.PTDetail
-	err := row.Scan(&ptDetail.EmployeeID, &ptDetail.FullName, &ptDetail.Phone, &ptDetail.Email, &ptDetail.DOB, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
+	err = row.Scan(&ptDetail.EmployeeID, &ptDetail.FullName, &ptDetail.Phone, &ptDetail.Email, &ptDetail.DOB, &ptDetail.ProfessionalProfile, &ptDetail.BodyIndex, &ptDetail.ExperienceYears, &ptDetail.Achievements, &ptDetail.AvailableSchedule)
 	if err != nil {
 		return nil, err
 	}

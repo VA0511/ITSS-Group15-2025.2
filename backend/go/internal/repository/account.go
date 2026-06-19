@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"gym-management/internal/domain/entity"
 )
 
@@ -23,6 +24,12 @@ func NewAccountRepository(db *sql.DB) AccountRepository {
 }
 
 func (r *accountRepository) Create(account *entity.Account) error {
+	var count int
+	err := r.db.QueryRow(`SELECT COUNT(*) FROM "Account" WHERE username = $1`, account.Username).Scan(&count)
+	if err == nil && count > 0 {
+		return errors.New("username already exists")
+	}
+
 	query := `INSERT INTO "Account" (username, password, role_id, email, is_first_login) VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	return r.db.QueryRow(query, account.Username, account.Password, account.RoleID, account.Email, account.IsFirstLogin).Scan(&account.ID)
 }
@@ -97,7 +104,13 @@ func (r *accountRepository) Update(account *entity.Account) error {
 }
 
 func (r *accountRepository) Delete(id int) error {
+	// First, delete any associated refresh tokens to avoid foreign key constraint violation
+	_, err := r.db.Exec(`DELETE FROM "AuthRefreshToken" WHERE account_id = $1`, id)
+	if err != nil {
+		return err
+	}
+
 	query := `DELETE FROM "Account" WHERE id = $1`
-	_, err := r.db.Exec(query, id)
+	_, err = r.db.Exec(query, id)
 	return err
 }

@@ -26,14 +26,14 @@ type accountUsecase struct {
 	delete        IDeleteAccountUseCase
 }
 
-func NewAccountUsecase(repo adapter.AccountRepository) AccountUsecase {
+func NewAccountUsecase(repo adapter.AccountRepository, empRepo adapter.EmployeeRepository) AccountUsecase {
 	return &accountUsecase{
 		create:        NewCreateAccountUseCase(repo),
 		get:           NewGetAccountUseCase(repo),
 		list:          NewListAccountsUseCase(repo),
 		listPaginated: NewListAccountsPaginatedUseCase(repo),
 		update:        NewUpdateAccountUseCase(repo),
-		delete:        NewDeleteAccountUseCase(repo),
+		delete:        NewDeleteAccountUseCase(repo, empRepo),
 	}
 }
 

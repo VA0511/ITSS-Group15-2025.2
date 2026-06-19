@@ -101,7 +101,9 @@ func (h *TrainingBookingHandler) GetAll(w http.ResponseWriter, r *http.Request) 
 	currentUser, ok := middleware.GetAuthenticatedUser(r)
 	if ok && currentUser.Role == "MEMBER" {
 		member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
-		if err == nil {
+		if err != nil {
+			trainingBookings = []*entity.TrainingBooking{}
+		} else {
 			var filtered []*entity.TrainingBooking
 			for _, b := range trainingBookings {
 				if b.MemberID == member.ID {
@@ -112,7 +114,9 @@ func (h *TrainingBookingHandler) GetAll(w http.ResponseWriter, r *http.Request) 
 		}
 	} else if ok && currentUser.Role == "PT" {
 		employee, err := h.employeeUsecase.GetEmployeeByAccountID(currentUser.AccountID)
-		if err == nil {
+		if err != nil {
+			trainingBookings = []*entity.TrainingBooking{}
+		} else {
 			var filtered []*entity.TrainingBooking
 			for _, b := range trainingBookings {
 				if b.PTID == employee.ID {

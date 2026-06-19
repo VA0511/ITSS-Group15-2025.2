@@ -31,6 +31,10 @@ func (h *AccountHandler) Create(w http.ResponseWriter, r *http.Request) {
 	account := mappers.AccountRequestToEntity(&req)
 
 	if err := h.usecase.CreateAccount(account); err != nil {
+		if err.Error() == "username already exists" {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

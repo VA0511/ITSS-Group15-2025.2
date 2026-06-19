@@ -53,9 +53,18 @@
       "actions": "Actions"
     },
     "modal": {
-      "add_title": "Add New Account",
+      "add_title": "Create PT Account",
+      "add_desc": "Select a trainer without an account and set up login credentials.",
+      "pt_only_hint": "This section only creates accounts for Personal Trainers (PT). To add employee records first, go to Staff Management.",
       "delete_title": "Confirm Delete Account",
       "reveal_title": "View Account Password"
+    },
+    "create_pt": {
+      "select_emp_label": "Select PT (without account)",
+      "select_placeholder": "--- Select a trainer ---",
+      "emp_required": "Please select a trainer",
+      "no_unlinked_pt": "All PTs already have accounts. Please add a new employee in Staff Management first.",
+      "link_failed": "Account created but could not link profile. Please update manually."
     },
     "form": {
       "username_label": "Username *",
@@ -90,7 +99,8 @@
     },
     "error": {
       "enter_password": "Please enter your password",
-      "wrong_password": "Incorrect password or insufficient permissions"
+      "wrong_password": "Incorrect password or insufficient permissions",
+      "username_exists": "Username already exists in the system"
     },
     "tooltip": {
       "view_password": "View Password",
@@ -703,22 +713,38 @@
       "warning": "This action cannot be undone."
     },
     "form_page": {
-      "title_edit": "Staff Profile",
-      "title_create": "Create Staff Account",
-      "subtitle": "Fill in information and assign login access (Role) for the internal account.",
-      "name_label": "Staff Full Name",
+      "title_edit": "Edit Staff",
+      "title_create": "Add New Staff",
+      "subtitle": "Fill in the employee's personal information. Login account creation is done separately in the Account Management section.",
+      "account_notice_title": "Note on System Accounts",
+      "account_notice_body": "This form is for adding employee information only. If the staff member is a PT (Trainer) or Manager and needs a system login account, please create one in the Account Management section.",
+      "account_notice_link": "Go to Account Management",
+      "name_label": "Full Name",
       "name_placeholder": "e.g. John Smith",
-      "role_label": "Access Role",
-      "role_trainer": "Personal Trainer (Trainer)",
-      "role_manager": "Receptionist / Cashier (Manager)",
+      "position_label": "Position",
+      "position_placeholder": "Select a position",
+      "position_PT": "PT",
+      "position_trainer": "PT",
+      "position_manager": "Manager",
+      "position_staff": "Staff",
+      "position_receptionist": "Receptionist",
+      "position_cashier": "Cashier",
+      "position_cleaner": "Cleaner",
+      "position_security": "Security",
+      "gender_label": "Gender",
+      "gender_placeholder": "Select gender",
+      "gender_male": "Male",
+      "gender_female": "Female",
+      "dob_label": "Date of Birth",
       "phone_label": "Phone Number",
-      "phone_placeholder": "Internal contact number",
-      "email_label": "Login Email",
-      "email_placeholder": "Email used for system access",
-      "password_label": "Initial Password",
-      "password_placeholder": "Enter password for staff member",
+      "phone_placeholder": "Employee contact number",
+      "email_label": "Contact Email",
+      "email_placeholder": "Employee's personal email",
+      "address_label": "Address",
+      "address_placeholder": "Enter residential address",
       "btn_cancel": "Cancel",
-      "btn_save": "Save Staff"
+      "btn_save": "Save Staff",
+      "btn_saving": "Saving..."
     }
   },
   "salary": {

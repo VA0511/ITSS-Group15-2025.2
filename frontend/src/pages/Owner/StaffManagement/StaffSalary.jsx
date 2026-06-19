@@ -85,7 +85,9 @@ const StaffSalary = () => {
   };
 
   const name = employee?.full_name || `#${id}`;
-  const position = employee?.position || '—';
+  const position = employee?.position
+    ? t(`staff.form_page.position_${employee.position}`, { defaultValue: employee.position })
+    : '—';
 
   if (loading) {
     return (

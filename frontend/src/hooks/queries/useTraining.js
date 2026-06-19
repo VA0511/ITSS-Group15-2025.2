@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { trainingService } from '@/services/trainingService';
 
 const toArray = (data) => (Array.isArray(data) ? data : []);
@@ -54,5 +54,15 @@ export const useMyPTDetail = () => {
   return useQuery({
     queryKey: ['myPTDetail'],
     queryFn: () => trainingService.getMyPTDetail(),
+  });
+};
+
+export const useUpdateMyPTDetail = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => trainingService.updateMyPTDetail(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myPTDetail'] });
+    },
   });
 };

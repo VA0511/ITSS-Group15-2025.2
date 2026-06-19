@@ -110,7 +110,7 @@ func main() {
 	invoiceUsecase := invoice_usecase.NewInvoiceUsecase(invoiceRepo)
 	roleUsecase := role_usecase.NewRoleUsecase(roleRepo)
 	facilityUsecase := facility_usecase.NewFacilityUsecase(facilityRepo)
-	accountUsecase := account_usecase.NewAccountUsecase(accountRepo)
+	accountUsecase := account_usecase.NewAccountUsecase(accountRepo, employeeRepo)
 	authUsecase := auth_usecase.NewAuthUsecase(authRepo)
 	serviceCategoryUsecase := service_category_usecase.NewServiceCategoryUsecase(serviceCategoryRepo)
 	subscriptionUsecase := subscription_usecase.NewSubscriptionUsecase(subscriptionRepo)

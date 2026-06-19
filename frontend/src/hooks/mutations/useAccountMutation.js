@@ -13,7 +13,14 @@ export const useCreateAccount = () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
     },
     onError: (error) => {
-      toast.error(t('notifications.error_add') + (error.response?.data || error.message || t('notifications.error_try_again')));
+      const errMsg = error.response?.data?.trim();
+      let displayError = error.message || t('notifications.error_try_again');
+      if (errMsg === 'username already exists') {
+        displayError = t('owner:account.error.username_exists', { defaultValue: 'Tên đăng nhập đã tồn tại trong hệ thống' });
+      } else if (errMsg) {
+        displayError = errMsg;
+      }
+      toast.error(t('notifications.error_add') + displayError);
     },
   });
 };

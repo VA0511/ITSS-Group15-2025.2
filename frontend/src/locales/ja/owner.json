@@ -53,9 +53,18 @@
       "actions": "操作"
     },
     "modal": {
-      "add_title": "新規アカウント追加",
+      "add_title": "PTアカウント作成",
+      "add_desc": "アカウントのないトレーナーを選んでログイン情報を設定します。",
+      "pt_only_hint": "この機能はパーソナルトレーナー（PT）のアカウント作成のみ行います。先に従業員情報を登録するにはスタッフ管理セクションへ。",
       "delete_title": "アカウント削除の確認",
       "reveal_title": "アカウントパスワードの確認"
+    },
+    "create_pt": {
+      "select_emp_label": "PTを選択（アカウント未登録）",
+      "select_placeholder": "--- トレーナーを選択 ---",
+      "emp_required": "トレーナーを選択してください",
+      "no_unlinked_pt": "全トレーナーにアカウントがあります。先にスタッフ管理で従業員を追加してください。",
+      "link_failed": "アカウントは作成されましたがプロフィールのリンクに失敗しました。手動で更新してください。"
     },
     "form": {
       "username_label": "ユーザー名 *",
@@ -90,7 +99,8 @@
     },
     "error": {
       "enter_password": "パスワードを入力してください",
-      "wrong_password": "パスワードが正しくないか、アクセス権限がありません"
+      "wrong_password": "パスワードが正しくないか、アクセス権限がありません",
+      "username_exists": "ユーザー名は既にシステム内に存在します"
     },
     "tooltip": {
       "view_password": "パスワードを見る",
@@ -703,22 +713,38 @@
       "warning": "この操作は元に戻せません。"
     },
     "form_page": {
-      "title_edit": "スタッフプロフィール",
-      "title_create": "スタッフアカウント作成",
-      "subtitle": "情報を入力し、内部アカウントのログイン権限（役割）を設定します。",
-      "name_label": "スタッフ氏名",
+      "title_edit": "スタッフ情報を編集",
+      "title_create": "スタッフを新規追加",
+      "subtitle": "従業員の個人情報を入力してください。ログインアカウントの作成はアカウント管理セクションで行います。",
+      "account_notice_title": "アカウントに関するご注意",
+      "account_notice_body": "このフォームは従業員情報の登録専用です。PT（トレーナー）またはマネージャーでシステムログインが必要な場合は、アカウント管理セクションでアカウントを作成してください。",
+      "account_notice_link": "アカウント管理へ移動",
+      "name_label": "氏名",
       "name_placeholder": "例: 山田太郎",
-      "role_label": "アクセス役割",
-      "role_trainer": "パーソナルトレーナー（Trainer）",
-      "role_manager": "受付 / レジ係（Manager）",
+      "position_label": "役職",
+      "position_placeholder": "役職を選択",
+      "position_PT": "PT",
+      "position_trainer": "PT",
+      "position_manager": "マネージャー",
+      "position_staff": "スタッフ",
+      "position_receptionist": "受付",
+      "position_cashier": "レジ係",
+      "position_cleaner": "清掃員",
+      "position_security": "警備員",
+      "gender_label": "性別",
+      "gender_placeholder": "性別を選択",
+      "gender_male": "男性",
+      "gender_female": "女性",
+      "dob_label": "生年月日",
       "phone_label": "電話番号",
-      "phone_placeholder": "内線番号",
-      "email_label": "ログインメール",
-      "email_placeholder": "システムアクセスに使用するメール",
-      "password_label": "初期パスワード",
-      "password_placeholder": "スタッフのパスワードを入力",
+      "phone_placeholder": "従業員の連絡先番号",
+      "email_label": "連絡用メール",
+      "email_placeholder": "従業員の個人メール",
+      "address_label": "住所",
+      "address_placeholder": "居住地住所を入力",
       "btn_cancel": "キャンセル",
-      "btn_save": "スタッフを保存"
+      "btn_save": "スタッフを保存",
+      "btn_saving": "保存中..."
     }
   },
   "salary": {

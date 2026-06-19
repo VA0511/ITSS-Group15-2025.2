@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Trash2, Eye, ChevronLeft, ChevronRight, Wallet } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -162,7 +162,11 @@ const StaffList = () => {
                       </div>
                       {staff.full_name || staff.FullName || staff.fullName || 'N/A'}
                     </TableCell>
-                    <TableCell>{staff.position || staff.Position || 'N/A'}</TableCell>
+                    <TableCell>
+                      {staff.position || staff.Position 
+                        ? t(`staff.form_page.position_${staff.position || staff.Position}`, { defaultValue: staff.position || staff.Position })
+                        : 'N/A'}
+                    </TableCell>
                     <TableCell>
                       <div className="text-sm text-gray-900 dark:text-gray-100">{staff.phone || staff.Phone || 'N/A'}</div>
                       <div className="text-xs text-gray-500">{staff.email || staff.Email || 'N/A'}</div>
@@ -269,7 +273,11 @@ const StaffList = () => {
               />
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{t('staff.form_fields.role')}</p>
-                <p className="text-base font-semibold text-gray-900 dark:text-white">{staffForm.position || staffForm.Position}</p>
+                <p className="text-base font-semibold text-gray-900 dark:text-white">
+                  {staffForm.position || staffForm.Position 
+                    ? t(`staff.form_page.position_${staffForm.position || staffForm.Position}`, { defaultValue: staffForm.position || staffForm.Position })
+                    : ''}
+                </p>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

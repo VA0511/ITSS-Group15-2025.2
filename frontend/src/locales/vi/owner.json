@@ -53,9 +53,18 @@
       "actions": "Thao tác"
     },
     "modal": {
-      "add_title": "Thêm tài khoản mới",
+      "add_title": "Tạo tài khoản PT",
+      "add_desc": "Chọn huấn luyện viên chưa có tài khoản và thiết lập thông tin đăng nhập.",
+      "pt_only_hint": "Chức năng này chỉ tạo tài khoản cho Huấn luyện viên (PT). Để tạo hồ sơ nhân viên trước, vui lòng vào mục Quản lý Nhân sự.",
       "delete_title": "Xác nhận xóa tài khoản",
       "reveal_title": "Xem mật khẩu tài khoản"
+    },
+    "create_pt": {
+      "select_emp_label": "Chọn PT (chưa có tài khoản)",
+      "select_placeholder": "--- Chọn huấn luyện viên ---",
+      "emp_required": "Vui lòng chọn một huấn luyện viên",
+      "no_unlinked_pt": "Tất cả PT đều đã có tài khoản. Hãy thêm nhân viên mới tại mục Quản lý Nhân sự.",
+      "link_failed": "Tài khoản đã tạo nhưng không liên kết được hồ sơ. Vui lòng cập nhật thủ công."
     },
     "form": {
       "username_label": "Tên đăng nhập *",
@@ -90,7 +99,8 @@
     },
     "error": {
       "enter_password": "Vui lòng nhập mật khẩu của bạn",
-      "wrong_password": "Mật khẩu không đúng hoặc không có quyền truy cập"
+      "wrong_password": "Mật khẩu không đúng hoặc không có quyền truy cập",
+      "username_exists": "Tên đăng nhập đã tồn tại trong hệ thống"
     },
     "tooltip": {
       "view_password": "Xem mật khẩu",
@@ -703,22 +713,38 @@
       "warning": "Hành động này không thể hoàn tác."
     },
     "form_page": {
-      "title_edit": "Hồ sơ Nhân sự",
-      "title_create": "Cấp tài khoản Nhân sự",
-      "subtitle": "Điền thông tin và cấp quyền đăng nhập (Role) cho tài khoản nội bộ.",
-      "name_label": "Họ và Tên Nhân sự",
+      "title_edit": "Chỉnh sửa Nhân sự",
+      "title_create": "Thêm Nhân sự mới",
+      "subtitle": "Điền thông tin cá nhân của nhân viên. Việc tạo tài khoản đăng nhập được thực hiện riêng tại mục Quản lý Tài khoản.",
+      "account_notice_title": "Lưu ý về tài khoản hệ thống",
+      "account_notice_body": "Đây là form thêm thông tin nhân viên. Nếu nhân viên là PT (Huấn luyện viên) hoặc Manager và cần tài khoản đăng nhập hệ thống, vui lòng tạo tài khoản tại mục Quản lý Tài khoản.",
+      "account_notice_link": "Đi tới Quản lý Tài khoản",
+      "name_label": "Họ và Tên",
       "name_placeholder": "VD: Nguyễn Văn A",
-      "role_label": "Quyền hạn (Role)",
-      "role_trainer": "Huấn Luyện Viên (Trainer)",
-      "role_manager": "Lễ Tân / Thu Ngân (Manager)",
+      "position_label": "Chức vụ",
+      "position_placeholder": "Chọn chức vụ",
+      "position_PT": "PT",
+      "position_trainer": "PT",
+      "position_manager": "Quản lý",
+      "position_staff": "Nhân viên",
+      "position_receptionist": "Lễ tân",
+      "position_cashier": "Thu ngân",
+      "position_cleaner": "Vệ sinh",
+      "position_security": "Bảo vệ",
+      "gender_label": "Giới tính",
+      "gender_placeholder": "Chọn giới tính",
+      "gender_male": "Nam",
+      "gender_female": "Nữ",
+      "dob_label": "Ngày sinh",
       "phone_label": "Số điện thoại",
-      "phone_placeholder": "Số liên lạc nội bộ",
-      "email_label": "Email đăng nhập",
-      "email_placeholder": "Email dùng để vào hệ thống",
-      "password_label": "Mật khẩu khởi tạo",
-      "password_placeholder": "Nhập mật khẩu cho nhân viên",
+      "phone_placeholder": "Số liên lạc nhân viên",
+      "email_label": "Email liên hệ",
+      "email_placeholder": "Email cá nhân của nhân viên",
+      "address_label": "Địa chỉ",
+      "address_placeholder": "Nhập địa chỉ thường trú",
       "btn_cancel": "Hủy bỏ",
-      "btn_save": "Lưu nhân sự"
+      "btn_save": "Lưu nhân sự",
+      "btn_saving": "Đang lưu..."
     }
   },
   "salary": {

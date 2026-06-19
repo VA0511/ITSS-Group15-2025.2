@@ -1,14 +1,19 @@
-﻿import React, { useMemo, useState } from 'react';
-import { Plus, Trash2, Eye, EyeOff, ChevronLeft, ChevronRight, KeyRound, ShieldCheck } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import {
+  Plus, Trash2, Eye, EyeOff, ChevronLeft, ChevronRight,
+  KeyRound, ShieldCheck, UserCheck, Info,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAccounts } from '@/hooks/queries/useAccounts';
 import { useCreateAccount, useDeleteAccount, useRevealPassword } from '@/hooks/mutations/useAccountMutation';
+import { useUpdateEmployee } from '@/hooks/mutations/useEmployeeMutation';
+import { useEmployees } from '@/hooks/queries/useEmployees';
 import Button from '@/components/Common/Button';
 import Modal from '@/components/Common/Modal';
 import Input from '@/components/Common/Input';
 import { toast } from '@/utils/toast';
-import { slideUpVariants, sectionStaggerVariants } from '@/lib/animations';
+import { slideUpVariants } from '@/lib/animations';
 
 const ROLE_MAP = { 1: 'OWNER', 2: 'MANAGER', 3: 'PT', 4: 'MEMBER' };
 const ROLE_BADGE = {
@@ -23,24 +28,33 @@ const AccountList = () => {
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  // Modals state
+  // ─── modal state ──────────────────────────────────────────────────────────
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, account: null });
   const [createModal, setCreateModal] = useState(false);
   const [revealModal, setRevealModal] = useState({ isOpen: false, account: null });
 
-  // Create form state
-  const [createForm, setCreateForm] = useState({ username: '', password: '', role_id: 2 });
+  // ─── PT account creation form ─────────────────────────────────────────────
+  // selectedEmployeeId: the PT employee to link; 0 = none selected yet
+  const [createForm, setCreateForm] = useState({
+    selectedEmployeeId: '',
+    username: '',
+    password: '',
+  });
   const [createErrors, setCreateErrors] = useState({});
 
-  // Reveal state
+  // ─── reveal modal state ───────────────────────────────────────────────────
   const [ownerPassword, setOwnerPassword] = useState('');
   const [revealedPassword, setRevealedPassword] = useState(null);
   const [showRevealedPwd, setShowRevealedPwd] = useState(false);
 
+  // ─── data ─────────────────────────────────────────────────────────────────
   const { data: accountResponse, isLoading } = useAccounts(page, limit);
+  const { data: employeesRaw } = useEmployees(1, 1000);
+
   const createMutation = useCreateAccount();
   const deleteMutation = useDeleteAccount();
   const revealMutation = useRevealPassword();
+  const updateEmployeeMutation = useUpdateEmployee();
 
   const accounts = useMemo(() => {
     const raw = !accountResponse
@@ -48,7 +62,6 @@ const AccountList = () => {
       : Array.isArray(accountResponse)
         ? accountResponse
         : accountResponse.data || [];
-    // áº¨n tÃ i khoáº£n OWNER (role_id = 1) khá»i danh sÃ¡ch
     return raw.filter((acc) => acc.role_id !== 1);
   }, [accountResponse]);
 
@@ -62,7 +75,45 @@ const AccountList = () => {
     return accountResponse.total_items || accounts.length;
   }, [accountResponse, accounts]);
 
-  // Delete
+  /**
+   * PT employees who do NOT yet have an account (account_id falsy / 0)
+   * and whose position contains "trainer" (case-insensitive).
+   */
+  const unlinkedPTs = useMemo(() => {
+    const raw = !employeesRaw
+      ? []
+      : Array.isArray(employeesRaw)
+        ? employeesRaw
+        : employeesRaw.data?.data || employeesRaw.data || [];
+    return raw.filter((e) => {
+      const pos = (e.position || '').toLowerCase();
+      const isTrainer = pos === 'trainer' || pos === 'pt';
+      const noAccount = !e.account_id || e.account_id === 0;
+      return isTrainer && noAccount;
+    });
+  }, [employeesRaw]);
+
+  // The currently selected employee object (for preview)
+  const selectedEmployee = useMemo(
+    () => unlinkedPTs.find((e) => String(e.id) === String(createForm.selectedEmployeeId)) || null,
+    [unlinkedPTs, createForm.selectedEmployeeId]
+  );
+
+  // ─── helpers ──────────────────────────────────────────────────────────────
+  const resetCreateModal = () => {
+    setCreateModal(false);
+    setCreateForm({ selectedEmployeeId: '', username: '', password: '' });
+    setCreateErrors({});
+  };
+
+  const handleSelectEmployee = (empId) => {
+    setCreateForm((prev) => ({
+      ...prev,
+      selectedEmployeeId: empId,
+    }));
+  };
+
+  // ─── delete ───────────────────────────────────────────────────────────────
   const handleDelete = () => {
     if (deleteModal.account) {
       deleteMutation.mutate(deleteModal.account.id);
@@ -70,46 +121,52 @@ const AccountList = () => {
     }
   };
 
-  // Create
-  const validateCreate = () => {
+  // ─── create PT account ────────────────────────────────────────────────────
+  const validate = () => {
     const errs = {};
+    if (!createForm.selectedEmployeeId) errs.selectedEmployeeId = t('account.create_pt.emp_required');
     if (!createForm.username.trim()) errs.username = t('account.validation.username_required');
     if (createForm.password.length < 6) errs.password = t('account.validation.password_min');
-    if (!createForm.role_id) errs.role_id = t('account.validation.role_required');
     setCreateErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
   const handleCreate = () => {
-    if (!validateCreate()) return;
+    if (!validate()) return;
+
     createMutation.mutate(
-      { username: createForm.username, password: createForm.password, role_id: parseInt(createForm.role_id) },
+      { username: createForm.username, password: createForm.password, role_id: 3 /* PT */ },
       {
-        onSuccess: () => {
-          setCreateModal(false);
-          setCreateForm({ username: '', password: '', role_id: 2 });
-          setCreateErrors({});
+        onSuccess: (res) => {
+          // Get the newly created account's ID
+          const newAccountId =
+            res?.data?.id || res?.id || res?.data?.data?.id;
+
+          if (newAccountId && createForm.selectedEmployeeId) {
+            // Link the selected PT employee to this new account
+            updateEmployeeMutation.mutate(
+              { id: parseInt(createForm.selectedEmployeeId), data: { account_id: newAccountId } },
+              {
+                onError: () => {
+                  toast.error(t('account.create_pt.link_failed'));
+                },
+              }
+            );
+          }
+          resetCreateModal();
         },
       }
     );
   };
 
-  // Reveal password
+  // ─── reveal password ──────────────────────────────────────────────────────
   const handleReveal = () => {
-    if (!ownerPassword) {
-      toast.error(t('account.error.enter_password'));
-      return;
-    }
+    if (!ownerPassword) { toast.error(t('account.error.enter_password')); return; }
     revealMutation.mutate(
       { id: revealModal.account.id, ownerPassword },
       {
-        onSuccess: (res) => {
-          const pwd = res?.data?.password || res?.password;
-          setRevealedPassword(pwd);
-        },
-        onError: () => {
-          toast.error(t('account.error.wrong_password'));
-        },
+        onSuccess: (res) => setRevealedPassword(res?.data?.password || res?.password),
+        onError: () => toast.error(t('account.error.wrong_password')),
       }
     );
   };
@@ -128,6 +185,7 @@ const AccountList = () => {
     setShowRevealedPwd(false);
   };
 
+  // ─── render ───────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -181,8 +239,7 @@ const AccountList = () => {
                         <td className="px-4 py-3">
                           <div className="flex justify-end gap-1">
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              variant="ghost" size="icon"
                               className="h-8 w-8 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50"
                               title={t('account.tooltip.view_password')}
                               onClick={() => openRevealModal(account)}
@@ -190,8 +247,7 @@ const AccountList = () => {
                               <KeyRound className="h-4 w-4" />
                             </Button>
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              variant="ghost" size="icon"
                               className="h-8 w-8 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/50"
                               title={t('account.tooltip.delete')}
                               onClick={() => setDeleteModal({ isOpen: true, account })}
@@ -209,9 +265,8 @@ const AccountList = () => {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-4">
             <span className="text-sm text-gray-500 dark:text-gray-400">{t('account.pagination', { page, total: totalPages })}</span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
@@ -225,9 +280,69 @@ const AccountList = () => {
         )}
       </motion.div>
 
-      {/* Modal: ThÃªm tÃ i khoáº£n */}
-      <Modal isOpen={createModal} onClose={() => { setCreateModal(false); setCreateErrors({}); }} title={t('account.modal.add_title')}>
+      {/* ─── Modal: Tạo tài khoản PT ──────────────────────────────────────── */}
+      <Modal
+        isOpen={createModal}
+        onClose={resetCreateModal}
+        title={t('account.modal.add_title')}
+        description={t('account.modal.add_desc')}
+      >
         <div className="p-4 space-y-4">
+
+          {/* Info banner */}
+          <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/30 p-3 text-sm text-blue-700 dark:text-blue-300">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{t('account.modal.pt_only_hint')}</span>
+          </div>
+
+          {/* Select PT employee */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              {t('account.create_pt.select_emp_label')}
+              <span className="text-red-500 ml-0.5">*</span>
+            </label>
+            {unlinkedPTs.length === 0 ? (
+              <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
+                <UserCheck className="h-4 w-4 shrink-0" />
+                {t('account.create_pt.no_unlinked_pt')}
+              </div>
+            ) : (
+              <select
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-950 dark:border-gray-700 dark:text-white"
+                value={createForm.selectedEmployeeId}
+                onChange={(e) => handleSelectEmployee(e.target.value)}
+              >
+                <option value="">{t('account.create_pt.select_placeholder')}</option>
+                {unlinkedPTs.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.full_name || emp.FullName || `PT #${emp.id}`}
+                    {emp.phone ? ` · ${emp.phone}` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+            {createErrors.selectedEmployeeId && (
+              <span className="text-xs text-red-500">{createErrors.selectedEmployeeId}</span>
+            )}
+          </div>
+
+          {/* Selected employee preview */}
+          {selectedEmployee && (
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 px-4 py-3 text-sm space-y-1">
+              <p className="font-semibold text-gray-900 dark:text-white">{selectedEmployee.full_name}</p>
+              {selectedEmployee.phone && (
+                <p className="text-gray-500 dark:text-gray-400">📞 {selectedEmployee.phone}</p>
+              )}
+              {selectedEmployee.email && (
+                <p className="text-gray-500 dark:text-gray-400">✉️ {selectedEmployee.email}</p>
+              )}
+              {selectedEmployee.address && (
+                <p className="text-gray-500 dark:text-gray-400">📍 {selectedEmployee.address}</p>
+              )}
+            </div>
+          )}
+
+          {/* Username */}
           <Input
             label={t('account.form.username_label')}
             placeholder={t('account.form.username_placeholder')}
@@ -235,6 +350,8 @@ const AccountList = () => {
             onChange={(e) => setCreateForm(f => ({ ...f, username: e.target.value }))}
             error={createErrors.username}
           />
+
+          {/* Password */}
           <Input
             label={t('account.form.password_label')}
             type="password"
@@ -243,29 +360,26 @@ const AccountList = () => {
             onChange={(e) => setCreateForm(f => ({ ...f, password: e.target.value }))}
             error={createErrors.password}
           />
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('account.form.role_label')}</label>
-            <select
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:bg-gray-950 dark:border-gray-800 dark:text-white"
-              value={createForm.role_id}
-              onChange={(e) => setCreateForm(f => ({ ...f, role_id: e.target.value }))}
-            >
-              <option value={1}>OWNER</option>
-              <option value={2}>MANAGER</option>
-              <option value={3}>PT</option>
-              <option value={4}>MEMBER</option>
-            </select>
-            {createErrors.role_id && <span className="text-xs text-red-500">{createErrors.role_id}</span>}
-          </div>
+
           <div className="flex justify-end gap-2 pt-2 border-t dark:border-gray-800">
-            <Button variant="outline" onClick={() => { setCreateModal(false); setCreateErrors({}); }}>{t('account.btn.cancel')}</Button>
-            <Button onClick={handleCreate} isLoading={createMutation.isPending}>{t('account.btn.create')}</Button>
+            <Button variant="outline" onClick={resetCreateModal}>{t('account.btn.cancel')}</Button>
+            <Button
+              onClick={handleCreate}
+              disabled={unlinkedPTs.length === 0}
+              isLoading={createMutation.isPending || updateEmployeeMutation.isPending}
+            >
+              {t('account.btn.create')}
+            </Button>
           </div>
         </div>
       </Modal>
 
-      {/* Modal: XÃ¡c nháº­n xÃ³a */}
-      <Modal isOpen={deleteModal.isOpen} onClose={() => setDeleteModal({ isOpen: false, account: null })} title={t('account.modal.delete_title')}>
+      {/* Modal: Xác nhận xóa */}
+      <Modal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, account: null })}
+        title={t('account.modal.delete_title')}
+      >
         <div className="p-4">
           <p className="text-gray-700 dark:text-gray-300 mb-2">
             {t('account.delete.confirm_pre')}<strong>{deleteModal.account?.username}</strong>{t('account.delete.confirm_post')}
@@ -278,7 +392,7 @@ const AccountList = () => {
         </div>
       </Modal>
 
-      {/* Modal: Xem máº­t kháº©u */}
+      {/* Modal: Xem mật khẩu */}
       <Modal isOpen={revealModal.isOpen} onClose={closeRevealModal} title={t('account.modal.reveal_title')}>
         <div className="p-4 space-y-4">
           <div className="flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3">
@@ -287,7 +401,6 @@ const AccountList = () => {
               {t('account.reveal.info_pre')}<strong>{revealModal.account?.username}</strong>{t('account.reveal.info_post')}
             </p>
           </div>
-
           {revealedPassword === null ? (
             <>
               <Input
@@ -308,13 +421,9 @@ const AccountList = () => {
               <label className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('account.reveal.account_password_label')}</label>
               <div className="flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 py-2">
                 <span className="flex-1 font-mono text-gray-900 dark:text-white">
-                  {showRevealedPwd ? revealedPassword : 'â€¢'.repeat(revealedPassword.length || 8)}
+                  {showRevealedPwd ? revealedPassword : '•'.repeat(revealedPassword.length || 8)}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setShowRevealedPwd(v => !v)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                >
+                <button type="button" onClick={() => setShowRevealedPwd(v => !v)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                   {showRevealedPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>

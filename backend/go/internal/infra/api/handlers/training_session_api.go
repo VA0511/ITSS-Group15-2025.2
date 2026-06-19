@@ -63,19 +63,42 @@ func (h *TrainingSessionHandler) GetAll(w http.ResponseWriter, r *http.Request) 
 	currentUser, ok := middleware.GetAuthenticatedUser(r)
 	if ok && currentUser.Role == "PT" {
 		employee, err := h.employeeUsecase.GetEmployeeByAccountID(currentUser.AccountID)
-		if err == nil {
-			sessions, err := h.usecase.GetSessionsByPTEmployeeID(employee.ID)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			if sessions == nil {
-				sessions = []*entity.TrainingSession{}
-			}
+		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(sessions)
+			json.NewEncoder(w).Encode([]*entity.TrainingSession{})
 			return
 		}
+		sessions, err := h.usecase.GetSessionsByPTEmployeeID(employee.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if sessions == nil {
+			sessions = []*entity.TrainingSession{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(sessions)
+		return
+	}
+
+	if ok && currentUser.Role == "MEMBER" {
+		member, err := h.memberUsecase.GetMemberByAccountID(currentUser.AccountID)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode([]*entity.TrainingSession{})
+			return
+		}
+		sessions, err := h.usecase.GetSessionsByMemberID(member.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if sessions == nil {
+			sessions = []*entity.TrainingSession{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(sessions)
+		return
 	}
 
 	trainingSessions, err := h.usecase.GetAllTrainingSessions()
